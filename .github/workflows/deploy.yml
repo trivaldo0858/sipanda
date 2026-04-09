@@ -38,6 +38,7 @@ jobs:
         run: php artisan test
 
   # ─── JOB 2: BUILD & PUSH IMAGE ────────────────────────────
+    # ─── JOB 2: BUILD & PUSH IMAGE ────────────────────────────
   build-and-push:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
@@ -53,6 +54,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # TAMBAHKAN INI: Menyiapkan Docker Buildx untuk mendukung cache GHA
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Login ke GHCR
         uses: docker/login-action@v3
@@ -77,6 +82,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # Sekarang cache ini akan berfungsi karena ada setup-buildx-action di atas
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
