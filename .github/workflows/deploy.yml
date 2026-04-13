@@ -38,7 +38,6 @@ jobs:
         run: php artisan test
 
   # ─── JOB 2: BUILD & PUSH IMAGE ────────────────────────────
-    # ─── JOB 2: BUILD & PUSH IMAGE ────────────────────────────
   build-and-push:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
@@ -55,7 +54,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # TAMBAHKAN INI: Menyiapkan Docker Buildx untuk mendukung cache GHA
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -82,7 +80,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Sekarang cache ini akan berfungsi karena ada setup-buildx-action di atas
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -99,7 +96,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 8022
+          port: 22
           script: |
             set -e
 
@@ -108,20 +105,20 @@ jobs:
             # Login ke GHCR
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Masuk ke folder project
-            cd /home/${{ secrets.SERVER_USER }}/RPL2X-kelompok-1
+            # Masuk ke folder project yang benar
+            cd ~/RPL2C-kelompok-2
 
-            # Pull image terbaru
-            docker pull ghcr.io/${{ github.repository }}:latest
+            # Pull image terbaru menggunakan Docker Compose
+            docker compose pull
 
-            # Update container tanpa downtime besar
+            # Update container
             docker compose up -d --remove-orphans
 
             # Tunggu container siap
             echo "⏳ Menunggu container ready..."
-            sleep 10
+            sleep 5
 
             # Jalankan migrasi database
             docker compose exec -T app php artisan migrate --force --no-interaction
 
-            echo "Deployment selesai!"
+            echo "✅ Deployment selesai!"
