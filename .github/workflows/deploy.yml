@@ -121,4 +121,4 @@ jobs:
             # Jalankan migrasi database
             docker compose exec -T app php artisan migrate --force --no-interaction
 
-            echo "✅ Deployment selesai!"
+            echo "Deployment selesai!"
