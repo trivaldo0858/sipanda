@@ -1,4 +1,5 @@
 <?php
+// app/Models/Imunisasi.php
 
 namespace App\Models;
 
@@ -6,14 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Imunisasi extends Model
 {
-    protected $table = 'imunisasi';
+    protected $table      = 'imunisasi';
     protected $primaryKey = 'id_imunisasi';
 
-    protected $fillable = ['nik_anak', 'nip_bidan', 'id_vaksin', 'tgl_pemberian'];
-
-    protected $casts = [
-        'tgl_pemberian' => 'date',
+    protected $fillable = [
+        'nik_anak', 'nip_bidan', 'id_vaksin', 'tgl_pemberian',
+        'status_validasi', 'catatan_validasi',
     ];
+
+    protected $casts = ['tgl_pemberian' => 'date'];
 
     public function anak()
     {
@@ -28,5 +30,10 @@ class Imunisasi extends Model
     public function jenisVaksin()
     {
         return $this->belongsTo(JenisVaksin::class, 'id_vaksin', 'id_vaksin');
+    }
+
+    public function scopeMenungguValidasi($query)
+    {
+        return $query->where('status_validasi', 'Menunggu');
     }
 }

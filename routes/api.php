@@ -10,130 +10,117 @@ use App\Http\Controllers\API\LaporanController;
 use App\Http\Controllers\API\NotifikasiController;
 use App\Http\Controllers\API\PemeriksaanController;
 use App\Http\Controllers\API\PenggunaController;
+use App\Http\Controllers\API\PosyanduController;
+use App\Http\Controllers\API\ValidasiController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| SIPANDA — API Routes
-| Base URL: /api/v1
-|--------------------------------------------------------------------------
-*/
 
 Route::prefix('v1')->group(function () {
 
-    // ============================================================
-    // PUBLIC — tidak perlu login
-    // ============================================================
+    // ── PUBLIC ───────────────────────────────────────────────────────
     Route::prefix('auth')->group(function () {
-        Route::post('login', [AuthController::class, 'login']);
+        Route::post('login',        [AuthController::class, 'login']);
+        Route::post('login-ortu',   [AuthController::class, 'loginOrangTua']);
         Route::post('login-google', [AuthController::class, 'loginGoogle']);
     });
 
-    // ============================================================
-    // PROTECTED — wajib login (Sanctum token)
-    // ============================================================
+    // ── PROTECTED ────────────────────────────────────────────────────
     Route::middleware('auth:sanctum')->group(function () {
 
         // Auth
         Route::prefix('auth')->group(function () {
-            Route::post('logout', [AuthController::class, 'logout']);
-            Route::get('me', [AuthController::class, 'me']);
+            Route::post('logout',        [AuthController::class, 'logout']);
+            Route::get('me',             [AuthController::class, 'me']);
             Route::post('ubah-password', [AuthController::class, 'ubahPassword']);
         });
 
-        // Dashboard (semua role, response disesuaikan di controller)
+        // Dashboard
         Route::get('dashboard', [DashboardController::class, 'index']);
 
-        // --------------------------------------------------------
-        // Notifikasi — semua role (hanya milik sendiri)
-        // --------------------------------------------------------
+        // Notifikasi
         Route::prefix('notifikasi')->group(function () {
-            Route::get('/', [NotifikasiController::class, 'index']);
+            Route::get('/',              [NotifikasiController::class, 'index']);
             Route::post('mark-all-read', [NotifikasiController::class, 'markAllRead']);
-            Route::post('{id}/read', [NotifikasiController::class, 'markRead']);
-            Route::delete('{id}', [NotifikasiController::class, 'destroy']);
+            Route::post('{id}/read',     [NotifikasiController::class, 'markRead']);
+            Route::delete('{id}',        [NotifikasiController::class, 'destroy']);
         });
 
-        // --------------------------------------------------------
-        // Jadwal Posyandu — semua role bisa lihat
-        // --------------------------------------------------------
-        Route::get('jadwal', [JadwalPosyanduController::class, 'index']);
-        Route::get('jadwal/{id}', [JadwalPosyanduController::class, 'show']);
+        // Posyandu — semua bisa lihat
+        Route::get('posyandu',      [PosyanduController::class, 'index']);
+        Route::get('posyandu/{id}', [PosyanduController::class, 'show']);
+        // Posyandu CRUD — Super Admin only (via Sanctum token jika Super Admin login mobile)
+        Route::middleware('role:SuperAdmin')->group(function () {
+            Route::post('posyandu',         [PosyanduController::class, 'store']);
+            Route::put('posyandu/{id}',     [PosyanduController::class, 'update']);
+            Route::delete('posyandu/{id}',  [PosyanduController::class, 'destroy']);
+        });
 
-        // Jadwal — Kader & Bidan bisa create/update/delete
-        Route::middleware('role:Kader,Bidan')->group(function () {
-            Route::post('jadwal', [JadwalPosyanduController::class, 'store']);
-            Route::put('jadwal/{id}', [JadwalPosyanduController::class, 'update']);
+        // Jadwal — semua bisa lihat
+        Route::get('jadwal',      [JadwalPosyanduController::class, 'index']);
+        Route::get('jadwal/{id}', [JadwalPosyanduController::class, 'show']);
+        Route::middleware('role:Kader,Bidan,SuperAdmin')->group(function () {
+            Route::post('jadwal',        [JadwalPosyanduController::class, 'store']);
+            Route::put('jadwal/{id}',    [JadwalPosyanduController::class, 'update']);
             Route::delete('jadwal/{id}', [JadwalPosyanduController::class, 'destroy']);
         });
 
-        // --------------------------------------------------------
-        // Jenis Vaksin — semua role bisa lihat
-        // --------------------------------------------------------
-        Route::get('vaksin', [JenisVaksinController::class, 'index']);
+        // Vaksin
+        Route::get('vaksin',      [JenisVaksinController::class, 'index']);
         Route::get('vaksin/{id}', [JenisVaksinController::class, 'show']);
-
-        // Vaksin — hanya Bidan yang bisa kelola
-        Route::middleware('role:Bidan')->group(function () {
-            Route::post('vaksin', [JenisVaksinController::class, 'store']);
-            Route::put('vaksin/{id}', [JenisVaksinController::class, 'update']);
+        Route::middleware('role:Bidan,SuperAdmin')->group(function () {
+            Route::post('vaksin',        [JenisVaksinController::class, 'store']);
+            Route::put('vaksin/{id}',    [JenisVaksinController::class, 'update']);
             Route::delete('vaksin/{id}', [JenisVaksinController::class, 'destroy']);
         });
 
-        // --------------------------------------------------------
-        // Data Anak — Kader & Bidan akses penuh, OrangTua read own
-        // --------------------------------------------------------
-        Route::get('anak', [AnakController::class, 'index']);
-        Route::get('anak/{nik}', [AnakController::class, 'show']);
+        // Anak
+        Route::get('anak',                    [AnakController::class, 'index']);
+        Route::get('anak/{nik}',              [AnakController::class, 'show']);
         Route::get('anak/{nik}/perkembangan', [AnakController::class, 'perkembangan']);
-
-        Route::middleware('role:Kader,Bidan')->group(function () {
-            Route::post('anak', [AnakController::class, 'store']);
-            Route::put('anak/{nik}', [AnakController::class, 'update']);
-            Route::delete('anak/{nik}', [AnakController::class, 'destroy']);
+        Route::middleware('role:Kader,Bidan,SuperAdmin')->group(function () {
+            Route::post('anak',          [AnakController::class, 'store']);
+            Route::put('anak/{nik}',     [AnakController::class, 'update']);
+            Route::delete('anak/{nik}',  [AnakController::class, 'destroy']);
         });
 
-        // --------------------------------------------------------
-        // Pemeriksaan — Kader & Bidan kelola, OrangTua bisa read
-        // --------------------------------------------------------
-        Route::get('pemeriksaan', [PemeriksaanController::class, 'index']);
+        // Pemeriksaan
+        Route::get('pemeriksaan',      [PemeriksaanController::class, 'index']);
         Route::get('pemeriksaan/{id}', [PemeriksaanController::class, 'show']);
-
-        Route::middleware('role:Kader,Bidan')->group(function () {
-            Route::post('pemeriksaan', [PemeriksaanController::class, 'store']);
-            Route::put('pemeriksaan/{id}', [PemeriksaanController::class, 'update']);
-            Route::delete('pemeriksaan/{id}', [PemeriksaanController::class, 'destroy']);
+        Route::middleware('role:Kader,Bidan,SuperAdmin')->group(function () {
+            Route::post('pemeriksaan',         [PemeriksaanController::class, 'store']);
+            Route::put('pemeriksaan/{id}',     [PemeriksaanController::class, 'update']);
+            Route::delete('pemeriksaan/{id}',  [PemeriksaanController::class, 'destroy']);
         });
 
-        // --------------------------------------------------------
-        // Imunisasi — Bidan & Kader kelola, OrangTua bisa read
-        // --------------------------------------------------------
-        Route::get('imunisasi', [ImunisasiController::class, 'index']);
+        // Imunisasi
+        Route::get('imunisasi',      [ImunisasiController::class, 'index']);
         Route::get('imunisasi/{id}', [ImunisasiController::class, 'show']);
-
-        Route::middleware('role:Bidan,Kader')->group(function () {
-            Route::post('imunisasi', [ImunisasiController::class, 'store']);
-            Route::put('imunisasi/{id}', [ImunisasiController::class, 'update']);
+        Route::middleware('role:Bidan,Kader,SuperAdmin')->group(function () {
+            Route::post('imunisasi',        [ImunisasiController::class, 'store']);
+            Route::put('imunisasi/{id}',    [ImunisasiController::class, 'update']);
             Route::delete('imunisasi/{id}', [ImunisasiController::class, 'destroy']);
         });
 
-        // --------------------------------------------------------
-        // Laporan — Bidan only
-        // --------------------------------------------------------
+        // Validasi — Bidan only
         Route::middleware('role:Bidan')->group(function () {
-            Route::get('laporan', [LaporanController::class, 'index']);
-            Route::post('laporan', [LaporanController::class, 'store']);
-            Route::get('laporan/{id}', [LaporanController::class, 'show']);
-            Route::delete('laporan/{id}', [LaporanController::class, 'destroy']);
+            Route::get('validasi',                               [ValidasiController::class, 'index']);
+            Route::patch('validasi/pemeriksaan/{id}',            [ValidasiController::class, 'validasiPemeriksaan']);
+            Route::patch('validasi/imunisasi/{id}',              [ValidasiController::class, 'validasiImunisasi']);
         });
 
-        // --------------------------------------------------------
-        // Manajemen Pengguna — Kader only
-        // --------------------------------------------------------
-        Route::middleware('role:Kader')->group(function () {
+        // Laporan — Bidan & Kader
+        Route::middleware('role:Bidan,Kader,SuperAdmin')->group(function () {
+            Route::get('laporan',                    [LaporanController::class, 'index']);
+            Route::post('laporan',                   [LaporanController::class, 'store']);
+            Route::get('laporan/{id}',               [LaporanController::class, 'show']);
+            Route::delete('laporan/{id}',            [LaporanController::class, 'destroy']);
+            Route::get('laporan/{id}/export-pdf',    [LaporanController::class, 'exportPdf']);
+            Route::get('laporan/{id}/export-excel',  [LaporanController::class, 'exportExcel']);
+        });
+
+        // Pengguna — Kader & SuperAdmin
+        Route::middleware('role:Kader,SuperAdmin')->group(function () {
             Route::apiResource('pengguna', PenggunaController::class);
         });
 
-    }); // end auth:sanctum
-
+    });
 });

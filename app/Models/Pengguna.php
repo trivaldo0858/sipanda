@@ -10,25 +10,21 @@ class Pengguna extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $table = 'pengguna';
+    protected $table      = 'pengguna';
     protected $primaryKey = 'id_user';
 
     protected $fillable = [
         'username',
         'password',
         'role',
+        'id_posyandu',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    protected $casts = [
-        'password' => 'hashed',
-    ];
+    protected $casts = ['password' => 'hashed'];
 
-    // Relationships
+    // ── Relasi ────────────────────────────────────────────────────────
     public function bidan()
     {
         return $this->hasOne(Bidan::class, 'id_user', 'id_user');
@@ -54,8 +50,14 @@ class Pengguna extends Authenticatable
         return $this->hasMany(Notifikasi::class, 'id_user', 'id_user');
     }
 
-    // Helpers
-    public function isBidan(): bool { return $this->role === 'Bidan'; }
-    public function isKader(): bool { return $this->role === 'Kader'; }
-    public function isOrangTua(): bool { return $this->role === 'OrangTua'; }
+    public function posyandu()
+    {
+        return $this->belongsTo(Posyandu::class, 'id_posyandu', 'id_posyandu');
+    }
+
+    // ── Role Helpers ──────────────────────────────────────────────────
+    public function isSuperAdmin(): bool { return $this->role === 'SuperAdmin'; }
+    public function isBidan(): bool      { return $this->role === 'Bidan'; }
+    public function isKader(): bool      { return $this->role === 'Kader'; }
+    public function isOrangTua(): bool   { return $this->role === 'OrangTua'; }
 }
