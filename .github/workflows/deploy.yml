@@ -114,7 +114,7 @@ jobs:
             # Update container
             docker compose up -d --remove-orphans
 
-            echo "⏳ Menunggu container ready..."
+            echo "Menunggu container ready..."
             # Tunggu 10 detik agar DB benar-benar siap
             sleep 10
 
