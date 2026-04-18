@@ -105,23 +105,24 @@ jobs:
             # Login ke GHCR
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Masuk ke folder project
-            cd /home/${{ secrets.SERVER_USER }}/DOSEN
+            # Masuk ke folder project yang benar
+            cd ~/RPL2C-kelompok-2 || exit 1
 
-            # Pull image terbaru
-            docker pull ghcr.io/${{ github.repository }}:latest
+            # Pull image terbaru menggunakan compose agar semua service sinkron
+            docker compose pull
 
-            # Update container tanpa downtime besar
+            # Update container
             docker compose up -d --remove-orphans
 
-            # Tunggu container siap
             echo "⏳ Menunggu container ready..."
-
-            until docker compose exec -T db mysqladmin ping -h "localhost" --silent; do
-              sleep 2
-            done
+            # Tunggu 10 detik agar DB benar-benar siap
+            sleep 10
 
             # Jalankan migrasi database
             docker compose exec -T app php artisan migrate --force --no-interaction
+
+            # Bersihkan cache agar perubahan muncul di web
+            docker compose exec -T app php artisan config:clear
+            docker compose exec -T app php artisan view:clear
 
             echo "✅ Deployment selesai!"
