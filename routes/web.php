@@ -8,6 +8,11 @@ use App\Http\Controllers\Web\SuperAdmin\PenggunaController;
 use App\Http\Controllers\Web\SuperAdmin\PosyanduController;
 use Illuminate\Support\Facades\Route;
 
+// --- TAMBAHKAN INI ---
+Route::get('/', function () {
+    return redirect()->route('superadmin.login');
+});
+
 // ── Super Admin Web Routes ────────────────────────────────────────────
 Route::prefix('superadmin')->name('superadmin.')->group(function () {
 
