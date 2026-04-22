@@ -54,6 +54,7 @@
                 </div>
             @endif
 
+<<<<<<< HEAD
             <form action="{{ route('superadmin.login.post') }}" method="POST" class="space-y-6">
                 @csrf
                 
@@ -79,6 +80,33 @@
                             class="login-input w-full pl-11 pr-4 py-3 rounded-xl text-slate-600 bg-slate-50 focus:bg-white" 
                             placeholder="••••••••" required>
                     </div>
+=======
+        <form action="{{ route('superadmin.login.post') }}" method="POST">
+            @csrf
+            <div class="mb-3">
+                <label class="form-label">Nama Pengguna</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="bi bi-person text-muted"></i>
+                    </span>
+                    <input type="text" name="username"
+                           class="form-control border-start-0"
+                           value="{{ old('username') }}"
+                           placeholder="Masukkan nama pengguna"
+                           required autofocus>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Kata Sandi</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="bi bi-lock text-muted"></i>
+                    </span>
+                    <input type="password" name="password"
+                           class="form-control border-start-0"
+                           placeholder="Masukkan kata sandi"
+                           required>
+>>>>>>> f1cde7e33559cc0c73551933eeeae5a0f8a39e08
                 </div>
 
                 <div class="flex items-center justify-between">
