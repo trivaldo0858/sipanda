@@ -12,11 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Daftarkan alias middleware di sini
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'superadmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create(); // Pastikan ini 'create()' bukan 'create()' manual jika bawaan Laravel 11
+    })->create();

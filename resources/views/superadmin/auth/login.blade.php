@@ -1,125 +1,54 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIPANDA</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #1a2a4a 0%, #2E86AB 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.3);
-        }
-        .login-logo {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-        .login-logo .icon-wrap {
-            width: 64px; height: 64px;
-            background: linear-gradient(135deg, #2E86AB, #1a6a8a);
-            border-radius: 16px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-            margin-bottom: 12px;
-        }
-        .login-logo h4 { font-weight: 700; color: #1a2a4a; margin: 0; }
-        .login-logo p  { color: #888; font-size: 13px; margin: 4px 0 0; }
-        .form-label { font-weight: 600; font-size: 13px; color: #555; }
-        .form-control {
-            border-radius: 8px;
-            border: 1.5px solid #e0e0e0;
-            padding: 10px 14px;
-            font-size: 14px;
-        }
-        .form-control:focus {
-            border-color: #2E86AB;
-            box-shadow: 0 0 0 3px rgba(46,134,171,.15);
-        }
-        .btn-login {
-            background: linear-gradient(135deg, #2E86AB, #1a6a8a);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-weight: 600;
-            width: 100%;
-            font-size: 15px;
-        }
-        .btn-login:hover { opacity: .9; color: white; }
-    </style>
-</head>
-<body>
-    <div class="login-card">
-        <div class="login-logo">
-            <div class="icon-wrap">
-                <i class="bi bi-heart-pulse-fill"></i>
-            </div>
-            <h4>SIPANDA</h4>
-            <p>Sistem Informasi Posyandu Anak Digital</p>
+@extends('layouts.auth')
+
+@section('content')
+<div class="min-h-screen flex items-center justify-center bg-pink-50 px-4">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-8 border border-pink-100">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-extrabold text-pink-600 mb-2">SIPANDA</h2>
+            <p class="text-gray-500 font-medium">Login Super Admin</p>
+            <div class="h-1 w-20 bg-pink-400 mx-auto mt-2 rounded-full"></div>
         </div>
-
-        <p class="text-center text-muted small mb-4">
-            <i class="bi bi-shield-lock me-1"></i> Login Super Admin
-        </p>
-
-        @if($errors->any())
-            <div class="alert alert-danger py-2 small">
-                <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                {{ $errors->first() }}
-            </div>
-        @endif
 
         <form action="{{ route('superadmin.login.post') }}" method="POST">
             @csrf
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0">
-                        <i class="bi bi-person text-muted"></i>
+            
+            <div class="mb-6">
+                <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="h-5 w-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
                     </span>
-                    <input type="text" name="username"
-                           class="form-control border-start-0"
-                           value="{{ old('username') }}"
-                           placeholder="Masukkan username"
-                           required autofocus>
+                    <input type="text" name="username" id="username" required
+                        class="block w-full pl-10 pr-3 py-3 border border-pink-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 bg-pink-50/30 text-gray-900 placeholder-gray-400 sm:text-sm"
+                        placeholder="Masukkan username admin">
                 </div>
             </div>
-            <div class="mb-4">
-                <label class="form-label">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0">
-                        <i class="bi bi-lock text-muted"></i>
+
+            <div class="mb-8">
+                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="h-5 w-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
                     </span>
-                    <input type="password" name="password"
-                           class="form-control border-start-0"
-                           placeholder="Masukkan password"
-                           required>
+                    <input type="password" name="password" id="password" required
+                        class="block w-full pl-10 pr-3 py-3 border border-pink-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 bg-pink-50/30 text-gray-900 placeholder-gray-400 sm:text-sm"
+                        placeholder="••••••••">
                 </div>
             </div>
-            <div class="form-check mb-4">
-                <input type="checkbox" class="form-check-input" name="remember" id="remember">
-                <label class="form-check-label small text-muted" for="remember">Ingat saya</label>
-            </div>
-            <button type="submit" class="btn-login">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
+
+            <button type="submit"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200 uppercase tracking-wider">
+                Masuk ke Dashboard
             </button>
         </form>
+
+        <div class="mt-6 text-center text-xs text-gray-400">
+            &copy; 2026 SIPANDA Team - Posyandu Digital
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+@endsection
