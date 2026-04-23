@@ -38,9 +38,9 @@
         </nav>
 
         <div class="p-4 border-t border-gray-100">
-            <form action="{{ route('superadmin.logout') }}" method="POST">
+            <form action="{{ route('superadmin.logout') }}" method="POST" id="logout-form">
                 @csrf
-                <button class="w-full text-left px-4 py-3 text-red-500 font-medium flex items-center">
+                <button type="submit" class="w-full text-left px-4 py-3 text-red-500 font-medium flex items-center">
                     <span class="mr-3"></span> Keluar
                 </button>
             </form>

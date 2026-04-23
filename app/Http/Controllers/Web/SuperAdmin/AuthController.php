@@ -42,11 +42,12 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
+
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
-        // Arahkan ke superadmin.login, bukan redirect('/login')
-        return redirect()->route('superadmin.auth.login');
+        return redirect()->route('superadmin.login');
     }
 }
