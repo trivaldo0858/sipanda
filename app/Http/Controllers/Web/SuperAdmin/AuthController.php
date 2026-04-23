@@ -46,6 +46,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('superadmin.login');
+        // Arahkan ke superadmin.login, bukan redirect('/login')
+        return redirect()->route('superadmin.auth.login');
     }
 }
