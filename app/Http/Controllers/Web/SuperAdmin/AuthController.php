@@ -15,7 +15,7 @@ class AuthController extends Controller
         if (Auth::check() && Auth::user()->isSuperAdmin()) {
             return redirect()->route('superadmin.dashboard');
         }
-        return view('superadmin.auth.login');
+        return view('superadmin.dashboard.index');
     }
 
     public function login(Request $request)
@@ -29,7 +29,7 @@ class AuthController extends Controller
             ->where('role', 'SuperAdmin')
             ->first();
 
-        if (! $pengguna || ! Hash::check($request->password, $pengguna->password)) {
+        if (!$pengguna || !Hash::check($request->password, $pengguna->password)) {
             return back()->withErrors([
                 'username' => 'Username atau password salah.',
             ])->withInput();
