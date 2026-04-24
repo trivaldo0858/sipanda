@@ -27,7 +27,7 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
 
         Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
         Route::get('laporan/global', [LaporanController::class, 'globalSummary'])->name('laporan.global');
-        
-        
+
+
     });
 });
