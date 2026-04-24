@@ -1,0 +1,259 @@
+/* --- HALAMAN DASHBOARD --- */
+
+/* --- 1. VARIABEL GLOBAL & RESET --- */
+:root {
+    --primary-blue: #2563EB;
+    --hover-blue: #1D4ED8;
+    --bg-page: #F8FAFC;
+    --white: #ffffff;
+    --text-main: #1E293B;
+    --text-muted: #94A3B8;
+    --border-color: #F1F5F9;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
+
+/* --- 2. HALAMAN LOGIN (GUEST) --- */
+.login-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--white);
+    padding: 48px 40px;
+    border-radius: 40px;
+    box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.login-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--primary-blue);
+    text-align: center;
+    margin: 0 0 24px 0;
+}
+
+.form-input-login {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.form-input-login:focus {
+    border-color: var(--primary-blue);
+}
+
+.form-label-float {
+    position: absolute;
+    left: 40px;
+    top: -10px;
+    background-color: var(--white);
+    padding: 0 8px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    z-index: 10;
+}
+
+/* --- 3. LAYOUT UTAMA (DASHBOARD) --- */
+.sidebar-sipanda {
+    width: 260px;
+    height: 100vh;
+    background-color: var(--white);
+    border-right: 1px solid var(--border-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    z-index: 9999; /* Memastikan sidebar di atas & pointer-events aktif */
+}
+
+.main-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- 4. SIDEBAR ELEMENTS --- */
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 24px;
+    margin-bottom: 40px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    background: var(--primary-blue);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.logo-text h1 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.logo-text p {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.nav-link-sipanda {
+    display: flex;
+    align-items: center;
+    padding: 14px 24px;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    transition: 0.3s;
+    position: relative;
+}
+
+.nav-active {
+    background-color: #EFF6FF;
+    color: var(--primary-blue) !important;
+    border-right: 4px solid var(--primary-blue);
+}
+
+.btn-logout {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 14px 24px;
+    background: none;
+    border: none;
+    color: #EF4444;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.btn-logout:hover {
+    opacity: 0.7;
+}
+
+/* --- 5. HEADER NAVBAR --- */
+.header-sipanda {
+    height: 80px;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.profile-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-blue);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+/* --- 6. DASHBOARD COMPONENTS --- */
+.content-padding {
+    padding: 40px;
+    flex: 1;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.card-figma {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 32px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+}
+
+.icon-container {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: 900;
+    margin-top: 10px;
+    display: block;
+}
+
+.container-card {
+    background: var(--white);
+    padding: 35px;
+    border-radius: 40px;
+    border: 1px solid var(--border-color);}

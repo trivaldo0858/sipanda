@@ -19,15 +19,15 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::middleware(['auth', 'superadmin'])->group(function () {
 
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('posyandu', PosyanduController::class);
 
         Route::resource('pengguna', PenggunaController::class);
 
-        // Fitur Laporan Lintas Posyandu
         Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
         Route::get('laporan/global', [LaporanController::class, 'globalSummary'])->name('laporan.global');
+        
+        
     });
 });
