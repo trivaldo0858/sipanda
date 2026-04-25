@@ -257,3 +257,143 @@ html, body {
     padding: 35px;
     border-radius: 40px;
     border: 1px solid var(--border-color);}
+
+    
+/* LOGIN */
+/* --- SIPANDA CLEAN CSS --- */
+
+/* --- 1. VARIABEL GLOBAL & RESET --- */
+:root {
+    --primary-blue: #0073E6;
+    --hover-blue: #005BB5;
+    --bg-page: #F8FAFC;
+    --white: #ffffff;
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+    --border-color: #E2E8F0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+/* --- 2. LOGIN PAGE STYLING --- */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.brand-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand-name {
+    font-size: 42px;
+    font-weight: 800;
+    color: #0061C1;
+    margin-bottom: 5px;
+}
+
+.brand-tagline {
+    font-size: 15px;
+    color: var(--text-muted);
+}
+
+.login-card {
+    background: var(--white);
+    padding: 45px 40px;
+    border-radius: 28px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border-color);
+}
+
+/* --- 3. INPUT GAYA BARIS & LABEL DI PINGGIR KIRI --- */
+.input-group {
+    margin-bottom: 28px;
+}
+
+/* Tulisan 'Nama Pengguna' & 'Kata Sandi' rata kiri (di pinggir) */
+.input-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    color: #475569;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left; /* KUNCI: Menjadikan label rata kiri */
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color); /* Hanya garis bawah */
+    transition: 0.3s;
+    background: transparent; /* Pastikan tidak ada background di wrapper */
+}
+
+.input-wrapper:focus-within {
+    border-bottom-color: var(--primary-blue);
+}
+
+.input-wrapper input {
+    width: 100%;
+    border: none !important;
+    outline: none !important;
+    padding: 12px 0;
+    font-size: 16px;
+    background: transparent !important; /* HAPUS BACKGROUND BIRU/PUTIH TOTAL */
+    color: var(--text-main);
+}
+
+/* ANTI BACKGROUND BIRU DARI BROWSER (AUTOFILL FIX) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text-main);
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important; /* Menutup background biru browser dengan putih */
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.input-icon {
+    font-size: 18px;
+    margin-left: 10px;
+    opacity: 0.6;
+}
+
+/* --- 4. BUTTON & FOOTER --- */
+.btn-login {
+    width: 100%;
+    background: var(--primary-blue);
+    color: var(--white);
+    border: none;
+    padding: 16px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+}
+
+.btn-login:hover {
+    background: var(--hover-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 115, 230, 0.2);
+}

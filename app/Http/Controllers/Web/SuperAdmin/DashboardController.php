@@ -8,41 +8,35 @@ use App\Models\Imunisasi;
 use App\Models\Pemeriksaan;
 use App\Models\Pengguna;
 use App\Models\Posyandu;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $stats = [
-            'total_posyandu' => Posyandu::where('status', 'Aktif')->count(),
-            'total_pengguna' => Pengguna::whereIn('role', ['Bidan', 'Kader', 'OrangTua'])->count(),
-            'total_bidan' => Pengguna::where('role', 'Bidan')->count(),
-            'total_kader' => Pengguna::where('role', 'Kader')->count(),
-            'total_anak' => Anak::count(),
-            'total_pemeriksaan' => Pemeriksaan::whereMonth('tgl_pemeriksaan', now()->month)->count(),
-            'total_imunisasi' => Imunisasi::whereMonth('tgl_pemberian', now()->month)->count(),
+            'total_posyandu'    => Posyandu::count(),
+            'total_pengguna'    => Pengguna::whereIn('role', ['Bidan', 'Kader', 'OrangTua'])->count(),
+            'total_bidan'       => Pengguna::where('role', 'Bidan')->count(),
+            'total_kader'       => Pengguna::where('role', 'Kader')->count(),
+            'total_anak'        => Anak::count(),
+            'total_pemeriksaan' => Pemeriksaan::count(), 
+            'total_imunisasi'   => Imunisasi::count(),
         ];
 
-        $countPosyandu = \App\Models\Posyandu::count();
-        $countUser = \App\Models\User::where('role', 'Bidan')->count() + \App\Models\User::where('role', 'Kader')->count();
+        $countPosyandu = Posyandu::count();
+        $countUser = Pengguna::whereIn('role', ['Bidan', 'Kader'])->count();
 
-
-        $posyanduList = Posyandu::withCount(['kader', 'bidan'])
-            ->with([
-                'kader.pemeriksaan' => function ($q) {
-                    $q->whereMonth('tgl_pemeriksaan', now()->month);
-                }
-            ])
-            ->where('status', 'Aktif')
-            ->get()
-            ->map(fn($p) => [
-                'id_posyandu' => $p->id_posyandu,
-                'nama_posyandu' => $p->nama_posyandu,
-                'wilayah' => $p->wilayah,
-                'total_kader' => $p->kader_count,
-                'total_bidan' => $p->bidan_count,
-                'pemeriksaan_bulan' => $p->kader->flatMap->pemeriksaan->count(),
-            ]);
+        $posyanduList = Posyandu::all()->map(function ($p) {
+            return [
+                'id_posyandu'       => $p->id_posyandu,
+                'nama_posyandu'     => $p->nama_posyandu,
+                'wilayah'           => $p->wilayah,
+                'total_kader'       => Pengguna::where('id_posyandu', $p->id_posyandu)->where('role', 'Kader')->count(),
+                'total_bidan'       => Pengguna::where('id_posyandu', $p->id_posyandu)->where('role', 'Bidan')->count(),
+                'pemeriksaan_bulan' => 0,
+            ];
+        });
 
         return view('superadmin.dashboard.index', compact('stats', 'posyanduList', 'countPosyandu', 'countUser'));
     }

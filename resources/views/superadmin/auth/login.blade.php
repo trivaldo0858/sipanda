@@ -1,56 +1,60 @@
 @extends('layouts.auth')
 
 @section('content')
-    <div class="min-h-screen flex items-center justify-center bg-pink-50 px-4">
-        <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-8 border border-pink-100">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-extrabold text-pink-600 mb-2">SIPANDA</h2>
-                <p class="text-gray-500 font-medium">Login Super Admin</p>
-                <div class="h-1 w-20 bg-pink-400 mx-auto mt-2 rounded-full"></div>
-            </div>
-
-            <form action="{{ route('superadmin.login.post') }}" method="POST">
-                @csrf
-
-                <div class="mb-6">
-                    <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Nama Pengguna</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <svg class="h-5 w-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </span>
-                        <input type="text" name="username" id="username" required
-                            class="block w-full pl-10 pr-3 py-3 border border-pink-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 bg-pink-50/30 text-gray-900 placeholder-gray-400 sm:text-sm"
-                            placeholder="Masukkan nama pengguna">
-                    </div>
-                </div>
-
-                <div class="mb-8">
-                    <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Kata Sandi</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <svg class="h-5 w-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                        </span>
-                        <input type="password" name="password" id="password" required
-                            class="block w-full pl-10 pr-3 py-3 border border-pink-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 bg-pink-50/30 text-gray-900 placeholder-gray-400 sm:text-sm"
-                            placeholder="Masukkan kata sandi">
-                    </div>
-                </div>
-
-                <button type="submit"
-                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200 uppercase tracking-wider">
-                    Masuk ke Dashboard
-                </button>
-            </form>
-
-            <div class="mt-6 text-center text-xs text-gray-400">
-                &copy; 2026 SIPANDA Team - Posyandu Digital
-            </div>
-        </div>
+<div class="login-container">
+    <div class="brand-section">
+        <h1 class="brand-name">SIPANDA</h1>
+        <p class="brand-tagline">Sistem Posyandu Anak Digital</p>
     </div>
+
+    <div class="login-card">
+        <form action="{{ route('superadmin.login.post') }}" method="POST">
+            @csrf
+            
+            <div class="input-group">
+                <label>NAMA PENGGUNA</label>
+                <div class="input-wrapper">
+                    <input type="text" name="username" placeholder="Masukkan nama pengguna" required>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon-main"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>KATA SANDI</label>
+                <div class="input-wrapper">
+                    <input type="password" name="password" id="passwordInput" placeholder="Masukkan kata sandi" required>
+                    <div id="togglePassword" style="cursor: pointer; display: flex; align-items: center;">
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path id="eyePath" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                            <circle id="eyeCircle" cx="12" cy="12" r="3"></circle>
+                            <line id="eyeLine" x1="1" y1="1" x2="23" y2="23" style="display:none;"></line>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">Masuk</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const passwordInput = document.querySelector('#passwordInput');
+    const eyeLine = document.querySelector('#eyeLine');
+    const eyeCircle = document.querySelector('#eyeCircle');
+
+    togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        if (type === 'text') {
+            eyeLine.style.display = 'block'; 
+            eyeCircle.style.opacity = '0.5';
+        } else {
+            eyeLine.style.display = 'none'; 
+            eyeCircle.style.opacity = '1';
+        }
+    });
+</script>
 @endsection

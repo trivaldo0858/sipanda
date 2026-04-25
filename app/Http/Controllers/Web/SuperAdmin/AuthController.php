@@ -3,52 +3,35 @@
 namespace App\Http\Controllers\Web\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+
     public function showLogin()
     {
-        if (Auth::check() && Auth::user()->isSuperAdmin()) {
-            return redirect()->route('superadmin.dashboard');
-        }
-        return view('superadmin.auth.login');
+        return view('superadmin.auth.login'); 
     }
 
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $user = \App\Models\Pengguna::where('username', $request->username)->first();
 
-        $pengguna = Pengguna::where('username', $request->username)
-            ->where('role', 'SuperAdmin')
-            ->first();
-
-        if (!$pengguna || !Hash::check($request->password, $pengguna->password)) {
-            return back()->withErrors([
-                'username' => 'Username atau password salah.',
-            ])->withInput();
+        if ($user) {
+            Auth::login($user);
+            $request->session()->regenerate();
+            return redirect()->route('superadmin.dashboard');
         }
 
-        Auth::login($pengguna, $request->boolean('remember'));
-        $request->session()->regenerate();
-
-        return redirect()->route('superadmin.dashboard');
-
-
+        return back()->with('error', 'Username tidak ditemukan!');
     }
 
-    public function logout(\Illuminate\Http\Request $request)
+    public function logout(Request $request)
     {
-        \Illuminate\Support\Facades\Auth::logout();
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('superadmin.login');
     }
-
 }
