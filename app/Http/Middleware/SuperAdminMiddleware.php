@@ -10,17 +10,9 @@ class SuperAdminMiddleware
 {
     public function handle(Request $request, Closure $next): mixed
     {
-        if (! Auth::check() || ! Auth::user()->isSuperAdmin()) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Akses ditolak. Hanya Super Admin.',
-                ], 403);
-            }
-            return redirect()->route('superadmin.login')
-                ->with('error', 'Silakan login sebagai Super Admin.');
+        if (!Auth::check() || !Auth::user()->isSuperAdmin()) {
+            return redirect()->route('superadmin.login');
         }
-
         return $next($request);
     }
 }

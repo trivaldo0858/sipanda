@@ -15,7 +15,7 @@ class AuthController extends Controller
         if (Auth::check() && Auth::user()->isSuperAdmin()) {
             return redirect()->route('superadmin.dashboard');
         }
-        return view('superadmin.dashboard.index');
+        return view('superadmin.auth.login');
     }
 
     public function login(Request $request)
@@ -36,8 +36,11 @@ class AuthController extends Controller
         }
 
         Auth::login($pengguna, $request->boolean('remember'));
+        $request->session()->regenerate();
 
         return redirect()->route('superadmin.dashboard');
+
+
     }
 
     public function logout(\Illuminate\Http\Request $request)
