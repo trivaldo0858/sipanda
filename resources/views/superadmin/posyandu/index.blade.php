@@ -1,106 +1,95 @@
 @extends('layouts.superadmin')
-@section('page-title', 'Manajemen Unit Posyandu')
+
+@section('header_title', 'Registrasi Unit Posyandu')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h5 class="fw-bold mb-1">Unit Posyandu</h5>
-        <p class="text-muted small mb-0">Kelola semua unit posyandu yang terdaftar</p>
-    </div>
-    <a href="{{ route('superadmin.posyandu.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-lg me-1"></i> Tambah Posyandu
-    </a>
-</div>
-
-{{-- Filter --}}
-<div class="card mb-4">
-    <div class="card-body py-2">
-        <form method="GET" class="d-flex gap-2">
-            <input type="text" name="search" class="form-control form-control-sm"
-                   placeholder="Cari nama posyandu..." value="{{ request('search') }}">
-            <button type="submit" class="btn btn-sm btn-primary px-3">
-                <i class="bi bi-search"></i>
-            </button>
-            @if(request('search'))
-                <a href="{{ route('superadmin.posyandu.index') }}" class="btn btn-sm btn-outline-secondary">
-                    Reset
-                </a>
-            @endif
-        </form>
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="px-4">Nama Posyandu</th>
-                        <th>Wilayah</th>
-                        <th>Alamat</th>
-                        <th>No. Telp</th>
-                        <th class="text-center">Bidan</th>
-                        <th class="text-center">Kader</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($posyandu as $p)
-                    <tr>
-                        <td class="px-4 fw-semibold">{{ $p->nama_posyandu }}</td>
-                        <td>{{ $p->wilayah ?? '-' }}</td>
-                        <td class="text-muted small">{{ Str::limit($p->alamat, 40) ?? '-' }}</td>
-                        <td>{{ $p->no_telp ?? '-' }}</td>
-                        <td class="text-center">
-                            <span class="badge bg-primary bg-opacity-10 text-primary">
-                                {{ $p->bidan_count }}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-info bg-opacity-10 text-info">
-                                {{ $p->kader_count }}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge {{ $p->status === 'Aktif' ? 'badge-aktif' : 'badge-nonaktif' }} px-2 py-1">
-                                {{ $p->status }}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <div class="d-flex gap-1 justify-content-center">
-                                <a href="{{ route('superadmin.posyandu.edit', $p->id_posyandu) }}"
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <form action="{{ route('superadmin.posyandu.destroy', $p->id_posyandu) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Hapus posyandu ini?')">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8" class="text-center text-muted py-5">
-                            <i class="bi bi-hospital fs-2 d-block mb-2 opacity-25"></i>
-                            Belum ada data posyandu.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <section class="registration-shell">
+        <div class="registration-hero">
+            <div>
+                <p class="registration-kicker">Administrasi Sistem</p>
+                <h1 class="registration-title">Daftar Unit Posyandu</h1>
+                <p class="registration-copy">Kelola seluruh unit Posyandu yang terdaftar dan lanjutkan proses registrasi
+                    unit baru dari dashboard Super Admin.</p>
+            </div>
+            <a href="{{ route('superadmin.posyandu.create') }}" class="primary-cta">
+                <span>Registrasi Unit Baru</span>
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M4.167 10h11.666m0 0-4.166-4.167M15.833 10l-4.166 4.167" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
         </div>
+
+        <div class="registration-stats">
+            <article class="metric-card">
+                <span>Total Unit Posyandu</span>
+                <strong>{{ $summary['total_unit'] }}</strong>
+                <p>Unit Posyandu terdaftar.</p>
+            </article>
+        </div>
+
+        <div class="registration-toolbar">
+            <form method="GET" class="registration-filter">
+                <div class="search-field">
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                        <path d="M17.5 17.5l-3.625-3.625m1.958-4.167a6.125 6.125 0 11-12.25 0 6.125 6.125 0 0112.25 0z"
+                            stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari nama unit atau alamat...">
+                </div>
+                <button type="submit" class="toolbar-button">Cari Unit</button>
+                @if(request()->filled('search'))
+                    <a href="{{ route('superadmin.posyandu.index') }}" class="toolbar-link">Reset</a>
+                @endif
+            </form>
+        </div>
+
+        <div class="unit-grid">
+            @forelse($posyandu as $item)
+                <article class="unit-card">
+                    <div class="unit-card-head">
+                        <div>
+                            {{-- Baris kategori dihapus karena sistem hanya untuk Posyandu Balita --}}
+                            <h3 style="margin-top: 0.5rem;">{{ $item->nama_posyandu }}</h3>
+                        </div>
+                    </div>
+
+                    <p class="unit-address" style="margin-top: 1rem;">{{ $item->alamat }}</p>
+
+                    <div class="unit-card-footer">
+                        <div class="unit-mini-stats">
+                            <span>{{ $item->bidan_count }} Bidan</span>
+                            <span>{{ $item->kader_count }} Kader</span>
+                        </div>
+
+                        <div class="unit-actions">
+                            <a href="{{ route('superadmin.posyandu.edit', $item->id_posyandu) }}"
+                                class="action-link action-link-edit">Edit</a>
+                            <form action="{{ route('superadmin.posyandu.destroy', $item->id_posyandu) }}" method="POST"
+                                onsubmit="return confirm('Hapus unit posyandu ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="action-link action-link-delete">Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            @empty
+                <div class="unit-empty-state">
+                    <h3>Belum ada unit Posyandu terdaftar</h3>
+                    <p>Mulai proses registrasi unit baru agar Super Admin dapat mengelola layanan Posyandu secara terpusat.</p>
+                    <a href="{{ route('superadmin.posyandu.create') }}" class="primary-cta primary-cta-inline">
+                        <span>Daftarkan Unit Pertama</span>
+                    </a>
+                </div>
+            @endforelse
+        </div>
+
         @if($posyandu->hasPages())
-        <div class="px-4 py-3 border-top">
-            {{ $posyandu->links() }}
-        </div>
+            <div class="unit-pagination">
+                {{ $posyandu->links() }}
+            </div>
         @endif
-    </div>
-</div>
+    </section>
 @endsection

@@ -6,16 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Posyandu extends Model
 {
-    protected $table      = 'posyandu';
-    protected $primaryKey = 'id_posyandu';
-
-    protected $fillable = [
-        'nama_posyandu',
-        'alamat',
-        'wilayah',
-        'no_telp',
-        'status',
-    ];
+    protected $table = 'posyandu';
+    // app/Models/Posyandu.php
+    protected $primaryKey = 'id_posyandu'; // WAJIB ADA karena bukan 'id'
+    protected $fillable = ['nama_posyandu', 'alamat', 'wilayah', 'no_telp'];
 
     // ── Relasi ────────────────────────────────────────────────────────
     public function kader()

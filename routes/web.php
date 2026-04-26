@@ -24,10 +24,10 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('login.post');
 
     // Group Middleware (Sekarang lebih aman dari duplikasi)
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth', 'superadmin'])->group(function () {
 
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-        
+
         // DASHBOARD UTAMA
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -41,7 +41,8 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
 
         // ROUTE PLACEHOLDER (Agar Sidebar tidak error)
         Route::get('/registrasi', [PosyanduController::class, 'create'])->name('posyandu.create.alias');
-        Route::get('/staff', function() { return "Halaman Staff"; })->name('staff.index');
+        Route::get('/staff', function () {
+            return "Halaman Staff"; })->name('staff.index');
         Route::get('/akun-staff', [PenggunaController::class, 'index'])->name('akun.index');
     });
 });
