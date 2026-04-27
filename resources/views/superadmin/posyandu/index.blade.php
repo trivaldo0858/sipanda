@@ -20,14 +20,6 @@
             </a>
         </div>
 
-        <div class="registration-stats">
-            <article class="metric-card">
-                <span>Total Unit Posyandu</span>
-                <strong>{{ $summary['total_unit'] }}</strong>
-                <p>Unit Posyandu terdaftar.</p>
-            </article>
-        </div>
-
         <div class="registration-toolbar">
             <form method="GET" class="registration-filter">
                 <div class="search-field">
