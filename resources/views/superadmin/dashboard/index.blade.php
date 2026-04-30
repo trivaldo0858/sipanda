@@ -1,81 +1,266 @@
+{{-- resources/views/superadmin/dashboard/index.blade.php --}}
 @extends('layouts.superadmin')
 
+@section('title', 'Dashboard')
+
 @section('content')
+    {{-- Chart.js --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <div class="dashboard-wrapper">
-        <div class="stats-grid">
-            <div class="card-figma">
-                <div class="icon-container" style="background:#EFF6FF; color:#2563EB;">
-                    <svg style="width:24px; height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                </div>
-                <p class="stat-label">Total Balita</p>
-                <span class="stat-value">{{ number_format($stats['total_anak'] ?? 0) }}</span>
+    <div class="space-y-8">
+
+        {{-- Header --}}
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-800">
+                    Dashboard Utama
+                </h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    Ringkasan data global sistem SIPANDA
+                </p>
             </div>
 
-            <div class="card-figma">
-                <div class="icon-container" style="background:#FFF1F2; color:#E11D48;">
-                    <svg style="width:24px; height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                </div>
-                <p class="stat-label">Total Unit Posyandu</p>
-                <span class="stat-value">{{ $stats['total_posyandu'] ?? 0 }}</span>
-            </div>
-
-            <div class="card-figma">
-                <div class="icon-container" style="background:#F0FDF4; color:#16A34A;">
-                    <svg style="width:24px; height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </div>
-                <p class="stat-label">Total Staf/Bidan</p>
-                <span class="stat-value">{{ $stats['total_staf'] ?? 0 }}</span>
+            <div class="text-sm text-slate-500">
+                {{ now()->translatedFormat('l, d F Y') }}
             </div>
         </div>
 
-        <div class="chart-container-card" id="chart-wrapper"
-            data-chart="{{ json_encode($chart_data ?? [45, 52, 48, 70, 65, 80]) }}">
-            <h3 style="font-size:18px; font-weight:900; margin-bottom:20px;">Statistik Pertumbuhan Anak</h3>
-            <div style="height: 350px;">
-                <canvas id="mainDashboardChart"></canvas>
+        {{-- Statistik --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+            {{-- Total Balita --}}
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                        👶
+                    </div>
+
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 text-emerald-600">
+                        Anak
+                    </span>
+                </div>
+
+                <p class="text-sm text-slate-500 uppercase tracking-wide">
+                    Total Balita
+                </p>
+
+                <h3 class="text-4xl font-bold text-slate-900 mt-2">
+                    {{ number_format($stats['total_anak']) }}
+                </h3>
+            </div>
+
+            {{-- Posyandu --}}
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600">
+                        🏥
+                    </div>
+
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">
+                        Aktif
+                    </span>
+                </div>
+
+                <p class="text-sm text-slate-500 uppercase tracking-wide">
+                    Total Posyandu
+                </p>
+
+                <h3 class="text-4xl font-bold text-slate-900 mt-2">
+                    {{ number_format($stats['total_posyandu']) }}
+                </h3>
+            </div>
+
+            {{-- Pemeriksaan --}}
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                        📋
+                    </div>
+
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-600">
+                        Bulan Ini
+                    </span>
+                </div>
+
+                <p class="text-sm text-slate-500 uppercase tracking-wide">
+                    Pemeriksaan
+                </p>
+
+                <h3 class="text-4xl font-bold text-slate-900 mt-2">
+                    {{ number_format($stats['total_pemeriksaan']) }}
+                </h3>
+            </div>
+
+            {{-- Imunisasi --}}
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-600">
+                        💉
+                    </div>
+
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-sky-50 text-sky-600">
+                        Bulan Ini
+                    </span>
+                </div>
+
+                <p class="text-sm text-slate-500 uppercase tracking-wide">
+                    Imunisasi
+                </p>
+
+                <h3 class="text-4xl font-bold text-slate-900 mt-2">
+                    {{ number_format($stats['total_imunisasi']) }}
+                </h3>
             </div>
         </div>
+
+        {{-- Grafik + Info --}}
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+            {{-- Chart --}}
+            <div class="xl:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">
+                            Aktivitas 6 Bulan Terakhir
+                        </h2>
+                        <p class="text-sm text-slate-500">
+                            Berdasarkan jumlah pemeriksaan bulanan
+                        </p>
+                    </div>
+                </div>
+
+                <div class="h-[360px]">
+                    <canvas id="dashboardChart"></canvas>
+                </div>
+            </div>
+
+            {{-- Pengguna --}}
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-slate-800 mb-6">
+                    Ringkasan Pengguna
+                </h2>
+
+                <div class="space-y-4">
+                    <div class="rounded-2xl bg-slate-50 p-4">
+                        <p class="text-sm text-slate-500">Total Pengguna</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-1">
+                            {{ number_format($stats['total_pengguna']) }}
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-blue-50 p-4">
+                        <p class="text-sm text-blue-600">Bidan</p>
+                        <p class="text-3xl font-bold text-blue-700 mt-1">
+                            {{ number_format($stats['total_bidan']) }}
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl bg-emerald-50 p-4">
+                        <p class="text-sm text-emerald-600">Kader</p>
+                        <p class="text-3xl font-bold text-emerald-700 mt-1">
+                            {{ number_format($stats['total_kader']) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Tabel Posyandu --}}
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100">
+                <h2 class="text-xl font-bold text-slate-800">
+                    Sebaran & Performa Posyandu
+                </h2>
+                <p class="text-sm text-slate-500 mt-1">
+                    Rekap unit aktif di seluruh wilayah
+                </p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[900px]">
+                    <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+                        <tr>
+                            <th class="text-left px-6 py-4">Nama Posyandu</th>
+                            <th class="text-left px-6 py-4">Wilayah</th>
+                            <th class="text-center px-6 py-4">Kader</th>
+                            <th class="text-center px-6 py-4">Bidan</th>
+                            <th class="text-center px-6 py-4">Pemeriksaan</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($posyanduList as $item)
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-6 py-4 font-semibold text-slate-800">
+                                    {{ $item['nama_posyandu'] }}
+                                </td>
+
+                                <td class="px-6 py-4 text-slate-600">
+                                    {{ $item['wilayah'] }}
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    {{ $item['total_kader'] }}
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    {{ $item['total_bidan'] }}
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    {{ $item['pemeriksaan_bulan'] }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-10 text-slate-400">
+                                    Belum ada data posyandu.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-
+    {{-- Chart --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('mainDashboardChart').getContext('2d');
-
-            // Mengambil data dari atribut HTML agar VS Code tidak merah
-            const chartWrapper = document.getElementById('chart-wrapper');
-            const dataGizi = JSON.parse(chartWrapper.getAttribute('data-chart'));
+            const ctx = document.getElementById('dashboardChart');
 
             new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
                     datasets: [{
-                        label: 'Balita Sehat',
-                        data: dataGizi,
-                        backgroundColor: '#2563EB',
+                        data: [
+                            {{ $stats['total_pemeriksaan'] }},
+                            {{ $stats['total_pemeriksaan'] }},
+                            {{ $stats['total_pemeriksaan'] }},
+                            {{ $stats['total_pemeriksaan'] }},
+                            {{ $stats['total_pemeriksaan'] }},
+                            {{ $stats['total_pemeriksaan'] }}
+                        ],
                         borderRadius: 12,
-                        barThickness: 45,
+                        barThickness: 42
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false }
+                    },
                     scales: {
-                        y: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { weight: '600' } } },
-                        x: { grid: { display: false }, ticks: { color: '#64748B', font: { weight: '700' } } }
+                        x: {
+                            grid: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 5 }
+                        }
                     }
                 }
             });

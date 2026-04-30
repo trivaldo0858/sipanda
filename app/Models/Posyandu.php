@@ -6,12 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Posyandu extends Model
 {
-    protected $table = 'posyandu';
-    // app/Models/Posyandu.php
-    protected $primaryKey = 'id_posyandu'; // WAJIB ADA karena bukan 'id'
-    protected $fillable = ['nama_posyandu', 'alamat', 'wilayah', 'no_telp'];
+    protected $table      = 'posyandu';
+    protected $primaryKey = 'id_posyandu';
+
+    protected $fillable = [
+        'nama_posyandu',
+        'alamat',
+        'wilayah',
+        'no_telp',
+        'status',
+    ];
 
     // ── Relasi ────────────────────────────────────────────────────────
+
     public function kader()
     {
         return $this->hasMany(Kader::class, 'id_posyandu', 'id_posyandu');
@@ -27,7 +34,17 @@ class Posyandu extends Model
         return $this->hasMany(Pengguna::class, 'id_posyandu', 'id_posyandu');
     }
 
-    // Helper: hitung jumlah balita dari semua kader posyandu ini
+    // Pengguna yang punya akses ke posyandu ini (many-to-many) ← BARU
+    public function penggunaAkses()
+    {
+        return $this->belongsToMany(
+            Pengguna::class,
+            'pengguna_posyandu',
+            'id_posyandu',
+            'id_user'
+        )->withTimestamps();
+    }
+
     public function getTotalBalitaAttribute(): int
     {
         return Anak::whereHas('orangTua.pengguna', function ($q) {

@@ -28,9 +28,12 @@ Route::prefix('v1')->group(function () {
 
         // Auth
         Route::prefix('auth')->group(function () {
-            Route::post('logout',        [AuthController::class, 'logout']);
-            Route::get('me',             [AuthController::class, 'me']);
-            Route::post('ubah-password', [AuthController::class, 'ubahPassword']);
+            Route::post('logout',          [AuthController::class, 'logout']);
+            Route::get('me',               [AuthController::class, 'me']);
+            Route::post('ubah-password',   [AuthController::class, 'ubahPassword']);
+            // ── Skenario B ──────────────────────────────────────────
+            Route::get('posyandu-saya',    [AuthController::class, 'posyanduSaya']);
+            Route::post('set-posyandu',    [AuthController::class, 'setPosyandu']);
         });
 
         // Dashboard
@@ -47,11 +50,10 @@ Route::prefix('v1')->group(function () {
         // Posyandu — semua bisa lihat
         Route::get('posyandu',      [PosyanduController::class, 'index']);
         Route::get('posyandu/{id}', [PosyanduController::class, 'show']);
-        // Posyandu CRUD — Super Admin only (via Sanctum token jika Super Admin login mobile)
         Route::middleware('role:SuperAdmin')->group(function () {
-            Route::post('posyandu',         [PosyanduController::class, 'store']);
-            Route::put('posyandu/{id}',     [PosyanduController::class, 'update']);
-            Route::delete('posyandu/{id}',  [PosyanduController::class, 'destroy']);
+            Route::post('posyandu',        [PosyanduController::class, 'store']);
+            Route::put('posyandu/{id}',    [PosyanduController::class, 'update']);
+            Route::delete('posyandu/{id}', [PosyanduController::class, 'destroy']);
         });
 
         // Jadwal — semua bisa lihat
@@ -77,18 +79,18 @@ Route::prefix('v1')->group(function () {
         Route::get('anak/{nik}',              [AnakController::class, 'show']);
         Route::get('anak/{nik}/perkembangan', [AnakController::class, 'perkembangan']);
         Route::middleware('role:Kader,Bidan,SuperAdmin')->group(function () {
-            Route::post('anak',          [AnakController::class, 'store']);
-            Route::put('anak/{nik}',     [AnakController::class, 'update']);
-            Route::delete('anak/{nik}',  [AnakController::class, 'destroy']);
+            Route::post('anak',         [AnakController::class, 'store']);
+            Route::put('anak/{nik}',    [AnakController::class, 'update']);
+            Route::delete('anak/{nik}', [AnakController::class, 'destroy']);
         });
 
         // Pemeriksaan
         Route::get('pemeriksaan',      [PemeriksaanController::class, 'index']);
         Route::get('pemeriksaan/{id}', [PemeriksaanController::class, 'show']);
         Route::middleware('role:Kader,Bidan,SuperAdmin')->group(function () {
-            Route::post('pemeriksaan',         [PemeriksaanController::class, 'store']);
-            Route::put('pemeriksaan/{id}',     [PemeriksaanController::class, 'update']);
-            Route::delete('pemeriksaan/{id}',  [PemeriksaanController::class, 'destroy']);
+            Route::post('pemeriksaan',        [PemeriksaanController::class, 'store']);
+            Route::put('pemeriksaan/{id}',    [PemeriksaanController::class, 'update']);
+            Route::delete('pemeriksaan/{id}', [PemeriksaanController::class, 'destroy']);
         });
 
         // Imunisasi
@@ -102,24 +104,27 @@ Route::prefix('v1')->group(function () {
 
         // Validasi — Bidan only
         Route::middleware('role:Bidan')->group(function () {
-            Route::get('validasi',                               [ValidasiController::class, 'index']);
-            Route::patch('validasi/pemeriksaan/{id}',            [ValidasiController::class, 'validasiPemeriksaan']);
-            Route::patch('validasi/imunisasi/{id}',              [ValidasiController::class, 'validasiImunisasi']);
+            Route::get('validasi',                      [ValidasiController::class, 'index']);
+            Route::patch('validasi/pemeriksaan/{id}',   [ValidasiController::class, 'validasiPemeriksaan']);
+            Route::patch('validasi/imunisasi/{id}',     [ValidasiController::class, 'validasiImunisasi']);
         });
 
-        // Laporan — Bidan & Kader
+        // Laporan — Bidan, Kader, SuperAdmin
         Route::middleware('role:Bidan,Kader,SuperAdmin')->group(function () {
-            Route::get('laporan',                    [LaporanController::class, 'index']);
-            Route::post('laporan',                   [LaporanController::class, 'store']);
-            Route::get('laporan/{id}',               [LaporanController::class, 'show']);
-            Route::delete('laporan/{id}',            [LaporanController::class, 'destroy']);
-            Route::get('laporan/{id}/export-pdf',    [LaporanController::class, 'exportPdf']);
-            Route::get('laporan/{id}/export-excel',  [LaporanController::class, 'exportExcel']);
+            Route::get('laporan',                   [LaporanController::class, 'index']);
+            Route::post('laporan',                  [LaporanController::class, 'store']);
+            Route::get('laporan/{id}',              [LaporanController::class, 'show']);
+            Route::delete('laporan/{id}',           [LaporanController::class, 'destroy']);
+            Route::get('laporan/{id}/export-pdf',   [LaporanController::class, 'exportPdf']);
+            Route::get('laporan/{id}/export-excel', [LaporanController::class, 'exportExcel']);
         });
 
         // Pengguna — Kader & SuperAdmin
         Route::middleware('role:Kader,SuperAdmin')->group(function () {
             Route::apiResource('pengguna', PenggunaController::class);
+            // Assign posyandu ke pengguna (SuperAdmin only)
+            Route::post('pengguna/{id}/assign-posyandu',  [PenggunaController::class, 'assignPosyandu']);
+            Route::delete('pengguna/{id}/remove-posyandu',[PenggunaController::class, 'removePosyandu']);
         });
 
     });

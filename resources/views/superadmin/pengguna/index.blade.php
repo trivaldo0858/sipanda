@@ -1,127 +1,282 @@
+{{-- resources/views/superadmin/pengguna/index.blade.php --}}
 @extends('layouts.superadmin')
-@section('page-title', 'Manajemen Akun Pengguna')
+
+@section('title', 'Direktori Staff')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h5 class="fw-bold mb-1">Akun Pengguna</h5>
-        <p class="text-muted small mb-0">Kelola semua akun Bidan, Kader, dan Orang Tua</p>
-    </div>
-    <a href="{{ route('superadmin.pengguna.create') }}" class="btn btn-primary">
-        <i class="bi bi-person-plus-fill me-1"></i> Tambah Pengguna
-    </a>
-</div>
 
-{{-- Filter --}}
-<div class="card mb-4">
-    <div class="card-body py-2">
-        <form method="GET" class="d-flex gap-2 flex-wrap">
-            <input type="text" name="search" class="form-control form-control-sm"
-                   style="max-width:220px"
-                   placeholder="Cari username..." value="{{ request('search') }}">
-            <select name="role" class="form-select form-select-sm" style="max-width:150px">
-                <option value="">Semua Role</option>
-                <option value="Bidan"    {{ request('role') === 'Bidan'    ? 'selected' : '' }}>Bidan</option>
-                <option value="Kader"    {{ request('role') === 'Kader'    ? 'selected' : '' }}>Kader</option>
-                <option value="OrangTua" {{ request('role') === 'OrangTua' ? 'selected' : '' }}>Orang Tua</option>
-            </select>
-            <select name="posyandu" class="form-select form-select-sm" style="max-width:200px">
-                <option value="">Semua Posyandu</option>
-                @foreach($posyanduList as $p)
-                    <option value="{{ $p->id_posyandu }}"
-                        {{ request('posyandu') == $p->id_posyandu ? 'selected' : '' }}>
-                        {{ $p->nama_posyandu }}
-                    </option>
-                @endforeach
-            </select>
-            <button type="submit" class="btn btn-sm btn-primary px-3">
-                <i class="bi bi-search"></i>
-            </button>
-            @if(request()->anyFilled(['search', 'role', 'posyandu']))
-                <a href="{{ route('superadmin.pengguna.index') }}" class="btn btn-sm btn-outline-secondary">
+<div class="space-y-8">
+
+    {{-- Header --}}
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+
+        <div>
+            <h1 class="text-4xl font-bold text-slate-900 tracking-tight">
+                Direktori Staff
+            </h1>
+
+            <p class="mt-2 text-lg text-slate-500">
+                Kelola akun Bidan, Kader, dan Orang Tua dalam sistem SIPANDA.
+            </p>
+        </div>
+
+        <a href="{{ route('superadmin.pengguna.create') }}"
+           class="inline-flex items-center justify-center h-14 px-7 rounded-full bg-blue-600 text-white font-semibold tracking-wide shadow-lg hover:bg-blue-700 transition">
+            + Buat Akun Staff
+        </a>
+    </div>
+
+    {{-- Flash Message --}}
+    @if(session('success'))
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-emerald-700">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-700">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- Filter --}}
+    <div class="bg-white rounded-[28px] border border-slate-100 shadow-sm p-6">
+
+        <form method="GET" action="{{ route('superadmin.pengguna.index') }}"
+              class="grid grid-cols-1 lg:grid-cols-4 gap-5">
+
+            {{-- Search --}}
+            <div class="lg:col-span-2">
+                <label class="block text-xs font-bold tracking-[2px] text-slate-500 uppercase mb-3">
+                    Cari Pengguna
+                </label>
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Cari username..."
+                    class="w-full h-12 rounded-xl border border-slate-200 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+            </div>
+
+            {{-- Role --}}
+            <div>
+                <label class="block text-xs font-bold tracking-[2px] text-slate-500 uppercase mb-3">
+                    Role
+                </label>
+
+                <select
+                    name="role"
+                    class="w-full h-12 rounded-xl border border-slate-200 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="">Semua Role</option>
+                    <option value="Bidan" {{ request('role') == 'Bidan' ? 'selected' : '' }}>Bidan</option>
+                    <option value="Kader" {{ request('role') == 'Kader' ? 'selected' : '' }}>Kader</option>
+                    <option value="OrangTua" {{ request('role') == 'OrangTua' ? 'selected' : '' }}>Orang Tua</option>
+                </select>
+            </div>
+
+            {{-- Posyandu --}}
+            <div>
+                <label class="block text-xs font-bold tracking-[2px] text-slate-500 uppercase mb-3">
+                    Posyandu
+                </label>
+
+                <select
+                    name="id_posyandu"
+                    class="w-full h-12 rounded-xl border border-slate-200 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="">Semua Unit</option>
+
+                    @foreach($posyanduList as $item)
+                        <option value="{{ $item->id_posyandu }}"
+                            {{ request('id_posyandu') == $item->id_posyandu ? 'selected' : '' }}>
+                            {{ $item->nama_posyandu }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Button --}}
+            <div class="lg:col-span-4 flex flex-wrap gap-3 pt-2">
+                <button type="submit"
+                    class="h-12 px-6 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+                    Terapkan Filter
+                </button>
+
+                <a href="{{ route('superadmin.pengguna.index') }}"
+                    class="h-12 px-6 rounded-xl border border-slate-200 text-slate-600 font-semibold inline-flex items-center hover:bg-slate-50 transition">
                     Reset
                 </a>
-            @endif
+            </div>
+
         </form>
     </div>
-</div>
 
-<div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="px-4">Username</th>
-                        <th>Nama</th>
-                        <th>Role</th>
-                        <th>Posyandu</th>
-                        <th>Dibuat</th>
-                        <th class="text-center">Aksi</th>
+    {{-- Table --}}
+    <div class="bg-white rounded-[28px] border border-slate-100 shadow-sm overflow-hidden">
+
+        <div class="px-8 py-6 border-b border-slate-100">
+            <h2 class="text-xl font-bold text-slate-800">
+                Daftar Pengguna
+            </h2>
+        </div>
+
+        <div class="overflow-x-auto">
+
+            <table class="min-w-full text-left">
+
+                <thead class="bg-slate-50">
+                    <tr class="text-xs uppercase tracking-[2px] text-slate-500">
+                        <th class="px-8 py-4">Pengguna</th>
+                        <th class="px-6 py-4">Role</th>
+                        <th class="px-6 py-4">Detail</th>
+                        <th class="px-6 py-4">Unit Akses</th>
+                        <th class="px-6 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @forelse($pengguna as $p)
-                    <tr>
-                        <td class="px-4 fw-semibold">{{ $p->username }}</td>
-                        <td>
-                            @if($p->isBidan())    {{ $p->bidan->nama_bidan ?? '-' }}
-                            @elseif($p->isKader()) {{ $p->kader->nama_kader ?? '-' }}
-                            @else                  {{ $p->orangTua->nama_ibu ?? '-' }}
-                            @endif
-                        </td>
-                        <td>
-                            @php
-                                $roleColor = match($p->role) {
-                                    'Bidan'    => 'danger',
-                                    'Kader'    => 'info',
-                                    'OrangTua' => 'success',
-                                    default    => 'secondary',
-                                };
-                            @endphp
-                            <span class="badge bg-{{ $roleColor }} bg-opacity-10 text-{{ $roleColor }}">
-                                {{ $p->role }}
-                            </span>
-                        </td>
-                        <td class="text-muted small">
-                            {{ $p->posyandu->nama_posyandu ?? '-' }}
-                        </td>
-                        <td class="text-muted small">
-                            {{ $p->created_at->format('d/m/Y') }}
-                        </td>
-                        <td class="text-center">
-                            <div class="d-flex gap-1 justify-content-center">
-                                <a href="{{ route('superadmin.pengguna.edit', $p->id_user) }}"
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <form action="{{ route('superadmin.pengguna.destroy', $p->id_user) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Hapus pengguna {{ $p->username }}?')">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+
+                <tbody class="divide-y divide-slate-100">
+
+                    @forelse($pengguna as $item)
+
+                        @php
+                            $nama = $item->username;
+
+                            if($item->role === 'Bidan' && $item->bidan){
+                                $nama = $item->bidan->nama_bidan;
+                            }
+
+                            if($item->role === 'Kader' && $item->kader){
+                                $nama = $item->kader->nama_kader;
+                            }
+
+                            if($item->role === 'OrangTua' && $item->orangTua){
+                                $nama = $item->orangTua->nama_ibu;
+                            }
+                        @endphp
+
+                        <tr class="hover:bg-slate-50 transition">
+
+                            {{-- Pengguna --}}
+                            <td class="px-8 py-5">
+                                <div class="font-semibold text-slate-900">
+                                    {{ $nama }}
+                                </div>
+
+                                <div class="text-sm text-slate-500 mt-1">
+                                    {{ $item->username }}
+                                </div>
+                            </td>
+
+                            {{-- Role --}}
+                            <td class="px-6 py-5">
+                                @php
+                                    $badge = match($item->role){
+                                        'Bidan' => 'bg-blue-100 text-blue-700',
+                                        'Kader' => 'bg-amber-100 text-amber-700',
+                                        default => 'bg-emerald-100 text-emerald-700'
+                                    };
+                                @endphp
+
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold {{ $badge }}">
+                                    {{ $item->role }}
+                                </span>
+                            </td>
+
+                            {{-- Detail --}}
+                            <td class="px-6 py-5 text-sm text-slate-600 leading-7">
+
+                                @if($item->role === 'Bidan' && $item->bidan)
+                                    NIP: {{ $item->bidan->nip ?? '-' }} <br>
+                                    Telp: {{ $item->bidan->no_telp ?? '-' }}
+                                @elseif($item->role === 'Kader' && $item->kader)
+                                    Wilayah: {{ $item->kader->wilayah ?? '-' }}
+                                @elseif($item->role === 'OrangTua' && $item->orangTua)
+                                    Alamat: {{ $item->orangTua->alamat ?? '-' }}
+                                @else
+                                    -
+                                @endif
+
+                            </td>
+
+                            {{-- Posyandu --}}
+                            <td class="px-6 py-5">
+                                <div class="flex flex-wrap gap-2 max-w-md">
+
+                                    @forelse($item->posyanduList as $ps)
+
+                                        <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
+                                            {{ $ps->nama_posyandu }}
+                                        </span>
+
+                                    @empty
+
+                                        <span class="text-slate-400 text-sm">Belum ada</span>
+
+                                    @endforelse
+
+                                </div>
+                            </td>
+
+                            {{-- Action --}}
+                            <td class="px-6 py-5">
+
+                                <div class="flex items-center justify-end gap-3">
+
+                                    <a href="{{ route('superadmin.pengguna.edit', $item->id_user) }}"
+                                       class="h-10 px-4 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition">
+                                        Edit
+                                    </a>
+
+                                    <form
+                                        method="POST"
+                                        action="{{ route('superadmin.pengguna.destroy', $item->id_user) }}"
+                                        onsubmit="return confirm('Yakin ingin menghapus pengguna ini?')"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button
+                                            type="submit"
+                                            class="h-10 px-4 rounded-xl bg-red-50 text-red-600 font-medium hover:bg-red-100 transition"
+                                        >
+                                            Hapus
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
                     @empty
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-5">
-                            <i class="bi bi-people fs-2 d-block mb-2 opacity-25"></i>
-                            Belum ada data pengguna.
-                        </td>
-                    </tr>
+
+                        <tr>
+                            <td colspan="5" class="px-8 py-14 text-center text-slate-400">
+                                Tidak ada data pengguna ditemukan.
+                            </td>
+                        </tr>
+
                     @endforelse
+
                 </tbody>
+
             </table>
+
         </div>
-        @if($pengguna->hasPages())
-        <div class="px-4 py-3 border-top">
-            {{ $pengguna->links() }}
-        </div>
+
+        {{-- Pagination --}}
+        @if(method_exists($pengguna, 'links'))
+            <div class="px-8 py-6 border-t border-slate-100">
+                {{ $pengguna->links() }}
+            </div>
         @endif
+
     </div>
+
 </div>
+
 @endsection
