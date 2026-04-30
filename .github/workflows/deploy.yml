@@ -125,4 +125,4 @@ jobs:
             docker compose exec -T app php artisan config:clear
             docker compose exec -T app php artisan view:clear
 
-            echo "okkkkkkk bang Deployment selesai!"
+            echo " bang Deployment selesai!"
