@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Posyandu extends Model
 {
-    protected $table      = 'posyandu';
+    protected $table = 'posyandu';
     protected $primaryKey = 'id_posyandu';
 
     protected $fillable = [
         'nama_posyandu',
+        'kecamatan',
+        'desa_kelurahan',
         'alamat',
-        'wilayah',
-        'no_telp',
-        'status',
+        'kabupaten_kota',
     ];
 
     // ── Relasi ────────────────────────────────────────────────────────

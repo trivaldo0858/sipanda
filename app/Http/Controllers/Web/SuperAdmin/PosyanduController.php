@@ -28,22 +28,21 @@ class PosyanduController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi data yang masuk
+        // 1. Validasi input agar tidak ada data kosong
         $request->validate([
             'nama_posyandu' => 'required',
             'kecamatan' => 'required',
             'desa_kelurahan' => 'required',
             'alamat' => 'required',
-            // tambahkan field lain jika ada
         ]);
 
-        // 2. Simpan ke database
+        // 2. Simpan ke database (Sesuaikan dengan nama kolom di screenshot phpMyAdmin-mu)
         \App\Models\Posyandu::create([
             'nama_posyandu' => $request->nama_posyandu,
-            'kecamatan' => $request->kecamatan, // Tambahkan baris ini
-            'desa_kelurahan' => $request->desa_kelurahan, // Tambahkan baris ini
+            'kecamatan' => $request->kecamatan,      // Menangkap dropdown kecamatan
+            'desa_kelurahan' => $request->desa_kelurahan, // Menangkap dropdown desa
             'alamat' => $request->alamat,
-            'kabupaten_kota' => 'Indramayu', // Karena kita set tetap
+            'kabupaten_kota' => 'Indramayu',
         ]);
 
         return redirect()->route('superadmin.posyandu.index')->with('success', 'Unit Berhasil Ditambahkan');
