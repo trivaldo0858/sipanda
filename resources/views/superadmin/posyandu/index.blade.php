@@ -35,45 +35,49 @@
             </form>
         </div>
 
-        {{-- Tabel Daftar Unit (Kolom disesuaikan dengan Form) --}}
+        {{-- Tabel Daftar Unit --}}
         <div class="bg-white rounded-xl3 border border-line shadow-card overflow-hidden">
             <table class="w-full text-left">
                 <thead class="bg-slate-50 border-b border-line">
                     <tr>
-                        <th class="px-8 py-4 font-semibold text-slate-600 text-sm uppercase">Nama Posyandu</th>
-                        <th class="px-8 py-4 font-semibold text-slate-600 text-sm uppercase">Kategori</th>
-                        <th class="px-8 py-4 font-semibold text-slate-600 text-sm uppercase">Kecamatan</th>
-                        <th class="px-8 py-4 font-semibold text-slate-600 text-sm uppercase">Alamat</th>
-                        <th class="px-8 py-4 font-semibold text-slate-600 text-sm uppercase text-center">Aksi</th>
+                        <th class="px-6 py-4 font-semibold text-slate-600 text-sm uppercase">Nama Posyandu</th>
+                        <th class="px-6 py-4 font-semibold text-slate-600 text-sm uppercase">Kecamatan</th>
+                        <th class="px-6 py-4 font-semibold text-slate-600 text-sm uppercase">Desa/Kelurahan</th>
+                        <th class="px-6 py-4 font-semibold text-slate-600 text-sm uppercase">Alamat Detail</th>
+                        <th class="px-6 py-4 font-semibold text-slate-600 text-sm uppercase text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-line">
                     @forelse($posyandu as $item)
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="px-8 py-5 font-bold text-slate-800">{{ $item->nama_posyandu }}</td>
-                            <td class="px-8 py-5">
-                                <span
-                                    class="px-3 py-1 rounded-full text-xs font-medium {{ $item->kategori == 'Balita' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600' }}">
-                                    {{ $item->kategori ?? 'Umum' }}
-                                </span>
+                            {{-- Nama Posyandu --}}
+                            <td class="px-6 py-5 font-bold text-slate-800">{{ $item->nama_posyandu }}</td>
+
+                            {{-- Kolom Kecamatan (Baru) --}}
+                            <td class="px-6 py-5 text-slate-600 font-medium">{{ $item->kecamatan ?? 'Data Kosong'}}</td>
+
+                            {{-- Kolom Desa/Kelurahan (Baru --}}
+                            <td class="px-6 py-5 text-slate-500">{{ $item->desa_kelurahan ?? 'Data Kosong' }}</td>
+
+                            {{-- Alamat Detail --}}
+                            <td class="px-6 py-5 text-slate-500 text-sm max-w-[200px] truncate">
+                                {{ $item->alamat }}
                             </td>
-                            <td class="px-8 py-5 text-slate-500">{{ $item->desa_kelurahan }}</td>
-                            <td class="px-8 py-5 text-slate-500 text-sm max-w-xs truncate">{{ $item->alamat }}</td>
-                            <td class="px-8 py-5">
+
+                            {{-- Aksi --}}
+                            <td class="px-6 py-5">
                                 <div class="flex justify-center items-center gap-4">
-                                    {{-- AKSI: EDIT LOKASI --}}
                                     <a href="{{ route('superadmin.posyandu.edit', $item->id_posyandu) }}"
-                                        class="text-amber-600 hover:text-amber-700 font-semibold flex items-center gap-1">
+                                        class="text-amber-600 hover:text-amber-700 font-semibold flex items-center gap-1 transition">
                                         <span>✏️</span> Edit
                                     </a>
 
-                                    {{-- AKSI: HAPUS (Delete) --}}
                                     <form action="{{ route('superadmin.posyandu.destroy', $item->id_posyandu) }}" method="POST"
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus unit ini?')">
+                                        onsubmit="return confirm('Hapus unit {{ $item->nama_posyandu }}?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="text-red-500 hover:text-red-700 font-semibold flex items-center gap-1">
+                                            class="text-red-500 hover:text-red-700 font-semibold flex items-center gap-1 transition">
                                             <span>🗑️</span> Hapus
                                         </button>
                                     </form>
@@ -82,8 +86,8 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-8 py-12 text-center">
-                                <div class="text-slate-400 italic">Belum ada unit Posyandu yang terdaftar.</div>
+                            <td colspan="6" class="px-8 py-12 text-center text-slate-400 italic">
+                                Belum ada unit Posyandu yang terdaftar di wilayah Indramayu.
                             </td>
                         </tr>
                     @endforelse
