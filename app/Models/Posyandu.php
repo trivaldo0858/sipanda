@@ -15,6 +15,7 @@ class Posyandu extends Model
         'desa_kelurahan',
         'alamat',
         'kabupaten_kota',
+        'password_kader',
     ];
 
     // ── Relasi ────────────────────────────────────────────────────────

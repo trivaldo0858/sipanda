@@ -13,8 +13,7 @@ class Pemeriksaan extends Model
     protected $fillable = [
         'nik_anak', 'id_kader', 'nip_bidan', 'id_jadwal',
         'tgl_pemeriksaan', 'berat_badan', 'tinggi_badan',
-        'lingkar_kepala', 'keluhan',
-        'status_validasi', 'catatan_validasi', 'nip_validator',
+        'lingkar_kepala', 
     ];
 
     protected $casts = [

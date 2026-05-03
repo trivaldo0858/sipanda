@@ -21,16 +21,22 @@ class PenggunaController extends Controller
     {
         $pengguna = Pengguna::with(['bidan', 'kader', 'orangTua', 'posyandu', 'posyanduList'])
             ->whereIn('role', ['Bidan', 'Kader', 'OrangTua'])
-            ->when($request->role, fn ($q) => $q->where('role', $request->role))
-            ->when($request->id_posyandu, fn ($q) =>
+            ->when($request->role, fn($q) => $q->where('role', $request->role))
+            ->when(
+                $request->id_posyandu,
+                fn($q) =>
                 $q->where(function ($q2) use ($request) {
                     $q2->where('id_posyandu', $request->id_posyandu)
-                       ->orWhereHas('posyanduList', fn ($q3) =>
-                           $q3->where('posyandu.id_posyandu', $request->id_posyandu)
-                       );
+                        ->orWhereHas(
+                            'posyanduList',
+                            fn($q3) =>
+                            $q3->where('posyandu.id_posyandu', $request->id_posyandu)
+                        );
                 })
             )
-            ->when($request->search, fn ($q) =>
+            ->when(
+                $request->search,
+                fn($q) =>
                 $q->where('username', 'like', '%' . $request->search . '%')
             )
             ->paginate(15)
@@ -56,48 +62,48 @@ class PenggunaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'username'      => 'required|string|unique:pengguna,username',
-            'password'      => 'required|string|min:6',
-            'role'          => 'required|in:Bidan,Kader,OrangTua',
-            'id_posyandu'   => 'nullable|exists:posyandu,id_posyandu',
-            'nip'           => 'required_if:role,Bidan|string',
-            'nama_bidan'    => 'required_if:role,Bidan|string',
-            'no_telp'       => 'nullable|string',
-            'nama_kader'    => 'required_if:role,Kader|string',
-            'wilayah'       => 'nullable|string',
+            'username' => 'required|string|unique:pengguna,username',
+            'password' => 'required|string|min:6',
+            'role' => 'required|in:Bidan,Kader,OrangTua',
+            'id_posyandu' => 'nullable|exists:posyandu,id_posyandu',
+            'nip' => 'required_if:role,Bidan|string',
+            'nama_bidan' => 'required_if:role,Bidan|string',
+            'no_telp' => 'nullable|string',
+            'nama_kader' => 'required_if:role,Kader|string',
+            'wilayah' => 'nullable|string',
             'nik_orang_tua' => 'required_if:role,OrangTua|string',
-            'nama_ibu'      => 'required_if:role,OrangTua|string',
-            'alamat'        => 'nullable|string',
+            'nama_ibu' => 'required_if:role,OrangTua|string',
+            'alamat' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($request) {
             $user = Pengguna::create([
-                'username'          => $request->username,
-                'password'          => Hash::make($request->password),
-                'role'              => $request->role,
-                'id_posyandu'       => $request->id_posyandu,
+                'username' => $request->username,
+                'password' => Hash::make($request->password),
+                'role' => $request->role,
+                'id_posyandu' => $request->id_posyandu,
                 'id_posyandu_aktif' => $request->id_posyandu,
             ]);
 
             match ($request->role) {
-                'Bidan'    => Bidan::create([
-                    'nip'         => $request->nip,
-                    'id_user'     => $user->id_user,
-                    'nama_bidan'  => $request->nama_bidan,
-                    'no_telp'     => $request->no_telp,
+                'Bidan' => Bidan::create([
+                    'nip' => $request->nip,
+                    'id_user' => $user->id_user,
+                    'nama_bidan' => $request->nama_bidan,
+                    'no_telp' => $request->no_telp,
                     'id_posyandu' => $request->id_posyandu,
                 ]),
-                'Kader'    => Kader::create([
-                    'id_user'     => $user->id_user,
-                    'nama_kader'  => $request->nama_kader,
-                    'wilayah'     => $request->wilayah,
+                'Kader' => Kader::create([
+                    'id_user' => $user->id_user,
+                    'nama_kader' => $request->nama_kader,
+                    'wilayah' => $request->wilayah,
                     'id_posyandu' => $request->id_posyandu,
                 ]),
                 'OrangTua' => OrangTua::create([
                     'nik_orang_tua' => $request->nik_orang_tua,
-                    'id_user'       => $user->id_user,
-                    'nama_ibu'      => $request->nama_ibu,
-                    'alamat'        => $request->alamat,
+                    'id_user' => $user->id_user,
+                    'nama_ibu' => $request->nama_ibu,
+                    'alamat' => $request->alamat,
                 ]),
             };
 
@@ -116,7 +122,7 @@ class PenggunaController extends Controller
      */
     public function edit($id)
     {
-        $pengguna     = Pengguna::with(['bidan', 'kader', 'orangTua', 'posyanduList'])
+        $pengguna = Pengguna::with(['bidan', 'kader', 'orangTua', 'posyanduList'])
             ->findOrFail($id);
         $posyanduList = Posyandu::where('status', 'Aktif')->get();
 
@@ -131,40 +137,43 @@ class PenggunaController extends Controller
         $pengguna = Pengguna::findOrFail($id);
 
         $request->validate([
-            'username'    => 'sometimes|string|unique:pengguna,username,' . $id . ',id_user',
-            'password'    => 'nullable|string|min:6',
+            'username' => 'sometimes|string|unique:pengguna,username,' . $id . ',id_user',
+            'password' => 'nullable|string|min:6',
             'id_posyandu' => 'nullable|exists:posyandu,id_posyandu',
-            'nama_bidan'  => 'sometimes|string',
-            'no_telp'     => 'nullable|string',
-            'nama_kader'  => 'sometimes|string',
-            'wilayah'     => 'nullable|string',
-            'nama_ibu'    => 'sometimes|string',
-            'alamat'      => 'nullable|string',
+            'nama_bidan' => 'sometimes|string',
+            'no_telp' => 'nullable|string',
+            'nama_kader' => 'sometimes|string',
+            'wilayah' => 'nullable|string',
+            'nama_ibu' => 'sometimes|string',
+            'alamat' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($request, $pengguna) {
             $data = [];
-            if ($request->filled('username'))   $data['username']    = $request->username;
-            if ($request->filled('password'))   $data['password']    = Hash::make($request->password);
-            if ($request->has('id_posyandu'))   $data['id_posyandu'] = $request->id_posyandu;
+            if ($request->filled('username'))
+                $data['username'] = $request->username;
+            if ($request->filled('password'))
+                $data['password'] = Hash::make($request->password);
+            if ($request->has('id_posyandu'))
+                $data['id_posyandu'] = $request->id_posyandu;
             $pengguna->update($data);
 
             if ($pengguna->isBidan() && $pengguna->bidan) {
                 $pengguna->bidan->update(array_filter([
-                    'nama_bidan'  => $request->nama_bidan,
-                    'no_telp'     => $request->no_telp,
+                    'nama_bidan' => $request->nama_bidan,
+                    'no_telp' => $request->no_telp,
                     'id_posyandu' => $request->id_posyandu,
                 ]));
             } elseif ($pengguna->isKader() && $pengguna->kader) {
                 $pengguna->kader->update(array_filter([
-                    'nama_kader'  => $request->nama_kader,
-                    'wilayah'     => $request->wilayah,
+                    'nama_kader' => $request->nama_kader,
+                    'wilayah' => $request->wilayah,
                     'id_posyandu' => $request->id_posyandu,
                 ]));
             } elseif ($pengguna->isOrangTua() && $pengguna->orangTua) {
                 $pengguna->orangTua->update(array_filter([
                     'nama_ibu' => $request->nama_ibu,
-                    'alamat'   => $request->alamat,
+                    'alamat' => $request->alamat,
                 ]));
             }
         });
@@ -203,14 +212,16 @@ class PenggunaController extends Controller
             ->exists();
 
         if ($sudahAda) {
-            return back()->with('error',
+            return back()->with(
+                'error',
                 "{$pengguna->username} sudah memiliki akses ke {$posyandu->nama_posyandu}."
             );
         }
 
         $pengguna->posyanduList()->attach($request->id_posyandu);
 
-        return back()->with('success',
+        return back()->with(
+            'success',
             "Akses {$posyandu->nama_posyandu} berhasil ditambahkan ke {$pengguna->username}."
         );
     }
@@ -231,7 +242,8 @@ class PenggunaController extends Controller
         // Jangan hapus satu-satunya posyandu
         $total = $pengguna->posyanduList()->count();
         if ($total <= 1) {
-            return back()->with('error',
+            return back()->with(
+                'error',
                 'Tidak dapat menghapus posyandu satu-satunya milik pengguna ini.'
             );
         }
@@ -243,7 +255,8 @@ class PenggunaController extends Controller
             $pengguna->update(['id_posyandu_aktif' => $pengguna->id_posyandu]);
         }
 
-        return back()->with('success',
+        return back()->with(
+            'success',
             "Akses {$posyandu->nama_posyandu} berhasil dicabut dari {$pengguna->username}."
         );
     }

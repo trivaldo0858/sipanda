@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->string('desa_kelurahan');
             $table->text('alamat');
             $table->string('kabupaten_kota')->default('Indramayu');
+            $table->string('password_kader');
             $table->timestamps();
         });
     }

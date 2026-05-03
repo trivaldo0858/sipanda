@@ -25,7 +25,7 @@
                 <div class="flex-1 relative">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
                     <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Cari nama unit, kategori, atau alamat..."
+                        placeholder="Cari nama unit..."
                         class="w-full pl-12 pr-4 py-3 bg-softbg border-none rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none transition">
                 </div>
                 <button type="submit"

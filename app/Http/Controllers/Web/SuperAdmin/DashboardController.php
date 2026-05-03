@@ -4,41 +4,44 @@ namespace App\Http\Controllers\Web\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Anak;
-use App\Models\Imunisasi;
-use App\Models\Pemeriksaan;
-use App\Models\Pengguna;
 use App\Models\Posyandu;
+use App\Models\Bidan;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $stats = [
-            'total_posyandu'    => Posyandu::where('status', 'Aktif')->count(),
-            'total_pengguna'    => Pengguna::whereIn('role', ['Bidan', 'Kader', 'OrangTua'])->count(),
-            'total_bidan'       => Pengguna::where('role', 'Bidan')->count(),
-            'total_kader'       => Pengguna::where('role', 'Kader')->count(),
-            'total_anak'        => Anak::count(),
-            'total_pemeriksaan' => Pemeriksaan::whereMonth('tgl_pemeriksaan', now()->month)->count(),
-            'total_imunisasi'   => Imunisasi::whereMonth('tgl_pemberian', now()->month)->count(),
+            'total_anak' => Anak::count(),
+            'total_posyandu' => Posyandu::count(), // Total Unit Posyandu
+            'total_bidan' => Bidan::count(),    // Total Bidan
         ];
 
-        // Data per posyandu untuk tabel ringkasan
-        $posyanduList = Posyandu::withCount(['kader', 'bidan'])
-            ->with(['kader.pemeriksaan' => function ($q) {
-                $q->whereMonth('tgl_pemeriksaan', now()->month);
-            }])
-            ->where('status', 'Aktif')
-            ->get()
-            ->map(fn ($p) => [
-                'id_posyandu'    => $p->id_posyandu,
-                'nama_posyandu'  => $p->nama_posyandu,
-                'wilayah'        => $p->wilayah,
-                'total_kader'    => $p->kader_count,
-                'total_bidan'    => $p->bidan_count,
-                'pemeriksaan_bulan' => $p->kader->flatMap->pemeriksaan->count(),
-            ]);
+        $posyanduList = Posyandu::all()->map(function ($p) {
+            return [
+                'id_posyandu' => $p->id_posyandu,
+                'nama_posyandu' => $p->nama_posyandu,
+                'kecamatan' => $p->kecamatan,
+                'desa_kelurahan' => $p->desa_kelurahan,
+            ];
+        });
 
-        return view('superadmin.dashboard.index', compact('stats', 'posyanduList'));
+        // Mengambil rata-rata berat badan 6 bulan terakhir secara dinamis
+        $pemeriksaanData = \App\Models\Pemeriksaan::select(
+            \Illuminate\Support\Facades\DB::raw('MONTHNAME(tgl_periksa) as bulan'),
+            \Illuminate\Support\Facades\DB::raw('AVG(berat_badan) as rata_rata')
+        )
+            ->groupBy('bulan')
+            ->orderBy('tgl_periksa', 'ASC')
+            ->limit(6)
+            ->get();
+
+        // Format data untuk Chart.js
+        $chartData = [
+            'labels' => $pemeriksaanData->pluck('bulan')->toArray(),
+            'data' => $pemeriksaanData->pluck('rata_rata')->toArray(),
+        ];
+
+        return view('superadmin.dashboard.index', compact('stats', 'posyanduList', 'chartData'));
     }
 }
