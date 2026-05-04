@@ -2,19 +2,32 @@
 <!DOCTYPE html>
 <html lang="id">
 
+<!DOCTYPE html>
+<html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Super Admin') - SIPANDA</title>
+    <title>@yield('title')</title>
+
+    {{-- 1. Import Font Plus Jakarta Sans secara Lengkap --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     {{-- Tailwind CSS CDN --}}
     <script src="https://cdn.tailwindcss.com"></script>
 
-    {{-- Tailwind Config --}}
+    {{-- 2. Konfigurasi Tailwind untuk Font Global --}}
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        // Menetapkan Plus Jakarta Sans sebagai font default (sans)
+                        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    },
                     colors: {
                         primary: '#0A63D8',
                         softbg: '#F4F6FB',
@@ -31,9 +44,12 @@
         }
     </script>
 
+    {{-- 3. CSS Global untuk Halus & Scrollbar --}}
     <style>
         body {
-            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+            /* antialiased membuat font Jakarta Sans terlihat lebih premium */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         ::-webkit-scrollbar {
@@ -48,123 +64,103 @@
     </style>
 </head>
 
-<body class="bg-softbg text-slate-800">
+<body class="bg-softbg text-slate-800 font-sans">
+    {{-- Sisa kode Container Utama (Sidebar & Content) tetap sama --}}
 
-    <div class="min-h-screen flex">
+    <!-- Container Utama (Sidebar & Content) -->
+    <div class="min-h-screen bg-[#f3f4f9] p-6 flex gap-6">
 
-        {{-- Sidebar --}}
-        <aside class="w-[270px] bg-white border-r border-line flex flex-col">
+        <!-- Sidebar Modern Modern Minimalis -->
+        <aside
+            class="w-72 bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 flex flex-col p-8 sticky top-6 h-[calc(100vh-3rem)] transition-all">
 
-            {{-- Brand --}}
-            <div class="px-6 py-6 border-b border-line">
-                <div class="flex items-center gap-4">
-                    <div
-                        class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center font-bold text-xl shadow-card">
-                        +
-                    </div>
-
-                    <div>
-                        <h1 class="text-3xl font-extrabold text-primary leading-none">
-                            SIPANDA
-                        </h1>
-                        <p class="text-[11px] uppercase tracking-wider text-slate-400 mt-1">
-                            Sistem Posyandu Anak Digital
-                        </p>
-                    </div>
-                </div>
+            {{-- Brand Section --}}
+            <div class="flex items-center gap-4 mb-12 px-2">
+                <h1 class="text-xl font-bold text-slate-700 tracking-tight">SIPANDA</h1>
             </div>
 
-            {{-- Menu --}}
-            <nav class="px-4 py-6 space-y-2 flex-1">
+            {{-- Navigasi Menu --}}
+            <nav class="flex-1 space-y-3">
 
-                <a href="{{ route('superadmin.dashboard') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-2xl transition
-               {{ request()->routeIs('superadmin.dashboard') ? 'bg-blue-50 text-primary font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
-                    <span>📊</span>
-                    <span>Dashboard</span>
-                </a>
+                <!-- Dashboard -->
+                <div class="relative group">
+                    {{-- Indikator Aktif (Garis Pink di mockup) --}}
+                    @if(request()->routeIs('superadmin.dashboard'))
+                        <div class="absolute -left-8 top-1/2 -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full"></div>
+                    @endif
 
-                <a href="{{ route('superadmin.posyandu.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-2xl transition
-               {{ request()->routeIs('superadmin.posyandu.*') ? 'bg-blue-50 text-primary font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
-                    <span>🏥</span>
-                    <span>Posyandu</span>
-                </a>
-
-                <a href="{{ route('superadmin.pengguna.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-2xl transition
-               {{ request()->routeIs('superadmin.pengguna.*') ? 'bg-blue-50 text-primary font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
-                    <span>👥</span>
-                    <span>Pengguna</span>
-                </a>
-
-                <a href="{{ route('superadmin.laporan.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-2xl transition
-               {{ request()->routeIs('superadmin.laporan.*') ? 'bg-blue-50 text-primary font-semibold' : 'text-slate-600 hover:bg-slate-50' }}">
-                    <span>📄</span>
-                    <span>Laporan</span>
-                </a>
-            </nav>
-
-            {{-- Bottom --}}
-            <div class="p-4 border-t border-line space-y-2">
-
-                <div class="px-4 py-3 rounded-2xl bg-slate-50 text-sm text-slate-500">
-                    Login sebagai:
-                    <div class="font-semibold text-slate-700 mt-1">
-                        {{ auth()->user()->username ?? 'Super Admin' }}
-                    </div>
+                    <a href="{{ route('superadmin.dashboard') }}"
+                        class="flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 {{ request()->routeIs('superadmin.dashboard') ? 'bg-[#EBF3FF] text-[#0A63D8]' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                        <span class="font-bold text-sm">Dashboard</span>
+                    </a>
                 </div>
 
-                <form method="POST" action="{{ route('superadmin.logout') }}">
+                <!-- Posyandu -->
+                <div class="relative group">
+                    @if(request()->routeIs('superadmin.posyandu.*'))
+                        <div class="absolute -left-8 top-1/2 -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full"></div>
+                    @endif
+
+                    <a href="{{ route('superadmin.posyandu.index') }}"
+                        class="flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 {{ request()->routeIs('superadmin.posyandu.*') ? 'bg-[#EBF3FF] text-[#0A63D8]' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
+                            <path d="m3 9 2.45-4.91A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.79 1.09L21 9" />
+                        </svg>
+                        <span class="font-bold text-sm">Posyandu</span>
+                    </a>
+                </div>
+
+                <!-- Pengguna -->
+                <div class="relative group">
+                    @if(request()->routeIs('superadmin.pengguna.*'))
+                        <div class="absolute -left-8 top-1/2 -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full"></div>
+                    @endif
+
+                    <a href="{{ route('superadmin.pengguna.index') }}"
+                        class="flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 {{ request()->routeIs('superadmin.pengguna.*') ? 'bg-[#EBF3FF] text-[#0A63D8]' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        <span class="font-bold text-sm">Manajemen Pengguna</span>
+                    </a>
+                </div>
+
+            </nav>
+
+            {{-- Logout Section --}}
+            <div class="pt-6 mt-6 border-t border-slate-50">
+                <form action="{{ route('superadmin.logout') }}" method="POST">
                     @csrf
                     <button type="submit"
-                        class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 text-red-600 hover:bg-red-100 transition font-medium">
-                        <span>↩</span>
-                        <span>Keluar</span>
+                        class="w-full flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-red-500 transition-all duration-300 font-bold text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" x2="9" y1="12" y2="12" />
+                        </svg>
+                        Logout
                     </button>
                 </form>
-
             </div>
         </aside>
 
-        {{-- Main --}}
-        <div class="flex-1 min-w-0">
+        <!-- Konten Utama -->
+        <main class="flex-1 bg-white rounded-[2.5rem] shadow-sm border border-slate-50 p-10 overflow-y-auto">
+            @yield('content')
+        </main>
 
-            {{-- Topbar --}}
-            <header class="h-[78px] bg-white border-b border-line px-8 flex items-center justify-between">
-
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800">
-                        @yield('title', 'Dashboard')
-                    </h2>
-                </div>
-
-                <div class="flex items-center gap-4">
-
-                    <div class="hidden md:block text-right">
-                        <p class="text-sm font-semibold text-slate-700">
-                            {{ auth()->user()->username ?? 'Super Admin' }}
-                        </p>
-                        <p class="text-xs text-slate-400">
-                            Super Administrator
-                        </p>
-                    </div>
-
-                    <div
-                        class="w-11 h-11 rounded-full bg-primary text-white flex items-center justify-center font-bold">
-                        {{ strtoupper(substr(auth()->user()->username ?? 'S', 0, 1)) }}
-                    </div>
-
-                </div>
-            </header>
-
-            {{-- Page Content --}}
-            <main class="p-8">
-                @yield('content')
-            </main>
-
-        </div>
     </div>
     @stack('scripts') {{-- Tempat script dari halaman lain akan menempel --}}
 </body>

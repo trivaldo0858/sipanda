@@ -1,188 +1,68 @@
-{{-- resources/views/superadmin/auth/login.blade.php --}}
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Super Admin - SIPANDA</title>
+@extends('layouts.auth')
 
-    <script src="https://cdn.tailwindcss.com"></script>
+@section('title', 'SIPANDA')
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#0A63D8',
-                        softbg: '#F3F4F8',
-                        line: '#D7DCE5',
-                        muted: '#9CA3AF'
-                    },
-                    boxShadow: {
-                        card: '0 8px 25px rgba(0,0,0,0.05)',
-                        button: '0 10px 20px rgba(10,99,216,0.18)'
-                    },
-                    borderRadius: {
-                        xl2: '20px'
-                    }
-                }
-            }
-        }
-    </script>
+@section('content')
+    <div class="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 font-sans">
 
-    <style>
-        body{
-            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-        }
+        {{-- Header Section sesuai mockup --}}
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-black text-blue-600 tracking-tighter">SIPANDA</h1>
+            <p class="text-slate-500 font-medium text-sm mt-2">Sistem Posyandu Anak Digital</p>
+        </div>
 
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus{
-            -webkit-box-shadow: 0 0 0 1000px white inset;
-        }
-    </style>
-</head>
+        {{-- Login Card Modern --}}
+        <div
+            class="w-full max-w-[440px] bg-white p-12 rounded-[3rem] shadow-2xl shadow-slate-200/60 border border-slate-50">
 
-<body class="bg-softbg min-h-screen flex items-center justify-center px-4">
+            <form action="{{ url('/superadmin/login') }}" method="POST" class="space-y-10">
+                @csrf
 
-<div class="w-full max-w-sm">
+                {{-- Input Group: Nama Pengguna --}}
+                <div class="space-y-3">
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-[2px] ml-1">Nama
+                        Pengguna</label>
+                    <div
+                        class="relative flex items-center border-b-2 border-slate-100 focus-within:border-blue-600 transition-all duration-300 pb-2">
+                        <input type="text" name="username" value="{{ old('username', 'superadmin') }}" required autofocus
+                            placeholder="Masukkan nama pengguna"
+                            class="w-full bg-transparent border-none outline-none text-slate-700 placeholder:text-slate-300 py-1 px-1 font-medium">
 
-    {{-- Brand --}}
-    <div class="text-center mb-7">
-        <h1 class="text-4xl font-extrabold text-primary tracking-tight">
-            SIPANDA
-        </h1>
-
-        <p class="mt-2 text-gray-600 text-base">
-            Sistem Posyandu Anak Digital
-        </p>
-    </div>
-
-    {{-- Card --}}
-    <div class="bg-white rounded-xl2 shadow-card px-8 py-8">
-
-        {{-- Error Session --}}
-        @if(session('error'))
-            <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-600 px-4 py-3 text-sm">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        {{-- Validation --}}
-        @if($errors->any())
-            <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-600 px-4 py-3 text-sm">
-                <ul class="space-y-1">
-                    @foreach($errors->all() as $error)
-                        <li>• {{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        {{-- Form --}}
-        <form method="POST"
-              action="{{ route('superadmin.login.post') }}"
-              class="space-y-5">
-            @csrf
-
-            {{-- Username --}}
-            <div>
-                <label class="block text-[11px] font-bold tracking-[2px] text-gray-600 uppercase mb-2">
-                    Nama Pengguna
-                </label>
-
-                <div class="relative">
-                    <input
-                        type="text"
-                        name="username"
-                        value="{{ old('username') }}"
-                        placeholder="Masukkan nama pengguna"
-                        class="w-full border-0 border-b border-line bg-transparent pb-3 pr-9 text-base text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-primary transition"
-                        required
-                        autofocus
-                    >
-
-                    <div class="absolute right-0 top-0.5 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             class="w-5 h-5"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.8"
-                                  d="M15 19a4 4 0 00-8 0m8 0H7m8 0h2m-2 0a4 4 0 00-8 0m8-10a4 4 0 11-8 0 4 4 0 018 0"/>
+                        {{-- Ikon User di sisi kanan sesuai mockup --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
                 </div>
-            </div>
 
-            {{-- Password --}}
-            <div>
-                <label class="block text-[11px] font-bold tracking-[2px] text-gray-600 uppercase mb-2">
-                    Kata Sandi
-                </label>
+                {{-- Input Group: Kata Sandi --}}
+                <div class="space-y-3">
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-[2px] ml-1">Kata
+                        Sandi</label>
+                    <div
+                        class="relative flex items-center border-b-2 border-slate-100 focus-within:border-blue-600 transition-all duration-300 pb-2">
+                        <input type="password" name="password" required placeholder="Masukkan kata sandi"
+                            class="w-full bg-transparent border-none outline-none text-slate-700 placeholder:text-slate-300 py-1 px-1 font-medium">
 
-                <div class="relative">
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Masukkan kata sandi"
-                        class="w-full border-0 border-b border-line bg-transparent pb-3 pr-9 text-base text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-primary transition"
-                        required
-                    >
-
-                    <button
-                        type="button"
-                        id="togglePassword"
-                        class="absolute right-0 top-0.5 text-gray-400 hover:text-primary transition">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             class="w-5 h-5"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="1.8"
-                                  d="M15 7a3 3 0 11-6 0 3 3 0 016 0zm-9 13h12a2 2 0 002-2v-5a2 2 0 00-2-2H6a2 2 0 00-2 2v5a2 2 0 002 2z"/>
+                        {{-- Ikon Lock di sisi kanan sesuai mockup --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
+                    </div>
+                </div>
+
+                {{-- Submit Button Modern --}}
+                <div class="pt-4">
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-base">
+                        Masuk
                     </button>
                 </div>
-            </div>
-
-            {{-- Submit --}}
-            <div class="pt-3">
-                <button
-                    type="submit"
-                    id="loginBtn"
-                    class="w-full h-14 rounded-full bg-primary text-white text-xl font-semibold shadow-button hover:scale-[1.02] active:scale-[0.98] transition">
-                    Masuk
-                </button>
-            </div>
-
-        </form>
+            </form>
+        </div>
     </div>
-</div>
-
-<script>
-const togglePassword = document.getElementById('togglePassword');
-const passwordInput  = document.getElementById('password');
-const loginBtn       = document.getElementById('loginBtn');
-
-togglePassword.addEventListener('click', function () {
-    passwordInput.type =
-        passwordInput.type === 'password'
-        ? 'text'
-        : 'password';
-});
-
-document.querySelector('form').addEventListener('submit', function () {
-    loginBtn.innerHTML = 'Memproses...';
-    loginBtn.disabled = true;
-    loginBtn.classList.add('opacity-70');
-});
-</script>
-
-</body>
-</html>
+@endsection
