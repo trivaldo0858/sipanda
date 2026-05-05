@@ -120,13 +120,38 @@
         document.addEventListener('DOMContentLoaded', function () {
             // 1. Database Wilayah (Diringkas untuk efisiensi)
             const dataWilayah = {
-                "Anjatan": ["Anjatan", "Anjatan Baru", "Anjatan Utara", "Bugis", "Bugis Tua", "Cilandak", "Cilandak Lor", "Kedungwungu", "Kopyah", "Lempuyang", "Mangunjaya", "Salamdarma", "Wanguk"],
-                "Arahan": ["Arahan Kidul", "Arahan Lor", "Cidempet", "Linggajati", "Pranggong", "Sukadadi", "Sukasari", "Tawangsari"],
-                "Balongan": ["Balongan", "Gelarmendala", "Majakerta", "Rawadalem", "Sudimampir", "Sudimampir Lor", "Sukareja", "Sukaurip", "Tegalsembrada", "Tegalurung"],
-                "Cantigi": ["Cangkring", "Cantigi Kulon", "Cantigi Wetan", "Cemara", "Lamarantarung", "Panyingkiran Kidul", "Panyingkiran Lor"],
-                "Lohbener": ["Bojongslawi", "Kiajaran Kulon", "Kiajaran Wetan", "Lanjan", "Langut", "Larangan", "Legok", "Lohbener", "Pamayahan", "Rambatan Kulon", "Sindangkerta", "Waru"],
-                // Tambahkan kecamatan lainnya sesuai kebutuhan...
-            };
+                                "Anjatan": ["Anjatan", "Anjatan Baru", "Anjatan Utara", "Bugis", "Bugis Tua", "Cilandak", "Cilandak Lor", "Kedungwungu", "Kopyah", "Lempuyang", "Mangunjaya", "Salamdarma", "Wanguk"],
+                                "Arahan": ["Arahan Kidul", "Arahan Lor", "Cidempet", "Linggajati", "Pranggong", "Sukadadi", "Sukasari", "Tawangsari"],
+                                "Balongan": ["Balongan", "Gelarmendala", "Majakerta", "Rawadalem", "Sudimampir", "Sudimampir Lor", "Sukareja", "Sukaurip", "Tegalsembrada", "Tegalurung"],
+                                "Bangodua": ["Bangodua", "Beduyut", "Karanggetas", "Malangsari", "Mulyasari", "Rancasari", "Tegalgirang", "Wanasari"],
+                                "Bongas": ["Bongas", "Cipaat", "Cipedang", "Kertajaya", "Kertamulya", "Margamulya", "Plawangan", "Sidamulya"],
+                                "Cantigi": ["Cangkring", "Cantigi Kulon", "Cantigi Wetan", "Cemara", "Lamarantarung", "Panyingkiran Kidul", "Panyingkiran Lor"],
+                                "Cikedung": ["Amis", "Cikedung", "Cikedung Lor", "Jambak", "Jatisura", "Loyang", "Mundakjaya"],
+                                "Gabuswetan": ["Babakanjaya", "Drunten Kulon", "Drunten Wetan", "Gabuskulon", "Gabuswetan", "Kedokangabus", "Kedungdawa", "Rancahan", "Rancamulya", "Sekarmulya"],
+                                "Gantar": ["Baleraja", "Bantarwaru", "Gantar", "Mekarjaya", "Mekarwaru", "Sanca", "Situraja"],
+                                "Haurgeulis": ["Cipancuh", "Haurgeulis", "Haurkolot", "Karangtumaritis", "Kertanegara", "Mekarjati", "Sidadadi", "Sukajati", "Sumbermulya", "Wanakaya"],
+                                "Indramayu": ["Dukuh", "Karangsong", "Pabeanudik", "Pekandangan", "Pekandangan Jaya", "Plumbon", "Singajaya", "Singaraja", "Tambak", "Telukagung", "Bojongsari", "Karanganyar", "Karangmalang", "Kepandean", "Lemahabang", "Lemahmekar", "Margadadi", "Paoman"],
+                                "Jatibarang": ["Bulak", "Bulak Lor", "Jatibarang", "Jatibarang Baru", "Jatisawit", "Jatisawit Lor", "Kalimati", "Kebulen", "Krasak", "Lobener", "Lobener Lor", "Malang Semirang", "Pawidean", "Pilangsari", "Sukalila"],
+                                "Juntinyuat": ["Dadap", "Juntikebon", "Juntinyuat", "Juntiweden", "Limbangan", "Pondoh", "Sambimaya", "Segeran", "Segeran Kidul", "Tinumpuk"],
+                                "Kandanghaur": ["Bulak", "Curug", "Eretan Kulon", "Eretan Wetan", "Ilir", "Karanganyar", "Karangmulya", "Kertawinangun", "Pareangirang", "Pranti", "Soge", "Wirakanan", "Wirapanjunan"],
+                                "Karangampel": ["Benda", "Dukuh Jeruk", "Dukuh Tengah", "Mundu", "Kaplongan Lor", "Karangampel Kidul", "Karangampel", "Pringgacala", "Sendang", "Tanjungpura", "Tanjungsari"],
+                                "Kedokan Bunder": ["Cangkingan", "Jayalaksana", "Jayawinangun", "Kaplongan", "Kedokan Agung", "Kedokan Bunder", "Kedokan Bunder Wetan"],
+                                "Kertasemaya": ["Jambe", "Jengkok", "Kertasmaya", "Kliwed", "Lemahayu", "Manguntara", "Sukawera", "Tenajar", "Tenajar Kidul", "Tenajar Lor", "Tulungagung"],
+                                "Krangkeng": ["Dukuh Jati", "Kalianyar", "Kapringan", "Kedungwungu", "Krangkeng", "Luwunggesik", "Purwajaya", "Singakerta", "Srengseng", "Tanjakan", "Tegalmulya"],
+                                "Kroya": ["Jayamulya", "Kroya", "Sukamelang", "Sukaslamet", "Sumberjaya", "Sumbon", "Tanjungkerta", "Temiyang", "Temiyangsari"],
+                                "Lelea": ["Cempeh", "Langgengsari", "Lelea", "Nunuk", "Pangauban", "Tamansari", "Telagasari", "Tempel", "Tempelkulon", "Tugu", "Tunggulpayung"],
+                                "Lohbener": ["Bojongslawi", "Kiajaran Kulon", "Kiajaran Wetan", "Lanjan", "Langut", "Larangan", "Legok", "Lohbener", "Pamayahan", "Rambatan Kulon", "Sindangkerta", "Waru"],
+                                "Losarang": ["Cemara Kulon", "Jangga", "Jumbleng", "Krimun", "Losarang", "Muntur", "Pangkalan", "Pegagan", "Puntang", "Rajaiyang", "Santing", "Ranjeng"],
+                                "Pasekan": ["Brondong", "Karanganyar", "Pasekan", "Pabean Ilir", "Pagirikan", "Totoran"],
+                                "Patrol": ["Arjasari", "Bugel", "Limpas", "Mekarsari", "Patrol", "Patrol Baru", "Patrol Lor", "Sukahaji"],
+                                "Sindang": ["Babadan", "Dermayu", "Kenanga", "Panyindangan Kulon", "Panyindangan Wetan", "Penganjang", "Rambatan Wetan", "Sindang", "Terusan", "Wanantara"],
+                                "Sliyeg": ["Gadingan", "Longok", "Majasari", "Majasih", "Mekargading", "Sleman", "Sleman Lor", "Sliyeg", "Sliyeg Lor", "Sudikampiran", "Tambi", "Tambi Lor", "Tugu", "Tuguk Kidul"],
+                                "Sukagumiwang": ["Bondan", "Cadangpinggan", "Cibeber", "Gedangan", "Gunungsari", "Sukagumiwang", "Tersana"],
+                                "Sukra": ["Bogor", "Karanglayung", "Sukra", "Sukra Wetan", "Sumuradem", "Sumuradem Timur", "Tegal Taman", "Ujunggebang"],
+                                "Terisi": ["Cibereng", "Cikawung", "Jatimulya", "Jatimunggul", "Karangasem", "Kendayakan", "Maanggungan", "Plosokerep", "Rajasinga"],
+                                "Tukdana": ["Bodas", "Cangko", "Gadel", "Karangkerta", "Kerticala", "Lajer", "Mekarsari", "Pagedangan", "Rancajawat", "Sukadana", "Sukamulya", "Sukaperna", "Tukdana"],
+                                "Widasari": ["Bangkaloa Ilir", "Bunder", "Kalensari", "Kasmaran", "Kongsijaya", "Leuwigede", "Ujungaris", "Ujungjaya", "Ujung pendok Jaya", "Widasari"],
+                            };
 
             const kecamatanSelect = document.getElementById('kecamatan');
             const desaSelect = document.getElementById('desa');
