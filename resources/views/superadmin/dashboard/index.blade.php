@@ -4,10 +4,8 @@
 
 @section('content')
     <div class="space-y-8">
-        {{-- 1. Statistik Utama (Stats Cards) --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-            <!-- Card Total Balita -->
             <div class="bg-white p-8 rounded-[2.5rem] shadow-card border border-slate-50 flex items-center justify-between">
                 <div>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[2px] mb-1">Total Balita</p>
@@ -24,7 +22,6 @@
                 </div>
             </div>
 
-            <!-- Card Unit Posyandu -->
             <div class="bg-white p-8 rounded-[2.5rem] shadow-card border border-slate-50 flex items-center justify-between">
                 <div>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[2px] mb-1">Unit Posyandu</p>
@@ -39,7 +36,6 @@
                 </div>
             </div>
 
-            <!-- Card Total Bidan -->
             <div class="bg-white p-8 rounded-[2.5rem] shadow-card border border-slate-50 flex items-center justify-between">
                 <div>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[2px] mb-1">Total Bidan</p>
@@ -56,7 +52,6 @@
 
         </div>
 
-        {{-- Area Grafik Pertumbuhan (Satu Kolom Gabungan) --}}
         <div class="mt-8 bg-white p-10 rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-50">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
                 <div>
@@ -68,9 +63,7 @@
                     </div>
                 </div>
 
-                {{-- Dropdown Filter Modern dengan Ikon --}}
                 <div class="relative group min-w-[220px]">
-                    {{-- Elemen Select --}}
                     <select onchange="window.location.href='/superadmin?id_posyandu='+this.value"
                         class="w-full bg-[#EBF3FF] border border-blue-100 px-6 py-2.5 rounded-full text-xs font-bold text-[#0A63D8] shadow-sm outline-none appearance-none cursor-pointer hover:bg-blue-100 transition-all">
                         <option value="global" {{ $selectedPosyandu == 'global' ? 'selected' : '' }}>Grafik Global (Semua
@@ -82,7 +75,6 @@
                         @endforeach
                     </select>
 
-                    {{-- Ikon Dropdown Kustom --}}
                     <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[#0A63D8]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -92,11 +84,9 @@
                 </div>
             </div>
 
-            {{-- Canvas Grafik: Wadah ini akan selalu tampil --}}
             <div class="h-[400px] w-full relative">
                 <canvas id="chartPertumbuhan"></canvas>
 
-                {{-- Pesan opsional jika data benar-benar kosong --}}
                 @if(empty($chartData['labels']))
                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <p class="text-slate-300 font-medium text-sm text-center">
@@ -112,7 +102,6 @@
             <script>
                 const ctx = document.getElementById('chartPertumbuhan').getContext('2d');
 
-                // Kita berikan data default kosong [] jika variabel dari PHP kosong
                 const labels = @json($chartData['labels'] ?? []);
                 const dataBB = @json($chartData['dataBB'] ?? []);
                 const dataTB = @json($chartData['dataTB'] ?? []);
@@ -181,7 +170,7 @@
         <script>
             const commonOptions = {
                 responsive: true,
-                maintainAspectRatio: false, // Penting agar tinggi tetap terjaga
+                maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
                     y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#f8fafc' } },
