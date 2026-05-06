@@ -47,7 +47,7 @@ class PenggunaController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $posyanduList = Posyandu::where('status', 'Aktif')->get();
+        $posyanduList = Posyandu::all();
 
         return view('superadmin.pengguna.index', compact('pengguna', 'posyanduList'));
     }
@@ -57,7 +57,7 @@ class PenggunaController extends Controller
      */
     public function create()
     {
-        $posyanduList = Posyandu::where('status', 'Aktif')->get();
+        $posyanduList = Posyandu::all();
         return view('superadmin.pengguna.form', [
             'posyanduList' => $posyanduList,
             'pengguna_single' => null
@@ -82,7 +82,7 @@ class PenggunaController extends Controller
                 'username' => $request->username,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
-                'id_posyandu' => $request->id_posyandu[0], 
+                'id_posyandu' => $request->id_posyandu[0],
                 'id_posyandu_aktif' => $request->id_posyandu[0],
             ]);
 
@@ -91,7 +91,7 @@ class PenggunaController extends Controller
                     'id_user' => $user->id_user,
                     'nama_bidan' => $request->nama,
                     'id_posyandu' => $request->id_posyandu[0],
-                    'nip' => '-', 
+                    'nip' => '-',
                 ]),
                 'Kader' => Kader::create([
                     'id_user' => $user->id_user,
@@ -139,22 +139,22 @@ class PenggunaController extends Controller
 
         DB::transaction(function () use ($request, $pengguna) {
             $userData = ['username' => $request->username];
-            
+
             if ($request->filled('password')) {
                 $userData['password'] = Hash::make($request->password);
             }
-            
+
             $userData['id_posyandu'] = $request->id_posyandu[0];
             $pengguna->update($userData);
 
             if ($pengguna->isBidan() && $pengguna->bidan) {
                 $pengguna->bidan->update([
-                    'nama_bidan' => $request->nama, 
+                    'nama_bidan' => $request->nama,
                     'id_posyandu' => $request->id_posyandu[0]
                 ]);
             } elseif ($pengguna->isKader() && $pengguna->kader) {
                 $pengguna->kader->update([
-                    'nama_kader' => $request->nama, 
+                    'nama_kader' => $request->nama,
                     'id_posyandu' => $request->id_posyandu[0]
                 ]);
             } elseif ($pengguna->isOrangTua() && $pengguna->orangTua) {

@@ -7,12 +7,12 @@ use App\Models\Anak;
 use App\Models\Posyandu;
 use App\Models\Bidan;
 use App\Models\Pemeriksaan;
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         // 1. Mengambil statistik ringkasan global
         $stats = [
@@ -20,7 +20,7 @@ class DashboardController extends Controller
             'total_posyandu' => Posyandu::count(),
             'total_bidan' => Bidan::count(),
             // Tambahkan ini agar variabel $stats['total_pemeriksaan'] di view tidak error
-            'total_pemeriksaan' => Pemeriksaan::count(), 
+            'total_pemeriksaan' => Pemeriksaan::count(),
             'total_imunisasi' => 0, // Sesuaikan jika ada model Imunisasi
             'total_pengguna' => 0,  // Sesuaikan jika ada model User
             'total_kader' => 0,
@@ -34,10 +34,10 @@ class DashboardController extends Controller
 
         // PERBAIKAN DI SINI: Ganti tgl_periksa menjadi tgl_pemeriksaan
         $query = Pemeriksaan::select(
-            DB::raw('MONTHNAME(tgl_pemeriksaan) as bulan'),
+            DB::raw('MONTHNAME(tgl_periksa) as bulan'),
             DB::raw('AVG(berat_badan) as rata_bb'),
             DB::raw('AVG(tinggi_badan) as rata_tb'),
-            DB::raw('MIN(tgl_pemeriksaan) as tgl_sort') 
+            DB::raw('MIN(tgl_periksa) as tgl_sort')
         );
 
         if ($selectedPosyandu && $selectedPosyandu !== 'global') {
