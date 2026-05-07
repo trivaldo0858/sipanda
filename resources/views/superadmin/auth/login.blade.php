@@ -24,8 +24,7 @@
                         Pengguna</label>
                     <div
                         class="relative flex items-center border-b-2 border-slate-100 focus-within:border-blue-600 transition-all duration-300 pb-2">
-                        <input type="text" name="username" value="{{ old('username', 'superadmin') }}" required autofocus
-                            placeholder="Masukkan nama pengguna"
+                        <input type="text" name="username" required autofocus placeholder="Masukkan nama pengguna"
                             class="w-full bg-transparent border-none outline-none text-slate-700 placeholder:text-slate-300 py-1 px-1 font-medium">
 
                         {{-- Ikon User di sisi kanan sesuai mockup --}}
