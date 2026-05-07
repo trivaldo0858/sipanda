@@ -34,7 +34,6 @@ class PenggunaController extends Controller
                         );
                 })
             )
-            // PERBAIKAN: Pencarian sekarang mencakup Nama Lengkap di tabel relasi
             ->when($request->search, function ($q) use ($request) {
                 $searchTerm = '%' . $request->search . '%';
                 $q->where(function ($query) use ($searchTerm) {
@@ -91,7 +90,8 @@ class PenggunaController extends Controller
                     'id_user' => $user->id_user,
                     'nama_bidan' => $request->nama,
                     'id_posyandu' => $request->id_posyandu[0],
-                    'nip' => '-',
+                    // PERBAIKAN: Gunakan ID unik sementara agar tidak Duplicate Entry
+                    'nip' => 'T-' . time() . rand(10, 99),
                 ]),
                 'Kader' => Kader::create([
                     'id_user' => $user->id_user,
@@ -118,7 +118,8 @@ class PenggunaController extends Controller
     {
         $pengguna_single = Pengguna::with(['bidan', 'kader', 'orangTua', 'posyanduList'])
             ->findOrFail($id);
-        $posyanduList = Posyandu::where('status', 'Aktif')->get();
+        
+        $posyanduList = Posyandu::all();
 
         return view('superadmin.pengguna.form', compact('pengguna_single', 'posyanduList'));
     }
