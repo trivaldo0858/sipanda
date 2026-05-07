@@ -7,7 +7,7 @@
 
         {{-- Header Section sesuai mockup --}}
         <div class="text-center mb-10">
-            <h1 class="text-5xl font-black text-blue-600 tracking-tighter">SIPANDAA</h1>
+            <h1 class="text-5xl font-black text-blue-600 tracking-tighter">SIPANDA</h1>
             <p class="text-slate-500 font-medium text-sm mt-2">Sistem Posyandu Anak Digital</p>
         </div>
 
