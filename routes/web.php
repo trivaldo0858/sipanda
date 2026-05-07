@@ -8,10 +8,6 @@ use App\Http\Controllers\Web\SuperAdmin\PenggunaController;
 use App\Http\Controllers\Web\SuperAdmin\PosyanduController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect()->route('superadmin.login');
-});
-
 Route::prefix('superadmin')->name('superadmin.')->group(function () {
 
     // Login (public)
