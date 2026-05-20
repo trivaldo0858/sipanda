@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrangTua extends Model
 {
-    protected $table = 'orang_tua';
+    protected $table      = 'orang_tua';
     protected $primaryKey = 'nik_orang_tua';
-    protected $keyType = 'string';
-    public $incrementing = false;
+    protected $keyType    = 'string';
+    public $incrementing  = false;
 
-    protected $fillable = ['nik_orang_tua', 'id_user', 'nama_ibu', 'alamat'];
+    protected $fillable = ['nik_orang_tua', 'id_user', 'nama_ibu', 'no_telp', 'alamat'];
 
     public function pengguna()
     {

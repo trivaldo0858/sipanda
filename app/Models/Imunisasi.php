@@ -1,5 +1,4 @@
 <?php
-// app/Models/Imunisasi.php
 
 namespace App\Models;
 
@@ -11,8 +10,8 @@ class Imunisasi extends Model
     protected $primaryKey = 'id_imunisasi';
 
     protected $fillable = [
-        'nik_anak', 'nip_bidan', 'id_vaksin', 'tgl_pemberian',
-        'status_validasi', 'catatan_validasi',
+        'nik_anak', 'nip_bidan', 'id_vaksin',
+        'id_posyandu', 'tgl_pemberian', 'catatan',
     ];
 
     protected $casts = ['tgl_pemberian' => 'date'];
@@ -32,8 +31,8 @@ class Imunisasi extends Model
         return $this->belongsTo(JenisVaksin::class, 'id_vaksin', 'id_vaksin');
     }
 
-    public function scopeMenungguValidasi($query)
+    public function posyandu()
     {
-        return $query->where('status_validasi', 'Menunggu');
+        return $this->belongsTo(Posyandu::class, 'id_posyandu', 'id_posyandu');
     }
 }

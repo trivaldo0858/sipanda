@@ -1,26 +1,24 @@
 <?php
 // app/Models/Pemeriksaan.php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Pemeriksaan extends Model
 {
     protected $table      = 'pemeriksaan';
-    protected $primaryKey = 'id_pemeriksaan';
+    protected $primaryKey = 'id_periksa';
 
     protected $fillable = [
-        'nik_anak', 'id_kader', 'nip_bidan', 'id_jadwal',
-        'tgl_pemeriksaan', 'berat_badan', 'tinggi_badan',
-        'lingkar_kepala', 
+        'nik_anak', 'id_posyandu', 'nip_bidan', 'id_jadwal',
+        'tgl_periksa', 'berat_badan', 'tinggi_badan', 'lingkar_kepala',
+        'keluhan', 'status_validasi', 'catatan_validasi',
     ];
 
     protected $casts = [
-        'tgl_pemeriksaan' => 'date',
-        'berat_badan'     => 'float',
-        'tinggi_badan'    => 'float',
-        'lingkar_kepala'  => 'float',
+        'tgl_periksa'  => 'date',
+        'berat_badan'  => 'float',
+        'tinggi_badan' => 'float',
+        'lingkar_kepala' => 'float',
     ];
 
     public function anak()
@@ -28,19 +26,14 @@ class Pemeriksaan extends Model
         return $this->belongsTo(Anak::class, 'nik_anak', 'nik_anak');
     }
 
-    public function kader()
+    public function posyandu()
     {
-        return $this->belongsTo(Kader::class, 'id_kader', 'id_kader');
+        return $this->belongsTo(Posyandu::class, 'id_posyandu', 'id_posyandu');
     }
 
     public function bidan()
     {
         return $this->belongsTo(Bidan::class, 'nip_bidan', 'nip');
-    }
-
-    public function validator()
-    {
-        return $this->belongsTo(Bidan::class, 'nip_validator', 'nip');
     }
 
     public function jadwal()

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Posyandu extends Model
 {
-    protected $table = 'posyandu';
+    protected $table      = 'posyandu';
     protected $primaryKey = 'id_posyandu';
 
     protected $fillable = [
@@ -18,24 +18,45 @@ class Posyandu extends Model
         'password_kader',
     ];
 
+    protected $hidden = ['password_kader'];
+
     // ── Relasi ────────────────────────────────────────────────────────
 
-    public function kader()
-    {
-        return $this->hasMany(Kader::class, 'id_posyandu', 'id_posyandu');
-    }
-
+    // Bidan terhubung ke posyandu via pengguna.id_posyandu
     public function bidan()
     {
         return $this->hasMany(Bidan::class, 'id_posyandu', 'id_posyandu');
     }
 
-    public function pengguna()
+    // Kader tidak punya id_posyandu langsung —
+    // terhubung via pengguna.id_posyandu
+    public function penggunaKader()
     {
-        return $this->hasMany(Pengguna::class, 'id_posyandu', 'id_posyandu');
+        return $this->hasMany(Pengguna::class, 'id_posyandu', 'id_posyandu')
+                    ->where('role', 'Kader');
     }
 
-    // Pengguna yang punya akses ke posyandu ini (many-to-many) ← BARU
+    public function penggunaBidan()
+    {
+        return $this->hasMany(Pengguna::class, 'id_posyandu', 'id_posyandu')
+                    ->where('role', 'Bidan');
+    }
+
+    public function anak()
+    {
+        return $this->hasMany(Anak::class, 'id_posyandu', 'id_posyandu');
+    }
+
+    public function jadwal()
+    {
+        return $this->hasMany(JadwalPosyandu::class, 'id_posyandu', 'id_posyandu');
+    }
+
+    public function pemeriksaan()
+    {
+        return $this->hasMany(Pemeriksaan::class, 'id_posyandu', 'id_posyandu');
+    }
+
     public function penggunaAkses()
     {
         return $this->belongsToMany(
@@ -46,10 +67,20 @@ class Posyandu extends Model
         )->withTimestamps();
     }
 
+    // ── Accessor ──────────────────────────────────────────────────────
+
     public function getTotalBalitaAttribute(): int
     {
-        return Anak::whereHas('orangTua.pengguna', function ($q) {
-            $q->where('id_posyandu', $this->id_posyandu);
-        })->count();
+        return $this->anak()->count();
+    }
+
+    public function getTotalKaderAttribute(): int
+    {
+        return $this->penggunaKader()->count();
+    }
+
+    public function getTotalBidanAttribute(): int
+    {
+        return $this->penggunaBidan()->count();
     }
 }

@@ -7,7 +7,6 @@ use App\Models\Anak;
 use App\Models\Imunisasi;
 use App\Models\JadwalPosyandu;
 use App\Models\Pemeriksaan;
-use App\Models\Pengguna;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -17,166 +16,193 @@ class DashboardController extends Controller
         $user = $request->user();
 
         return match ($user->role) {
-            'Bidan'    => $this->dashboardBidan($user),
             'Kader'    => $this->dashboardKader($user),
+            'Bidan'    => $this->dashboardBidan($user),
             'OrangTua' => $this->dashboardOrangTua($user),
             default    => response()->json(['success' => false, 'message' => 'Role tidak dikenal.'], 403),
         };
     }
 
-    // ── Dashboard Bidan ───────────────────────────────────────────────
-    private function dashboardBidan(Pengguna $user)
+    // ── Dashboard Kader ───────────────────────────────────────────────
+    private function dashboardKader($user)
     {
-        // Filter berdasarkan posyandu AKTIF
         $idPosyandu = $user->getPosyanduAktifId();
 
-        $totalAnak = Anak::when($idPosyandu, fn ($q) =>
-            $q->whereHas('orangTua.pengguna', fn ($q2) =>
-                $q2->where('id_posyandu', $idPosyandu)
-            )
-        )->count();
+        $totalAnak = Anak::where('id_posyandu', $idPosyandu)->count();
 
-        $totalPemeriksaan = Pemeriksaan::whereMonth('tgl_pemeriksaan', now()->month)
-            ->whereYear('tgl_pemeriksaan', now()->year)
-            ->when($idPosyandu, fn ($q) =>
-                $q->whereHas('kader', fn ($q2) =>
-                    $q2->where('id_posyandu', $idPosyandu)
-                )
-            )
+        $pemeriksaanBulanIni = Pemeriksaan::where('id_posyandu', $idPosyandu)
+            ->whereMonth('tgl_periksa', now()->month)
+            ->whereYear('tgl_periksa', now()->year)
             ->count();
 
-        $totalImunisasi = Imunisasi::whereMonth('tgl_pemberian', now()->month)
-            ->whereYear('tgl_pemberian', now()->year)
-            ->when($idPosyandu, fn ($q) =>
-                $q->whereHas('anak.orangTua.pengguna', fn ($q2) =>
-                    $q2->where('id_posyandu', $idPosyandu)
-                )
-            )
+        $menungguValidasi = Pemeriksaan::where('id_posyandu', $idPosyandu)
+            ->where('status_validasi', 'Menunggu')
             ->count();
 
-        $jadwalMendatang = JadwalPosyandu::where('tgl_kegiatan', '>=', today())
-            ->when($idPosyandu, fn ($q) =>
-                $q->whereHas('kader', fn ($q2) =>
-                    $q2->where('id_posyandu', $idPosyandu)
-                )
-            )
+        $jadwalMendatang = JadwalPosyandu::where('id_posyandu', $idPosyandu)
+            ->where('tgl_kegiatan', '>=', today())
             ->orderBy('tgl_kegiatan')
-            ->take(5)
-            ->with('kader')
+            ->take(3)
             ->get();
 
-        $pemeriksaanTerbaru = Pemeriksaan::when($idPosyandu, fn ($q) =>
-            $q->whereHas('kader', fn ($q2) =>
-                $q2->where('id_posyandu', $idPosyandu)
-            )
-        )
-        ->with(['anak', 'kader'])
-        ->orderBy('tgl_pemeriksaan', 'desc')
-        ->take(5)
-        ->get();
+        $pemeriksaanTerbaru = Pemeriksaan::where('id_posyandu', $idPosyandu)
+            ->with(['anak'])
+            ->orderBy('tgl_periksa', 'desc')
+            ->take(5)
+            ->get()
+            ->map(fn ($p) => [
+                'id_periksa'     => $p->id_periksa,
+                'nama_anak'      => $p->anak->nama_anak ?? '-',
+                'tgl_periksa'    => $p->tgl_periksa->format('d/m/Y'),
+                'berat_badan'    => $p->berat_badan,
+                'status_validasi'=> $p->status_validasi,
+            ]);
 
         return response()->json([
             'success' => true,
             'data'    => [
-                'posyandu_aktif'         => $this->getPosyanduAktifData($user),
-                'total_anak'             => $totalAnak,
-                'total_pemeriksaan_bulan'=> $totalPemeriksaan,
-                'total_imunisasi_bulan'  => $totalImunisasi,
-                'jadwal_mendatang'       => $jadwalMendatang,
-                'pemeriksaan_terbaru'    => $pemeriksaanTerbaru,
-            ],
-        ]);
-    }
-
-    // ── Dashboard Kader ───────────────────────────────────────────────
-    private function dashboardKader(Pengguna $user)
-    {
-        $idPosyandu = $user->getPosyanduAktifId();
-        $kader      = $user->kader;
-
-        $totalAnak = Anak::when($idPosyandu, fn ($q) =>
-            $q->whereHas('orangTua.pengguna', fn ($q2) =>
-                $q2->where('id_posyandu', $idPosyandu)
-            )
-        )->count();
-
-        $jadwalSaya = JadwalPosyandu::when($kader, fn ($q) =>
-            $q->where('id_kader', $kader->id_kader)
-        )
-        ->where('tgl_kegiatan', '>=', today())
-        ->orderBy('tgl_kegiatan')
-        ->take(5)
-        ->get();
-
-        $pemeriksaanBulanIni = Pemeriksaan::when($kader, fn ($q) =>
-            $q->where('id_kader', $kader->id_kader)
-        )
-        ->whereMonth('tgl_pemeriksaan', now()->month)
-        ->whereYear('tgl_pemeriksaan', now()->year)
-        ->count();
-
-        $pemeriksaanTerbaru = Pemeriksaan::when($kader, fn ($q) =>
-            $q->where('id_kader', $kader->id_kader)
-        )
-        ->with('anak')
-        ->orderBy('tgl_pemeriksaan', 'desc')
-        ->take(5)
-        ->get();
-
-        return response()->json([
-            'success' => true,
-            'data'    => [
-                'posyandu_aktif'          => $this->getPosyanduAktifData($user),
+                'role'                    => 'Kader',
+                'posyandu'                => $user->posyandu ? [
+                    'id_posyandu'   => $user->posyandu->id_posyandu,
+                    'nama_posyandu' => $user->posyandu->nama_posyandu,
+                ] : null,
                 'total_anak'              => $totalAnak,
                 'pemeriksaan_bulan_ini'   => $pemeriksaanBulanIni,
-                'jadwal_saya'             => $jadwalSaya,
+                'menunggu_validasi'        => $menungguValidasi,
+                'jadwal_mendatang'        => $jadwalMendatang,
                 'pemeriksaan_terbaru'     => $pemeriksaanTerbaru,
             ],
         ]);
     }
 
-    // ── Dashboard Orang Tua ───────────────────────────────────────────
-    private function dashboardOrangTua(Pengguna $user)
+    // ── Dashboard Bidan ───────────────────────────────────────────────
+    private function dashboardBidan($user)
     {
-        $nikOrangTua = $user->orangTua->nik_orang_tua;
+        $idPosyandu = $user->getPosyanduAktifId();
 
-        $anakList = Anak::where('nik_orang_tua', $nikOrangTua)
-            ->with([
-                'pemeriksaan' => fn ($q) => $q->latest('tgl_pemeriksaan')->take(1),
-                'imunisasi'   => fn ($q) => $q->latest('tgl_pemberian')->take(1)->with('jenisVaksin'),
-            ])
-            ->get()
-            ->map(fn ($a) => array_merge($a->toArray(), ['umur_bulan' => $a->umur_bulan]));
+        $totalAnak = Anak::where('id_posyandu', $idPosyandu)->count();
 
-        $jadwalMendatang = JadwalPosyandu::where('tgl_kegiatan', '>=', today())
+        $totalPemeriksaan = Pemeriksaan::where('id_posyandu', $idPosyandu)
+            ->whereMonth('tgl_periksa', now()->month)
+            ->whereYear('tgl_periksa', now()->year)
+            ->count();
+
+        $totalImunisasi = Imunisasi::where('id_posyandu', $idPosyandu)
+            ->whereMonth('tgl_pemberian', now()->month)
+            ->whereYear('tgl_pemberian', now()->year)
+            ->count();
+
+        $menungguValidasi = Pemeriksaan::where('id_posyandu', $idPosyandu)
+            ->where('status_validasi', 'Menunggu')
+            ->count();
+
+        $jadwalMendatang = JadwalPosyandu::where('id_posyandu', $idPosyandu)
+            ->where('tgl_kegiatan', '>=', today())
             ->orderBy('tgl_kegiatan')
             ->take(3)
-            ->with('kader')
             ->get();
+
+        $pemeriksaanMenunggu = Pemeriksaan::where('id_posyandu', $idPosyandu)
+            ->where('status_validasi', 'Menunggu')
+            ->with('anak')
+            ->orderBy('tgl_periksa', 'desc')
+            ->take(5)
+            ->get()
+            ->map(fn ($p) => [
+                'id_periksa'  => $p->id_periksa,
+                'nama_anak'   => $p->anak->nama_anak ?? '-',
+                'tgl_periksa' => $p->tgl_periksa->format('d/m/Y'),
+                'berat_badan' => $p->berat_badan,
+            ]);
 
         return response()->json([
             'success' => true,
             'data'    => [
-                'anak'             => $anakList,
-                'jadwal_mendatang' => $jadwalMendatang,
-                'notif_belum_baca' => $user->notifikasi()->where('status', 'Belum Dibaca')->count(),
+                'role'                    => 'Bidan',
+                'posyandu'                => $user->posyandu ? [
+                    'id_posyandu'   => $user->posyandu->id_posyandu,
+                    'nama_posyandu' => $user->posyandu->nama_posyandu,
+                ] : null,
+                'profil_bidan'            => $user->bidan ? [
+                    'nip'        => $user->bidan->nip,
+                    'nama_bidan' => $user->bidan->nama_bidan,
+                ] : null,
+                'total_anak'              => $totalAnak,
+                'total_pemeriksaan_bulan' => $totalPemeriksaan,
+                'total_imunisasi_bulan'   => $totalImunisasi,
+                'menunggu_validasi'        => $menungguValidasi,
+                'jadwal_mendatang'        => $jadwalMendatang,
+                'pemeriksaan_menunggu'    => $pemeriksaanMenunggu,
             ],
         ]);
     }
 
-    // ── Helper ────────────────────────────────────────────────────────
-    private function getPosyanduAktifData(Pengguna $user): ?array
+    // ── Dashboard Orang Tua ───────────────────────────────────────────
+    private function dashboardOrangTua($user)
     {
-        $id = $user->getPosyanduAktifId();
-        if (! $id) return null;
+        $orangTua = $user->orangTua;
 
-        $p = \App\Models\Posyandu::find($id);
-        if (! $p) return null;
+        if (! $orangTua) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data orang tua tidak ditemukan.',
+            ], 404);
+        }
 
-        return [
-            'id_posyandu'   => $p->id_posyandu,
-            'nama_posyandu' => $p->nama_posyandu,
-            'wilayah'       => $p->wilayah,
-        ];
+        $anakList = $orangTua->anak()
+            ->with([
+                'posyandu:id_posyandu,nama_posyandu',
+                'pemeriksaan' => fn ($q) => $q
+                    ->where('status_validasi', 'Disetujui')
+                    ->latest('tgl_periksa')
+                    ->take(1),
+                'imunisasi' => fn ($q) => $q
+                    ->latest('tgl_pemberian')
+                    ->take(1)
+                    ->with('jenisVaksin'),
+            ])
+            ->get()
+            ->map(fn ($a) => [
+                'nik_anak'        => $a->nik_anak,
+                'nama_anak'       => $a->nama_anak,
+                'tgl_lahir'       => $a->tgl_lahir->format('Y-m-d'),
+                'jenis_kelamin'   => $a->jenis_kelamin,
+                'umur_bulan'      => $a->umur_bulan,
+                'umur_format'     => $a->umur_format,
+                'nama_posyandu'   => $a->posyandu?->nama_posyandu,
+                'pemeriksaan_terakhir' => $a->pemeriksaan->first() ? [
+                    'tgl_periksa'  => $a->pemeriksaan->first()->tgl_periksa->format('d/m/Y'),
+                    'berat_badan'  => $a->pemeriksaan->first()->berat_badan,
+                    'tinggi_badan' => $a->pemeriksaan->first()->tinggi_badan,
+                ] : null,
+                'imunisasi_terakhir' => $a->imunisasi->first() ? [
+                    'nama_vaksin'   => $a->imunisasi->first()->jenisVaksin?->nama_vaksin,
+                    'tgl_pemberian' => $a->imunisasi->first()->tgl_pemberian->format('d/m/Y'),
+                ] : null,
+            ]);
+
+        // Jadwal mendatang dari posyandu anak-anaknya
+        $posyanduIds = $orangTua->anak->pluck('id_posyandu')->unique();
+        $jadwalMendatang = JadwalPosyandu::whereIn('id_posyandu', $posyanduIds)
+            ->where('tgl_kegiatan', '>=', today())
+            ->orderBy('tgl_kegiatan')
+            ->take(3)
+            ->with('posyandu:id_posyandu,nama_posyandu')
+            ->get();
+
+        $notifBelumBaca = $user->notifikasi()
+            ->where('status', 'Belum Dibaca')
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'role'             => 'OrangTua',
+                'nama_ibu'         => $orangTua->nama_ibu,
+                'anak'             => $anakList,
+                'jadwal_mendatang' => $jadwalMendatang,
+                'notif_belum_baca' => $notifBelumBaca,
+            ],
+        ]);
     }
 }

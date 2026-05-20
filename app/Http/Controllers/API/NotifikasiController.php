@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class NotifikasiController extends Controller
 {
     /**
-     * Notifikasi milik user yang sedang login
+     * List notifikasi milik user yang login
      */
     public function index(Request $request)
     {
@@ -24,30 +24,40 @@ class NotifikasiController extends Controller
             $query->where('jenis_notif', $request->jenis_notif);
         }
 
+        $notifikasi  = $query->orderBy('tgl_kirim', 'desc')->paginate(20);
+        $unreadCount = Notifikasi::where('id_user', $request->user()->id_user)
+            ->where('status', 'Belum Dibaca')
+            ->count();
+
         return response()->json([
-            'success'          => true,
-            'unread_count'     => Notifikasi::where('id_user', $request->user()->id_user)
-                                            ->where('status', 'Belum Dibaca')->count(),
-            'data'             => $query->orderBy('tgl_kirim', 'desc')->paginate(20),
+            'success'      => true,
+            'unread_count' => $unreadCount,
+            'data'         => $notifikasi,
         ]);
     }
 
     /**
-     * Tandai satu notifikasi sebagai sudah dibaca
+     * Tandai satu notifikasi sudah dibaca
      */
-    public function markRead($id)
+    public function markRead(Request $request, $id)
     {
         $notif = Notifikasi::findOrFail($id);
 
-        abort_unless($notif->id_user === request()->user()->id_user, 403, 'Akses ditolak.');
+        abort_unless(
+            $notif->id_user === $request->user()->id_user,
+            403, 'Akses ditolak.'
+        );
 
         $notif->update(['status' => 'Sudah Dibaca']);
 
-        return response()->json(['success' => true, 'message' => 'Notifikasi ditandai sudah dibaca.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Notifikasi ditandai sudah dibaca.',
+        ]);
     }
 
     /**
-     * Tandai semua notifikasi user sebagai sudah dibaca
+     * Tandai semua notifikasi sudah dibaca
      */
     public function markAllRead(Request $request)
     {
@@ -55,19 +65,44 @@ class NotifikasiController extends Controller
             ->where('status', 'Belum Dibaca')
             ->update(['status' => 'Sudah Dibaca']);
 
-        return response()->json(['success' => true, 'message' => 'Semua notifikasi ditandai sudah dibaca.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Semua notifikasi ditandai sudah dibaca.',
+        ]);
     }
 
     /**
      * Hapus notifikasi
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $notif = Notifikasi::findOrFail($id);
-        abort_unless($notif->id_user === request()->user()->id_user, 403, 'Akses ditolak.');
+
+        abort_unless(
+            $notif->id_user === $request->user()->id_user,
+            403, 'Akses ditolak.'
+        );
 
         $notif->delete();
 
-        return response()->json(['success' => true, 'message' => 'Notifikasi dihapus.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Notifikasi dihapus.',
+        ]);
+    }
+
+    /**
+     * Jumlah notifikasi belum dibaca (untuk badge)
+     */
+    public function unreadCount(Request $request)
+    {
+        $count = Notifikasi::where('id_user', $request->user()->id_user)
+            ->where('status', 'Belum Dibaca')
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'data'    => ['unread_count' => $count],
+        ]);
     }
 }

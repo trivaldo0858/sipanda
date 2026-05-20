@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Web\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bidan;
-use App\Models\Kader;
 use App\Models\OrangTua;
 use App\Models\Pengguna;
 use App\Models\Posyandu;
@@ -15,32 +14,33 @@ use Illuminate\Support\Facades\Hash;
 class PenggunaController extends Controller
 {
     /**
-     * List semua pengguna dengan fitur pencarian nama lengkap
+     * List semua pengguna
+     * Kader tidak punya akun personal — hanya tampilkan Bidan & OrangTua
      */
     public function index(Request $request)
     {
-        $pengguna = Pengguna::with(['bidan', 'kader', 'orangTua', 'posyandu', 'posyanduList'])
+        $pengguna = Pengguna::with(['bidan', 'orangTua', 'posyandu', 'posyanduList'])
             ->whereIn('role', ['Bidan', 'Kader', 'OrangTua'])
             ->when($request->role, fn($q) => $q->where('role', $request->role))
-            ->when(
-                $request->id_posyandu,
-                fn($q) =>
+            ->when($request->id_posyandu, fn($q) =>
                 $q->where(function ($q2) use ($request) {
                     $q2->where('id_posyandu', $request->id_posyandu)
-                        ->orWhereHas(
-                            'posyanduList',
-                            fn($q3) =>
-                            $q3->where('posyandu.id_posyandu', $request->id_posyandu)
-                        );
+                       ->orWhereHas('posyanduList', fn($q3) =>
+                           $q3->where('posyandu.id_posyandu', $request->id_posyandu)
+                       );
                 })
             )
             ->when($request->search, function ($q) use ($request) {
                 $searchTerm = '%' . $request->search . '%';
                 $q->where(function ($query) use ($searchTerm) {
                     $query->where('username', 'like', $searchTerm)
-                        ->orWhereHas('bidan', fn($q2) => $q2->where('nama_bidan', 'like', $searchTerm))
-                        ->orWhereHas('kader', fn($q2) => $q2->where('nama_kader', 'like', $searchTerm))
-                        ->orWhereHas('orangTua', fn($q2) => $q2->where('nama_ibu', 'like', $searchTerm));
+                        // Hanya Bidan & OrangTua yang punya relasi profil
+                        ->orWhereHas('bidan', fn($q2) =>
+                            $q2->where('nama_bidan', 'like', $searchTerm)
+                        )
+                        ->orWhereHas('orangTua', fn($q2) =>
+                            $q2->where('nama_ibu', 'like', $searchTerm)
+                        );
                 });
             })
             ->paginate(15)
@@ -58,8 +58,8 @@ class PenggunaController extends Controller
     {
         $posyanduList = Posyandu::all();
         return view('superadmin.pengguna.form', [
-            'posyanduList' => $posyanduList,
-            'pengguna_single' => null
+            'posyanduList'    => $posyanduList,
+            'pengguna_single' => null,
         ]);
     }
 
@@ -69,38 +69,35 @@ class PenggunaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|unique:pengguna,username',
-            'password' => 'required|string|min:6',
-            'role' => 'required|in:Bidan,Kader,OrangTua',
-            'nama' => 'required|string',
+            'username'    => 'required|string|unique:pengguna,username',
+            'password'    => 'required|string|min:6',
+            'role'        => 'required|in:Bidan,OrangTua',
+            'nama'        => 'required|string',
             'id_posyandu' => 'required|array',
+            'nip'         => 'required_if:role,Bidan|nullable|string|unique:bidan,nip',
         ]);
 
         DB::transaction(function () use ($request) {
             $user = Pengguna::create([
-                'username' => $request->username,
-                'password' => Hash::make($request->password),
-                'role' => $request->role,
-                'id_posyandu' => $request->id_posyandu[0],
+                'username'          => $request->username,
+                'password'          => Hash::make($request->password),
+                'role'              => $request->role,
+                'id_posyandu'       => $request->id_posyandu[0],
                 'id_posyandu_aktif' => $request->id_posyandu[0],
             ]);
 
             match ($request->role) {
                 'Bidan' => Bidan::create([
-                    'id_user' => $user->id_user,
+                    'nip'        => $request->nip ?? ('NIP-' . time()),
+                    'id_user'    => $user->id_user,
                     'nama_bidan' => $request->nama,
-                    'id_posyandu' => $request->id_posyandu[0],
-                    // PERBAIKAN: Gunakan ID unik sementara agar tidak Duplicate Entry
-                    'nip' => 'T-' . time() . rand(10, 99),
-                ]),
-                'Kader' => Kader::create([
-                    'id_user' => $user->id_user,
-                    'nama_kader' => $request->nama,
-                    'id_posyandu' => $request->id_posyandu[0],
+                    'no_telp'    => $request->no_telp,
                 ]),
                 'OrangTua' => OrangTua::create([
-                    'id_user' => $user->id_user,
-                    'nama_ibu' => $request->nama,
+                    'nik_orang_tua' => $request->nik_orang_tua ?? ('NIK-' . time()),
+                    'id_user'       => $user->id_user,
+                    'nama_ibu'      => $request->nama,
+                    'alamat'        => $request->alamat,
                 ]),
             };
 
@@ -108,7 +105,7 @@ class PenggunaController extends Controller
         });
 
         return redirect()->route('superadmin.pengguna.index')
-            ->with('success', 'Akun Berhasil Dibuat');
+            ->with('success', 'Akun berhasil dibuat.');
     }
 
     /**
@@ -116,9 +113,9 @@ class PenggunaController extends Controller
      */
     public function edit($id)
     {
-        $pengguna_single = Pengguna::with(['bidan', 'kader', 'orangTua', 'posyanduList'])
+        $pengguna_single = Pengguna::with(['bidan', 'orangTua', 'posyanduList'])
             ->findOrFail($id);
-        
+
         $posyanduList = Posyandu::all();
 
         return view('superadmin.pengguna.form', compact('pengguna_single', 'posyanduList'));
@@ -132,35 +129,33 @@ class PenggunaController extends Controller
         $pengguna = Pengguna::findOrFail($id);
 
         $request->validate([
-            'username' => 'required|string|unique:pengguna,username,' . $id . ',id_user',
-            'password' => 'nullable|string|min:6',
-            'nama' => 'required|string',
+            'username'    => 'required|string|unique:pengguna,username,' . $id . ',id_user',
+            'password'    => 'nullable|string|min:6',
+            'nama'        => 'required|string',
             'id_posyandu' => 'required|array',
         ]);
 
         DB::transaction(function () use ($request, $pengguna) {
-            $userData = ['username' => $request->username];
+            $userData = [
+                'username'    => $request->username,
+                'id_posyandu' => $request->id_posyandu[0],
+            ];
 
             if ($request->filled('password')) {
                 $userData['password'] = Hash::make($request->password);
             }
 
-            $userData['id_posyandu'] = $request->id_posyandu[0];
             $pengguna->update($userData);
 
             if ($pengguna->isBidan() && $pengguna->bidan) {
                 $pengguna->bidan->update([
                     'nama_bidan' => $request->nama,
-                    'id_posyandu' => $request->id_posyandu[0]
-                ]);
-            } elseif ($pengguna->isKader() && $pengguna->kader) {
-                $pengguna->kader->update([
-                    'nama_kader' => $request->nama,
-                    'id_posyandu' => $request->id_posyandu[0]
+                    'no_telp'    => $request->no_telp,
                 ]);
             } elseif ($pengguna->isOrangTua() && $pengguna->orangTua) {
                 $pengguna->orangTua->update([
-                    'nama_ibu' => $request->nama
+                    'nama_ibu' => $request->nama,
+                    'alamat'   => $request->alamat,
                 ]);
             }
 
@@ -199,12 +194,16 @@ class PenggunaController extends Controller
             ->exists();
 
         if ($sudahAda) {
-            return back()->with('error', "{$pengguna->username} sudah memiliki akses ke {$posyandu->nama_posyandu}.");
+            return back()->with('error',
+                "{$pengguna->username} sudah memiliki akses ke {$posyandu->nama_posyandu}."
+            );
         }
 
         $pengguna->posyanduList()->attach($request->id_posyandu);
 
-        return back()->with('success', "Akses {$posyandu->nama_posyandu} berhasil ditambahkan.");
+        return back()->with('success',
+            "Akses {$posyandu->nama_posyandu} berhasil ditambahkan."
+        );
     }
 
     /**
@@ -221,7 +220,9 @@ class PenggunaController extends Controller
 
         $total = $pengguna->posyanduList()->count();
         if ($total <= 1) {
-            return back()->with('error', 'Tidak dapat menghapus posyandu satu-satunya milik pengguna ini.');
+            return back()->with('error',
+                'Tidak dapat menghapus posyandu satu-satunya milik pengguna ini.'
+            );
         }
 
         $pengguna->posyanduList()->detach($request->id_posyandu);
@@ -230,6 +231,8 @@ class PenggunaController extends Controller
             $pengguna->update(['id_posyandu_aktif' => $pengguna->id_posyandu]);
         }
 
-        return back()->with('success', "Akses {$posyandu->nama_posyandu} berhasil dicabut.");
+        return back()->with('success',
+            "Akses {$posyandu->nama_posyandu} berhasil dicabut."
+        );
     }
 }

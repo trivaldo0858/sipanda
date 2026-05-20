@@ -10,9 +10,11 @@ return new class extends Migration
     {
         Schema::create('pengguna', function (Blueprint $table) {
             $table->id('id_user');
-            $table->string('username')->unique();
-            $table->string('password');
-            $table->enum('role', ['Bidan', 'Kader', 'OrangTua']);
+            $table->string('username')->unique()->nullable(); // Kader tidak pakai username
+            $table->string('password')->nullable();           // Kader tidak pakai password personal
+            $table->enum('role', ['SuperAdmin', 'Bidan', 'Kader', 'OrangTua']);
+            $table->unsignedBigInteger('id_posyandu')->nullable(); // Posyandu utama
+            $table->unsignedBigInteger('id_posyandu_aktif')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

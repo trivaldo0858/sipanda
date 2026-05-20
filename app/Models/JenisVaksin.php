@@ -1,15 +1,13 @@
 <?php
-// ============================================================
-// File: app/Models/JenisVaksin.php
-// ============================================================
+// app/Models/JenisVaksin.php
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class JenisVaksin extends Model
 {
-    protected $table = 'jenis_vaksin';
+    protected $table      = 'jenis_vaksin';
     protected $primaryKey = 'id_vaksin';
-    protected $fillable = ['nama_vaksin', 'deskripsi'];
+    protected $fillable   = ['nama_vaksin', 'deskripsi'];
 
     public function imunisasi()
     {

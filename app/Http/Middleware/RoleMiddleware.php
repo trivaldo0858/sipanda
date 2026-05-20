@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 class RoleMiddleware
 {
     /**
-     * Penggunaan: route->middleware('role:Bidan,Kader')
-     * SuperAdmin otomatis bisa akses semua route yang protected
+     * Penggunaan di route: middleware('role:Kader,Bidan')
      */
     public function handle(Request $request, Closure $next, string ...$roles): mixed
     {
@@ -22,11 +21,7 @@ class RoleMiddleware
             ], 401);
         }
 
-        // SuperAdmin bisa akses semua endpoint
-        if ($user->isSuperAdmin()) {
-            return $next($request);
-        }
-
+        // Cocokkan role user dengan yang diizinkan
         if (! in_array($user->role, $roles)) {
             return response()->json([
                 'success' => false,

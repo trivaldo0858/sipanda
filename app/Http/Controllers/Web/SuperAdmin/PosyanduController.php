@@ -5,20 +5,23 @@ namespace App\Http\Controllers\Web\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Posyandu;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash; // Penting untuk enkripsi password
+use Illuminate\Support\Facades\Hash;
 
 class PosyanduController extends Controller
 {
     public function index(Request $request)
     {
-        // Mengambil data posyandu dengan hitungan relasi
-        $posyandu = Posyandu::withCount(['kader', 'bidan'])
-            ->when(
-                $request->search,
-                fn($q) =>
-                $q->where('nama_posyandu', 'like', '%' . $request->search . '%')
-            )
-            ->paginate(10);
+        $posyandu = Posyandu::withCount([
+            'anak',
+            'penggunaKader as kader_count',
+            'penggunaBidan as bidan_count',
+        ])
+        ->when(
+            $request->search,
+            fn($q) => $q->where('nama_posyandu', 'like', '%' . $request->search . '%')
+        )
+        ->paginate(10)
+        ->withQueryString();
 
         return view('superadmin.posyandu.index', compact('posyandu'));
     }
@@ -30,28 +33,26 @@ class PosyanduController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi input (Wajib mengisi password_kader untuk unit baru)
         $request->validate([
-            'nama_posyandu' => 'required|string|max:255',
-            'kecamatan' => 'required|string',
-            'desa_kelurahan' => 'required|string',
-            'alamat' => 'required|string',
-            'password_kader' => 'required|min:6', // Syarat minimal 6 karakter
+            'nama_posyandu'  => 'required|string|max:100',
+            'kecamatan'      => 'required|string|max:100',
+            'desa_kelurahan' => 'required|string|max:100',
+            'alamat'         => 'required|string',
+            'kabupaten_kota' => 'nullable|string|max:100',
+            'password_kader' => 'required|string|min:6',
         ]);
 
-        // 2. Simpan ke database
         Posyandu::create([
-            'nama_posyandu' => $request->nama_posyandu,
-            'kecamatan' => $request->kecamatan,
+            'nama_posyandu'  => $request->nama_posyandu,
+            'kecamatan'      => $request->kecamatan,
             'desa_kelurahan' => $request->desa_kelurahan,
-            'alamat' => $request->alamat,
-            'kabupaten_kota' => 'Indramayu',
-            // Enkripsi password agar aman di database
-            'password_kader' => bcrypt($request->password_kader),
+            'alamat'         => $request->alamat,
+            'kabupaten_kota' => $request->kabupaten_kota ?? 'Indramayu',
+            'password_kader' => Hash::make($request->password_kader),
         ]);
 
         return redirect()->route('superadmin.posyandu.index')
-            ->with('success', $request->nama_posyandu . ' berhasil didaftarkan.');
+            ->with('success', 'Posyandu berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -64,24 +65,23 @@ class PosyanduController extends Controller
     {
         $posyandu = Posyandu::findOrFail($id);
 
-        // 1. Validasi update (Password bersifat opsional saat edit)
         $request->validate([
-            'nama_posyandu' => 'required|string|max:255',
-            'kecamatan' => 'required|string',
-            'desa_kelurahan' => 'required|string',
-            'alamat' => 'required|string',
-            'password_kader' => 'nullable|min:6', // Isi jika ingin ganti password saja
+            'nama_posyandu'  => 'required|string|max:100',
+            'kecamatan'      => 'required|string|max:100',
+            'desa_kelurahan' => 'required|string|max:100',
+            'alamat'         => 'required|string',
+            'kabupaten_kota' => 'nullable|string|max:100',
+            'password_kader' => 'nullable|string|min:6',
         ]);
 
-        // 2. Siapkan data yang akan diupdate
         $data = [
-            'nama_posyandu' => $request->nama_posyandu,
-            'kecamatan' => $request->kecamatan,
+            'nama_posyandu'  => $request->nama_posyandu,
+            'kecamatan'      => $request->kecamatan,
             'desa_kelurahan' => $request->desa_kelurahan,
-            'alamat' => $request->alamat,
+            'alamat'         => $request->alamat,
+            'kabupaten_kota' => $request->kabupaten_kota ?? 'Indramayu',
         ];
 
-        // 3. Logika ganti password: Hanya update jika diisi oleh Super Admin
         if ($request->filled('password_kader')) {
             $data['password_kader'] = Hash::make($request->password_kader);
         }
@@ -89,12 +89,19 @@ class PosyanduController extends Controller
         $posyandu->update($data);
 
         return redirect()->route('superadmin.posyandu.index')
-            ->with('success', 'Data Posyandu berhasil diperbarui.');
+            ->with('success', 'Posyandu berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        Posyandu::findOrFail($id)->delete();
+        $posyandu = Posyandu::findOrFail($id);
+
+        if ($posyandu->anak()->count() > 0) {
+            return redirect()->route('superadmin.posyandu.index')
+                ->with('error', 'Tidak dapat menghapus posyandu yang masih memiliki data balita.');
+        }
+
+        $posyandu->delete();
 
         return redirect()->route('superadmin.posyandu.index')
             ->with('success', 'Posyandu berhasil dihapus.');

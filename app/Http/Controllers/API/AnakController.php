@@ -4,22 +4,34 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Anak;
+use App\Models\Notifikasi;
+use App\Models\OrangTua;
+use App\Models\Pengguna;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AnakController extends Controller
 {
     /**
-     * Daftar anak
-     * - Kader/Bidan: semua anak
-     * - OrangTua: hanya anak miliknya
+     * List anak — filter by posyandu aktif
+     * Kader: semua anak di posyanduny
+     * OrangTua: hanya anaknya sendiri
      */
     public function index(Request $request)
     {
-        $user = $request->user();
-        $query = Anak::with('orangTua');
+        $user       = $request->user();
+        $idPosyandu = $user->getPosyanduAktifId();
+
+        $query = Anak::with(['orangTua', 'posyandu']);
 
         if ($user->isOrangTua()) {
+            // OrangTua hanya lihat anaknya sendiri
             $query->where('nik_orang_tua', $user->orangTua->nik_orang_tua);
+        } elseif ($user->isKader() || $user->isBidan()) {
+            // Filter by posyandu aktif
+            if ($idPosyandu) {
+                $query->where('id_posyandu', $idPosyandu);
+            }
         }
 
         if ($request->filled('search')) {
@@ -29,58 +41,136 @@ class AnakController extends Controller
             });
         }
 
+        if ($request->filled('jenis_kelamin')) {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+
+        $anak = $query->paginate(15);
+
         return response()->json([
             'success' => true,
-            'data'    => $query->paginate(15),
+            'data'    => $anak,
         ]);
     }
 
     /**
-     * Tambah data anak
+     * KF-004: Tambah balita baru
+     * Secara otomatis mengaktifkan akses login Orang Tua
      */
     public function store(Request $request)
     {
         $request->validate([
-            'nik_anak'      => 'required|string|unique:anak,nik_anak',
-            'nik_orang_tua' => 'required|exists:orang_tua,nik_orang_tua',
+            'nik_anak'      => 'required|string|size:16|unique:anak,nik_anak',
             'nama_anak'     => 'required|string|max:100',
             'tgl_lahir'     => 'required|date',
             'jenis_kelamin' => 'required|in:L,P',
+            'nama_ayah'     => 'nullable|string|max:100',
+            // Data Orang Tua
+            'nik_orang_tua' => 'required|string|size:16',
+            'nama_ibu'      => 'required|string|max:100',
+            'no_telp_ibu'   => 'nullable|string|max:20',
+            'alamat'        => 'nullable|string',
         ]);
 
-        $anak = Anak::create($request->only([
-            'nik_anak', 'nik_orang_tua', 'nama_anak', 'tgl_lahir', 'jenis_kelamin',
-        ]));
+        $user       = $request->user();
+        $idPosyandu = $user->getPosyanduAktifId();
+
+        $anak = DB::transaction(function () use ($request, $idPosyandu) {
+
+            // ── 1. Buat atau ambil data OrangTua ──────────────────────
+            $orangTua = OrangTua::firstOrNew(
+                ['nik_orang_tua' => $request->nik_orang_tua]
+            );
+
+            // Jika OrangTua belum punya akun → buat akun otomatis
+            if (! $orangTua->exists || ! $orangTua->id_user) {
+                // Buat akun Pengguna untuk OrangTua
+                // Kredensial: NIK Balita + Tanggal Lahir (dihandle di loginOrangTua)
+                // Akun ini tidak butuh username/password karena login pakai NIK+TglLahir
+                $penggunaOrtu = Pengguna::create([
+                    'username' => null,
+                    'password' => null,
+                    'role'     => 'OrangTua',
+                ]);
+
+                $orangTua->fill([
+                    'id_user'  => $penggunaOrtu->id_user,
+                    'nama_ibu' => $request->nama_ibu,
+                    'no_telp'  => $request->no_telp_ibu,
+                    'alamat'   => $request->alamat,
+                ]);
+                $orangTua->save();
+            } else {
+                // Update data orang tua jika sudah ada
+                $orangTua->update([
+                    'nama_ibu' => $request->nama_ibu,
+                    'no_telp'  => $request->no_telp_ibu ?? $orangTua->no_telp,
+                    'alamat'   => $request->alamat ?? $orangTua->alamat,
+                ]);
+            }
+
+            // ── 2. Buat data Anak ─────────────────────────────────────
+            $anak = Anak::create([
+                'nik_anak'      => $request->nik_anak,
+                'nik_orang_tua' => $orangTua->nik_orang_tua,
+                'id_posyandu'   => $idPosyandu,
+                'nama_anak'     => $request->nama_anak,
+                'tgl_lahir'     => $request->tgl_lahir,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'nama_ayah'     => $request->nama_ayah,
+            ]);
+
+            // ── 3. Kirim notifikasi sambutan ke OrangTua ──────────────
+            if ($orangTua->id_user) {
+                Notifikasi::create([
+                    'id_user'     => $orangTua->id_user,
+                    'nik_anak'    => $anak->nik_anak,
+                    'pesan'       => "Selamat! Data {$anak->nama_anak} telah terdaftar di Posyandu. "
+                                   . "Anda dapat login menggunakan NIK Balita dan Tanggal Lahir.",
+                    'tgl_kirim'   => now(),
+                    'status'      => 'Belum Dibaca',
+                    'jenis_notif' => 'Umum',
+                ]);
+            }
+
+            return $anak;
+        });
 
         return response()->json([
             'success' => true,
-            'message' => 'Data anak berhasil ditambahkan.',
-            'data'    => $anak->load('orangTua'),
+            'message' => 'Data balita berhasil didaftarkan. Akun Orang Tua otomatis aktif.',
+            'data'    => $anak->load(['orangTua', 'posyandu']),
         ], 201);
     }
 
     /**
-     * Detail anak beserta riwayat pemeriksaan & imunisasi
+     * Detail anak + riwayat pemeriksaan & imunisasi
      */
     public function show(Request $request, $nik)
     {
         $user = $request->user();
         $anak = Anak::with([
             'orangTua',
-            'pemeriksaan.kader',
-            'pemeriksaan.bidan',
+            'posyandu',
+            'pemeriksaan' => fn ($q) => $q->orderBy('tgl_periksa', 'desc'),
             'imunisasi.jenisVaksin',
-            'imunisasi.bidan',
         ])->findOrFail($nik);
 
         // OrangTua hanya bisa lihat anaknya sendiri
-        if ($user->isOrangTua() && $anak->nik_orang_tua !== $user->orangTua->nik_orang_tua) {
-            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        if ($user->isOrangTua()) {
+            abort_unless(
+                $anak->nik_orang_tua === $user->orangTua->nik_orang_tua,
+                403,
+                'Akses ditolak.'
+            );
         }
 
         return response()->json([
             'success' => true,
-            'data'    => array_merge($anak->toArray(), ['umur_bulan' => $anak->umur_bulan]),
+            'data'    => array_merge($anak->toArray(), [
+                'umur_bulan'  => $anak->umur_bulan,
+                'umur_format' => $anak->umur_format,
+            ]),
         ]);
     }
 
@@ -95,15 +185,31 @@ class AnakController extends Controller
             'nama_anak'     => 'sometimes|string|max:100',
             'tgl_lahir'     => 'sometimes|date',
             'jenis_kelamin' => 'sometimes|in:L,P',
-            'nik_orang_tua' => 'sometimes|exists:orang_tua,nik_orang_tua',
+            'nama_ayah'     => 'nullable|string|max:100',
+            'nama_ibu'      => 'sometimes|string|max:100',
+            'no_telp_ibu'   => 'nullable|string|max:20',
+            'alamat'        => 'nullable|string',
         ]);
 
-        $anak->update($request->only(['nama_anak', 'tgl_lahir', 'jenis_kelamin', 'nik_orang_tua']));
+        DB::transaction(function () use ($request, $anak) {
+            $anak->update($request->only([
+                'nama_anak', 'tgl_lahir', 'jenis_kelamin', 'nama_ayah',
+            ]));
+
+            // Update data orang tua jika ada
+            if ($anak->orangTua && $request->hasAny(['nama_ibu', 'no_telp_ibu', 'alamat'])) {
+                $anak->orangTua->update(array_filter([
+                    'nama_ibu' => $request->nama_ibu,
+                    'no_telp'  => $request->no_telp_ibu,
+                    'alamat'   => $request->alamat,
+                ]));
+            }
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Data anak berhasil diperbarui.',
-            'data'    => $anak->fresh('orangTua'),
+            'data'    => $anak->fresh(['orangTua', 'posyandu']),
         ]);
     }
 
@@ -115,31 +221,53 @@ class AnakController extends Controller
         $anak = Anak::findOrFail($nik);
         $anak->delete();
 
-        return response()->json(['success' => true, 'message' => 'Data anak berhasil dihapus.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data anak berhasil dihapus.',
+        ]);
     }
 
     /**
-     * Grafik perkembangan anak (berat, tinggi, lingkar kepala)
+     * KF-007: Data perkembangan untuk grafik KMS
      */
     public function perkembangan(Request $request, $nik)
     {
         $user = $request->user();
         $anak = Anak::findOrFail($nik);
 
-        if ($user->isOrangTua() && $anak->nik_orang_tua !== $user->orangTua->nik_orang_tua) {
-            return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+        if ($user->isOrangTua()) {
+            abort_unless(
+                $anak->nik_orang_tua === $user->orangTua->nik_orang_tua,
+                403, 'Akses ditolak.'
+            );
         }
 
         $pemeriksaan = $anak->pemeriksaan()
-            ->select('tgl_pemeriksaan', 'berat_badan', 'tinggi_badan', 'lingkar_kepala')
-            ->orderBy('tgl_pemeriksaan')
-            ->get();
+            ->select('tgl_periksa', 'berat_badan', 'tinggi_badan', 'lingkar_kepala')
+            ->where('status_validasi', 'Disetujui')
+            ->orderBy('tgl_periksa', 'asc')
+            ->get()
+            ->map(fn ($p) => [
+                'tgl_periksa'   => $p->tgl_periksa->format('Y-m-d'),
+                'umur_bulan'    => $anak->tgl_lahir->diffInMonths($p->tgl_periksa),
+                'berat_badan'   => $p->berat_badan,
+                'tinggi_badan'  => $p->tinggi_badan,
+                'lingkar_kepala'=> $p->lingkar_kepala,
+            ]);
 
         return response()->json([
             'success' => true,
             'data'    => [
-                'anak'         => ['nik_anak' => $anak->nik_anak, 'nama_anak' => $anak->nama_anak],
-                'pemeriksaan'  => $pemeriksaan,
+                'anak'        => [
+                    'nik_anak'    => $anak->nik_anak,
+                    'nama_anak'   => $anak->nama_anak,
+                    'tgl_lahir'   => $anak->tgl_lahir->format('Y-m-d'),
+                    'jenis_kelamin' => $anak->jenis_kelamin,
+                    'umur_bulan'  => $anak->umur_bulan,
+                    'umur_format' => $anak->umur_format,
+                ],
+                'pemeriksaan' => $pemeriksaan,
+                'total_data'  => $pemeriksaan->count(),
             ],
         ]);
     }

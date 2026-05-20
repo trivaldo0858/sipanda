@@ -3,21 +3,77 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\AkunGoogle;
 use App\Models\Anak;
 use App\Models\OrangTua;
 use App\Models\Pengguna;
 use App\Models\Posyandu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * Login Kader & Bidan — username & password
-     */
-    public function login(Request $request)
+    // ================================================================
+    // LOGIN KADER
+    // ================================================================
+    public function loginKader(Request $request)
+    {
+        $request->validate([
+            'id_posyandu'    => 'required|integer|exists:posyandu,id_posyandu',
+            'password_kader' => 'required|string',
+        ]);
+
+        // Ambil password_kader langsung dari DB (bypass hidden)
+        $passwordKaderHash = DB::table('posyandu')
+            ->where('id_posyandu', $request->id_posyandu)
+            ->value('password_kader');
+
+        if (! Hash::check($request->password_kader, $passwordKaderHash)) {
+            throw ValidationException::withMessages([
+                'password_kader' => ['Password Posyandu salah.'],
+            ]);
+        }
+
+        $posyandu = Posyandu::findOrFail($request->id_posyandu);
+
+        $kaderUser = Pengguna::firstOrCreate(
+            [
+                'role'        => 'Kader',
+                'id_posyandu' => $posyandu->id_posyandu,
+            ],
+            [
+                'username'          => 'kader_' . $posyandu->id_posyandu,
+                'password'          => $passwordKaderHash,
+                'id_posyandu_aktif' => $posyandu->id_posyandu,
+            ]
+        );
+
+        $kaderUser->tokens()->delete();
+        $token = $kaderUser->createToken('kader-token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login berhasil.',
+            'data'    => [
+                'token'    => $token,
+                'role'     => 'Kader',
+                'id_user'  => $kaderUser->id_user,
+                'posyandu' => [
+                    'id_posyandu'    => $posyandu->id_posyandu,
+                    'nama_posyandu'  => $posyandu->nama_posyandu,
+                    'kecamatan'      => $posyandu->kecamatan,
+                    'desa_kelurahan' => $posyandu->desa_kelurahan,
+                    'alamat'         => $posyandu->alamat,
+                ],
+            ],
+        ]);
+    }
+
+    // ================================================================
+    // LOGIN BIDAN
+    // ================================================================
+    public function loginBidan(Request $request)
     {
         $request->validate([
             'username' => 'required|string',
@@ -25,7 +81,7 @@ class AuthController extends Controller
         ]);
 
         $pengguna = Pengguna::where('username', $request->username)
-            ->whereIn('role', ['Bidan', 'Kader', 'SuperAdmin'])
+            ->where('role', 'Bidan')
             ->first();
 
         if (! $pengguna || ! Hash::check($request->password, $pengguna->password)) {
@@ -35,51 +91,53 @@ class AuthController extends Controller
         }
 
         $pengguna->tokens()->delete();
-        $token = $pengguna->createToken('sipanda-token')->plainTextToken;
-
-        // Auto-set posyandu aktif jika belum ada
-        $this->autoSetPosyanduAktif($pengguna);
+        $token = $pengguna->createToken('bidan-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil.',
             'data'    => [
-                'token'           => $token,
-                'role'            => $pengguna->role,
-                'id_user'         => $pengguna->id_user,
-                'username'        => $pengguna->username,
-                'profil'          => $this->getProfil($pengguna),
-                'posyandu_aktif'  => $this->getPosyanduAktif($pengguna),
-                'posyandu_list'   => $this->getPosyanduList($pengguna),
+                'token'    => $token,
+                'role'     => 'Bidan',
+                'id_user'  => $pengguna->id_user,
+                'profil'   => $pengguna->bidan ? [
+                    'nip'        => $pengguna->bidan->nip,
+                    'nama_bidan' => $pengguna->bidan->nama_bidan,
+                    'no_telp'    => $pengguna->bidan->no_telp,
+                ] : null,
+                'posyandu' => $pengguna->posyandu ? [
+                    'id_posyandu'   => $pengguna->posyandu->id_posyandu,
+                    'nama_posyandu' => $pengguna->posyandu->nama_posyandu,
+                ] : null,
             ],
         ]);
     }
 
-    /**
-     * Login Orang Tua — NIK Balita + Tanggal Lahir
-     */
+    // ================================================================
+    // LOGIN ORANG TUA
+    // ================================================================
     public function loginOrangTua(Request $request)
     {
         $request->validate([
-            'nik_balita' => 'required|string',
-            'tgl_lahir'  => 'required|date_format:Y-m-d',
+            'nik_anak'  => 'required|string',
+            'tgl_lahir' => 'required|date_format:Y-m-d',
         ]);
 
-        $anak = Anak::where('nik_anak', $request->nik_balita)
+        $anak = Anak::where('nik_anak', $request->nik_anak)
             ->whereDate('tgl_lahir', $request->tgl_lahir)
             ->first();
 
         if (! $anak) {
             throw ValidationException::withMessages([
-                'nik_balita' => ['NIK Balita atau Tanggal Lahir tidak ditemukan.'],
+                'nik_anak' => ['NIK Balita atau Tanggal Lahir tidak sesuai.'],
             ]);
         }
 
         $orangTua = OrangTua::where('nik_orang_tua', $anak->nik_orang_tua)->first();
 
-        if (! $orangTua) {
+        if (! $orangTua || ! $orangTua->id_user) {
             throw ValidationException::withMessages([
-                'nik_balita' => ['Data orang tua tidak ditemukan.'],
+                'nik_anak' => ['Akun Orang Tua belum tersedia. Hubungi Kader.'],
             ]);
         }
 
@@ -89,76 +147,59 @@ class AuthController extends Controller
 
         if (! $pengguna) {
             throw ValidationException::withMessages([
-                'nik_balita' => ['Akun pengguna tidak ditemukan.'],
+                'nik_anak' => ['Akun tidak ditemukan.'],
             ]);
         }
 
         $pengguna->tokens()->delete();
-        $token = $pengguna->createToken('sipanda-ortu-token')->plainTextToken;
+        $token = $pengguna->createToken('ortu-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil.',
             'data'    => [
-                'token'    => $token,
-                'role'     => $pengguna->role,
-                'id_user'  => $pengguna->id_user,
-                'username' => $pengguna->username,
-                'profil'   => [
-                    'nik'    => $orangTua->nik_orang_tua,
-                    'nama'   => $orangTua->nama_ibu,
-                    'alamat' => $orangTua->alamat,
+                'token'      => $token,
+                'role'       => 'OrangTua',
+                'id_user'    => $pengguna->id_user,
+                'profil'     => [
+                    'nik_orang_tua' => $orangTua->nik_orang_tua,
+                    'nama_ibu'      => $orangTua->nama_ibu,
+                    'alamat'        => $orangTua->alamat,
                 ],
                 'anak_login' => [
                     'nik_anak'      => $anak->nik_anak,
                     'nama_anak'     => $anak->nama_anak,
-                    'tgl_lahir'     => $anak->tgl_lahir,
+                    'tgl_lahir'     => $anak->tgl_lahir->format('Y-m-d'),
                     'jenis_kelamin' => $anak->jenis_kelamin,
                     'umur_bulan'    => $anak->umur_bulan,
+                    'umur_format'   => $anak->umur_format,
                 ],
             ],
         ]);
     }
 
-    /**
-     * Login Google OAuth
-     */
-    public function loginGoogle(Request $request)
+    // ================================================================
+    // LIST POSYANDU (dropdown login Kader)
+    // ================================================================
+    public function getPosyanduList()
     {
-        $request->validate([
-            'google_id'    => 'required|string',
-            'email_google' => 'required|email',
-            'id_user'      => 'required|exists:pengguna,id_user',
-        ]);
-
-        $akun = AkunGoogle::updateOrCreate(
-            ['google_id' => $request->google_id],
-            ['id_user' => $request->id_user, 'email_google' => $request->email_google]
-        );
-
-        $pengguna = $akun->pengguna;
-        $pengguna->tokens()->delete();
-        $token = $pengguna->createToken('sipanda-google-token')->plainTextToken;
-
-        $this->autoSetPosyanduAktif($pengguna);
+        $list = Posyandu::select(
+            'id_posyandu',
+            'nama_posyandu',
+            'desa_kelurahan',
+            'kecamatan',
+            'kabupaten_kota'
+        )->orderBy('nama_posyandu')->get();
 
         return response()->json([
             'success' => true,
-            'message' => 'Login Google berhasil.',
-            'data'    => [
-                'token'          => $token,
-                'role'           => $pengguna->role,
-                'id_user'        => $pengguna->id_user,
-                'profil'         => $this->getProfil($pengguna),
-                'posyandu_aktif' => $this->getPosyanduAktif($pengguna),
-                'posyandu_list'  => $this->getPosyanduList($pengguna),
-            ],
+            'data'    => $list,
         ]);
     }
 
-    /**
-     * Logout
-     */
+    // ================================================================
+    // LOGOUT
+    // ================================================================
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -169,90 +210,58 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Data user login
-     */
+    // ================================================================
+    // ME
+    // ================================================================
     public function me(Request $request)
     {
-        $pengguna = $request->user();
+        $user = $request->user();
+        $data = [
+            'id_user' => $user->id_user,
+            'role'    => $user->role,
+        ];
 
-        return response()->json([
-            'success' => true,
-            'data'    => [
-                'id_user'        => $pengguna->id_user,
-                'username'       => $pengguna->username,
-                'role'           => $pengguna->role,
-                'profil'         => $this->getProfil($pengguna),
-                'posyandu_aktif' => $this->getPosyanduAktif($pengguna),
-                'posyandu_list'  => $this->getPosyanduList($pengguna),
-            ],
-        ]);
-    }
-
-    /**
-     * KF-BARU: Ambil daftar posyandu yang bisa diakses user
-     * GET /api/v1/auth/posyandu-saya
-     */
-    public function posyanduSaya(Request $request)
-    {
-        $pengguna = $request->user();
-        $list     = $this->getPosyanduList($pengguna);
-
-        return response()->json([
-            'success'        => true,
-            'data'           => [
-                'posyandu_list'  => $list,
-                'posyandu_aktif' => $this->getPosyanduAktif($pengguna),
-                'total'          => count($list),
-            ],
-        ]);
-    }
-
-    /**
-     * KF-BARU: Set posyandu aktif untuk sesi ini
-     * POST /api/v1/auth/set-posyandu
-     * Body: { "id_posyandu": 1 }
-     */
-    public function setPosyandu(Request $request)
-    {
-        $request->validate([
-            'id_posyandu' => 'required|integer|exists:posyandu,id_posyandu',
-        ]);
-
-        $pengguna = $request->user();
-
-        // Validasi: user harus punya akses ke posyandu ini
-        $bolehAkses = $this->cekAksesPosynadu($pengguna, $request->id_posyandu);
-
-        if (! $bolehAkses) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda tidak memiliki akses ke posyandu ini.',
-            ], 403);
+        if ($user->isBidan() && $user->bidan) {
+            $data['profil'] = [
+                'nip'        => $user->bidan->nip,
+                'nama_bidan' => $user->bidan->nama_bidan,
+                'no_telp'    => $user->bidan->no_telp,
+            ];
+            $data['posyandu'] = $user->posyandu ? [
+                'id_posyandu'   => $user->posyandu->id_posyandu,
+                'nama_posyandu' => $user->posyandu->nama_posyandu,
+            ] : null;
         }
 
-        // Simpan posyandu aktif
-        $pengguna->update(['id_posyandu_aktif' => $request->id_posyandu]);
+        if ($user->isKader()) {
+            $data['posyandu'] = $user->posyandu ? [
+                'id_posyandu'    => $user->posyandu->id_posyandu,
+                'nama_posyandu'  => $user->posyandu->nama_posyandu,
+                'desa_kelurahan' => $user->posyandu->desa_kelurahan,
+                'kecamatan'      => $user->posyandu->kecamatan,
+            ] : null;
+        }
 
-        $posyandu = Posyandu::find($request->id_posyandu);
+        if ($user->isOrangTua() && $user->orangTua) {
+            $data['profil'] = [
+                'nik_orang_tua' => $user->orangTua->nik_orang_tua,
+                'nama_ibu'      => $user->orangTua->nama_ibu,
+            ];
+            $data['anak_list'] = $user->orangTua->anak()
+                ->select('nik_anak', 'nama_anak', 'tgl_lahir', 'jenis_kelamin')
+                ->get()
+                ->map(fn ($a) => array_merge($a->toArray(), [
+                    'umur_bulan'  => $a->umur_bulan,
+                    'umur_format' => $a->umur_format,
+                ]));
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => "Posyandu aktif diubah ke {$posyandu->nama_posyandu}.",
-            'data'    => [
-                'posyandu_aktif' => [
-                    'id_posyandu'   => $posyandu->id_posyandu,
-                    'nama_posyandu' => $posyandu->nama_posyandu,
-                    'wilayah'       => $posyandu->wilayah,
-                    'alamat'        => $posyandu->alamat,
-                ],
-            ],
-        ]);
+        return response()->json(['success' => true, 'data' => $data]);
     }
 
-    /**
-     * Ubah password
-     */
+    // ================================================================
+    // UBAH PASSWORD (Bidan)
+    // ================================================================
     public function ubahPassword(Request $request)
     {
         $request->validate([
@@ -260,16 +269,16 @@ class AuthController extends Controller
             'password_baru' => 'required|string|min:6|confirmed',
         ]);
 
-        $pengguna = $request->user();
+        $user = $request->user();
 
-        if (! Hash::check($request->password_lama, $pengguna->password)) {
+        if (! Hash::check($request->password_lama, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Password lama tidak sesuai.',
             ], 422);
         }
 
-        $pengguna->update(['password' => Hash::make($request->password_baru)]);
+        $user->update(['password' => Hash::make($request->password_baru)]);
 
         return response()->json([
             'success' => true,
@@ -278,133 +287,52 @@ class AuthController extends Controller
     }
 
     // ================================================================
-    // HELPER METHODS
+    // UBAH PASSWORD KADER (password posyandu)
+    // Gunakan DB::table langsung untuk bypass $hidden di model Posyandu
     // ================================================================
-
-    /**
-     * Auto-set posyandu aktif saat pertama login
-     * Jika belum ada posyandu_aktif, gunakan posyandu utama
-     */
-    private function autoSetPosyanduAktif(Pengguna $pengguna): void
+    public function ubahPasswordKader(Request $request)
     {
-        if ($pengguna->id_posyandu_aktif) return; // sudah ada, skip
+        $request->validate([
+            'password_lama' => 'required|string',
+            'password_baru' => 'required|string|min:6|confirmed',
+        ]);
 
-        $idPosyandu = null;
+        $user = $request->user();
 
-        // Cek di tabel pivot dulu
-        $firstPosyandu = $pengguna->posyanduList()->first();
-        if ($firstPosyandu) {
-            $idPosyandu = $firstPosyandu->id_posyandu;
-        } elseif ($pengguna->id_posyandu) {
-            // Fallback ke posyandu utama
-            $idPosyandu = $pengguna->id_posyandu;
+        if (! $user->id_posyandu) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Posyandu tidak ditemukan.',
+            ], 404);
         }
 
-        if ($idPosyandu) {
-            $pengguna->update(['id_posyandu_aktif' => $idPosyandu]);
-        }
-    }
+        // Bypass $hidden — ambil langsung dari DB
+        $passwordKaderHash = DB::table('posyandu')
+            ->where('id_posyandu', $user->id_posyandu)
+            ->value('password_kader');
 
-    /**
-     * Cek apakah user boleh akses posyandu tertentu
-     */
-    private function cekAksesPosynadu(Pengguna $pengguna, int $idPosyandu): bool
-    {
-        // SuperAdmin bisa akses semua
-        if ($pengguna->isSuperAdmin()) return true;
-
-        // Cek di tabel pivot
-        $adaDiPivot = $pengguna->posyanduList()
-            ->where('posyandu.id_posyandu', $idPosyandu)
-            ->exists();
-
-        if ($adaDiPivot) return true;
-
-        // Fallback: cek posyandu utama
-        return $pengguna->id_posyandu === $idPosyandu;
-    }
-
-    /**
-     * Ambil data posyandu aktif
-     */
-    private function getPosyanduAktif(Pengguna $pengguna): ?array
-    {
-        $id = $pengguna->getPosyanduAktifId();
-        if (! $id) return null;
-
-        $p = Posyandu::find($id);
-        if (! $p) return null;
-
-        return [
-            'id_posyandu'   => $p->id_posyandu,
-            'nama_posyandu' => $p->nama_posyandu,
-            'wilayah'       => $p->wilayah,
-            'alamat'        => $p->alamat,
-        ];
-    }
-
-    /**
-     * Ambil semua posyandu yang bisa diakses user
-     */
-    private function getPosyanduList(Pengguna $pengguna): array
-    {
-        if ($pengguna->isSuperAdmin()) {
-            return Posyandu::where('status', 'Aktif')
-                ->get(['id_posyandu', 'nama_posyandu', 'wilayah', 'alamat'])
-                ->toArray();
+        if (! Hash::check($request->password_lama, $passwordKaderHash)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Password lama tidak sesuai.',
+            ], 422);
         }
 
-        // Ambil dari tabel pivot
-        $fromPivot = $pengguna->posyanduList()
-            ->where('posyandu.status', 'Aktif')
-            ->get(['posyandu.id_posyandu', 'nama_posyandu', 'wilayah', 'alamat'])
-            ->toArray();
+        $newHash = Hash::make($request->password_baru);
 
-        if (! empty($fromPivot)) return $fromPivot;
+        // Update password_kader di tabel posyandu
+        DB::table('posyandu')
+            ->where('id_posyandu', $user->id_posyandu)
+            ->update(['password_kader' => $newHash, 'updated_at' => now()]);
 
-        // Fallback: posyandu utama saja
-        if ($pengguna->id_posyandu) {
-            $p = Posyandu::find($pengguna->id_posyandu);
-            return $p ? [[
-                'id_posyandu'   => $p->id_posyandu,
-                'nama_posyandu' => $p->nama_posyandu,
-                'wilayah'       => $p->wilayah,
-                'alamat'        => $p->alamat,
-            ]] : [];
-        }
+        // Sync ke semua virtual user Kader di posyandu ini
+        Pengguna::where('role', 'Kader')
+            ->where('id_posyandu', $user->id_posyandu)
+            ->update(['password' => $newHash]);
 
-        return [];
-    }
-
-    /**
-     * Get profil berdasarkan role
-     */
-    private function getProfil(Pengguna $pengguna): ?array
-    {
-        if ($pengguna->isBidan() && $pengguna->bidan) {
-            return [
-                'nip'     => $pengguna->bidan->nip,
-                'nama'    => $pengguna->bidan->nama_bidan,
-                'no_telp' => $pengguna->bidan->no_telp,
-            ];
-        }
-
-        if ($pengguna->isKader() && $pengguna->kader) {
-            return [
-                'id_kader' => $pengguna->kader->id_kader,
-                'nama'     => $pengguna->kader->nama_kader,
-                'wilayah'  => $pengguna->kader->wilayah,
-            ];
-        }
-
-        if ($pengguna->isOrangTua() && $pengguna->orangTua) {
-            return [
-                'nik'    => $pengguna->orangTua->nik_orang_tua,
-                'nama'   => $pengguna->orangTua->nama_ibu,
-                'alamat' => $pengguna->orangTua->alamat,
-            ];
-        }
-
-        return null;
+        return response()->json([
+            'success' => true,
+            'message' => 'Password Posyandu berhasil diubah.',
+        ]);
     }
 }

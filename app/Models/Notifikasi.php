@@ -1,26 +1,19 @@
 <?php
-
+// app/Models/Notifikasi.php
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Notifikasi extends Model
 {
-    protected $table = 'notifikasi';
+    protected $table      = 'notifikasi';
     protected $primaryKey = 'id_notifikasi';
 
     protected $fillable = [
-        'id_user',
-        'nik_anak',
-        'pesan',
-        'tgl_kirim',
-        'status',
-        'jenis_notif',
+        'id_user', 'nik_anak', 'pesan',
+        'tgl_kirim', 'status', 'jenis_notif',
     ];
 
-    protected $casts = [
-        'tgl_kirim' => 'datetime',
-    ];
+    protected $casts = ['tgl_kirim' => 'datetime'];
 
     public function pengguna()
     {
@@ -30,5 +23,10 @@ class Notifikasi extends Model
     public function anak()
     {
         return $this->belongsTo(Anak::class, 'nik_anak', 'nik_anak');
+    }
+
+    public function isBelumDibaca(): bool
+    {
+        return $this->status === 'Belum Dibaca';
     }
 }

@@ -6,15 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Laporan extends Model
 {
-    protected $table = 'laporan';
+    protected $table      = 'laporan';
     protected $primaryKey = 'id_laporan';
 
     protected $fillable = [
-        'nip_bidan',
-        'jenis_laporan',
-        'periode_awal',
-        'periode_akhir',
-        'tgl_cetak',
+        'id_posyandu', 'nip_bidan',
+        'jenis_laporan', 'periode_awal',
+        'periode_akhir', 'tgl_cetak',
     ];
 
     protected $casts = [
@@ -22,6 +20,11 @@ class Laporan extends Model
         'periode_akhir' => 'date',
         'tgl_cetak'     => 'date',
     ];
+
+    public function posyandu()
+    {
+        return $this->belongsTo(Posyandu::class, 'id_posyandu', 'id_posyandu');
+    }
 
     public function bidan()
     {

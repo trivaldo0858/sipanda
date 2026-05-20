@@ -5,52 +5,23 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Posyandu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PosyanduController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * List posyandu (untuk dropdown login Kader)
+     * Public endpoint
+     */
+    public function list()
     {
-        $query = Posyandu::withCount(['kader', 'bidan']);
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('search')) {
-            $query->where('nama_posyandu', 'like', '%' . $request->search . '%');
-        }
-
-        return response()->json([
-            'success' => true,
-            'data'    => $query->paginate(15),
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama_posyandu' => 'required|string|max:100',
-            'alamat'        => 'nullable|string',
-            'wilayah'       => 'nullable|string|max:100',
-            'no_telp'       => 'nullable|string|max:20',
-            'status'        => 'in:Aktif,Tidak Aktif',
-        ]);
-
-        $posyandu = Posyandu::create($request->only([
-            'nama_posyandu', 'alamat', 'wilayah', 'no_telp', 'status',
-        ]));
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Posyandu berhasil ditambahkan.',
-            'data'    => $posyandu,
-        ], 201);
-    }
-
-    public function show($id)
-    {
-        $posyandu = Posyandu::with(['kader.pengguna', 'bidan.pengguna'])
-            ->findOrFail($id);
+        $posyandu = Posyandu::select(
+            'id_posyandu',
+            'nama_posyandu',
+            'desa_kelurahan',
+            'kecamatan',
+            'kabupaten_kota'
+        )->orderBy('nama_posyandu')->get();
 
         return response()->json([
             'success' => true,
@@ -58,36 +29,74 @@ class PosyanduController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * KF-006: Detail profil posyandu aktif (untuk Kader)
+     */
+    public function profil(Request $request)
     {
-        $posyandu = Posyandu::findOrFail($id);
+        $idPosyandu = $request->user()->getPosyanduAktifId();
 
-        $request->validate([
-            'nama_posyandu' => 'sometimes|string|max:100',
-            'alamat'        => 'nullable|string',
-            'wilayah'       => 'nullable|string|max:100',
-            'no_telp'       => 'nullable|string|max:20',
-            'status'        => 'in:Aktif,Tidak Aktif',
+        $posyandu = Posyandu::withCount(['anak', 'bidan', 'kader'])
+            ->findOrFail($idPosyandu);
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'id_posyandu'    => $posyandu->id_posyandu,
+                'nama_posyandu'  => $posyandu->nama_posyandu,
+                'kecamatan'      => $posyandu->kecamatan,
+                'desa_kelurahan' => $posyandu->desa_kelurahan,
+                'alamat'         => $posyandu->alamat,
+                'kabupaten_kota' => $posyandu->kabupaten_kota,
+                'total_anak'     => $posyandu->anak_count,
+                'total_bidan'    => $posyandu->bidan_count,
+                'total_kader'    => $posyandu->kader_count,
+            ],
         ]);
+    }
+
+    /**
+     * KF-006: Update profil posyandu (Kader)
+     */
+    public function updateProfil(Request $request)
+    {
+        $request->validate([
+            'alamat'         => 'nullable|string',
+            'desa_kelurahan' => 'nullable|string|max:100',
+            'kecamatan'      => 'nullable|string|max:100',
+        ]);
+
+        $idPosyandu = $request->user()->getPosyanduAktifId();
+        $posyandu   = Posyandu::findOrFail($idPosyandu);
 
         $posyandu->update($request->only([
-            'nama_posyandu', 'alamat', 'wilayah', 'no_telp', 'status',
+            'alamat', 'desa_kelurahan', 'kecamatan',
         ]));
 
         return response()->json([
             'success' => true,
-            'message' => 'Posyandu berhasil diperbarui.',
+            'message' => 'Profil posyandu berhasil diperbarui.',
             'data'    => $posyandu,
         ]);
     }
 
-    public function destroy($id)
+    /**
+     * Detail posyandu by ID (public)
+     */
+    public function show($id)
     {
-        Posyandu::findOrFail($id)->delete();
+        $posyandu = Posyandu::select(
+            'id_posyandu',
+            'nama_posyandu',
+            'desa_kelurahan',
+            'kecamatan',
+            'kabupaten_kota',
+            'alamat'
+        )->findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'message' => 'Posyandu berhasil dihapus.',
+            'data'    => $posyandu,
         ]);
     }
 }

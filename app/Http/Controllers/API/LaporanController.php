@@ -14,15 +14,15 @@ use App\Exports\LaporanExport;
 class LaporanController extends Controller
 {
     /**
-     * Daftar laporan
+     * List laporan — filter by posyandu aktif
      */
     public function index(Request $request)
     {
-        $query = Laporan::with('bidan');
+        $user       = $request->user();
+        $idPosyandu = $user->getPosyanduAktifId();
 
-        if ($request->user()->isBidan()) {
-            $query->where('nip_bidan', $request->user()->bidan->nip);
-        }
+        $query = Laporan::with(['posyandu', 'bidan'])
+            ->where('id_posyandu', $idPosyandu);
 
         if ($request->filled('jenis_laporan')) {
             $query->where('jenis_laporan', $request->jenis_laporan);
@@ -35,48 +35,66 @@ class LaporanController extends Controller
     }
 
     /**
-     * Generate & simpan laporan baru
+     * KF-010: Generate laporan baru
      */
     public function store(Request $request)
     {
         $request->validate([
-            'jenis_laporan' => 'required|in:Bulanan,Tahunan',
+            'jenis_laporan' => 'required|in:Pemeriksaan,Imunisasi,Gabungan',
             'periode_awal'  => 'required|date',
             'periode_akhir' => 'required|date|after_or_equal:periode_awal',
         ]);
 
-        $nip = $request->user()->bidan->nip;
+        $user       = $request->user();
+        $idPosyandu = $user->getPosyanduAktifId();
+        $nipBidan   = $user->isBidan() ? $user->bidan?->nip : null;
 
         $laporan = Laporan::create([
-            'nip_bidan'     => $nip,
+            'id_posyandu'   => $idPosyandu,
+            'nip_bidan'     => $nipBidan,
             'jenis_laporan' => $request->jenis_laporan,
             'periode_awal'  => $request->periode_awal,
             'periode_akhir' => $request->periode_akhir,
             'tgl_cetak'     => today(),
         ]);
 
+        $ringkasan = $this->getRingkasan(
+            $request->jenis_laporan,
+            $request->periode_awal,
+            $request->periode_akhir,
+            $idPosyandu
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Laporan berhasil dibuat.',
             'data'    => array_merge(
-                $laporan->load('bidan')->toArray(),
-                ['ringkasan' => $this->getRingkasan($request->periode_awal, $request->periode_akhir)]
+                $laporan->load(['posyandu', 'bidan'])->toArray(),
+                ['ringkasan' => $ringkasan]
             ),
         ], 201);
     }
 
     /**
-     * Detail laporan
+     * Detail laporan + ringkasan data
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $laporan = Laporan::with('bidan')->findOrFail($id);
+        $laporan    = Laporan::with(['posyandu', 'bidan'])->findOrFail($id);
+        $idPosyandu = $request->user()->getPosyanduAktifId();
+
+        $ringkasan = $this->getRingkasan(
+            $laporan->jenis_laporan,
+            $laporan->periode_awal,
+            $laporan->periode_akhir,
+            $laporan->id_posyandu
+        );
 
         return response()->json([
             'success' => true,
             'data'    => array_merge(
                 $laporan->toArray(),
-                ['ringkasan' => $this->getRingkasan($laporan->periode_awal, $laporan->periode_akhir)]
+                ['ringkasan' => $ringkasan]
             ),
         ]);
     }
@@ -87,90 +105,138 @@ class LaporanController extends Controller
     public function destroy($id)
     {
         Laporan::findOrFail($id)->delete();
-        return response()->json(['success' => true, 'message' => 'Laporan berhasil dihapus.']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Laporan berhasil dihapus.',
+        ]);
     }
 
-    // ----------------------------------------------------------------
-    // KF-010: Export PDF
-    // GET /api/v1/laporan/{id}/export-pdf
-    // ----------------------------------------------------------------
-    public function exportPdf($id)
+    /**
+     * Export PDF
+     */
+    public function exportPdf(Request $request, $id)
     {
-        $laporan   = Laporan::with('bidan')->findOrFail($id);
-        $ringkasan = $this->getRingkasan($laporan->periode_awal, $laporan->periode_akhir);
-        $detail    = $this->getDetailPemeriksaan($laporan->periode_awal, $laporan->periode_akhir);
+        $laporan   = Laporan::with(['posyandu', 'bidan'])->findOrFail($id);
+        $ringkasan = $this->getRingkasan(
+            $laporan->jenis_laporan,
+            $laporan->periode_awal,
+            $laporan->periode_akhir,
+            $laporan->id_posyandu
+        );
+        $detail = $this->getDetail(
+            $laporan->jenis_laporan,
+            $laporan->periode_awal,
+            $laporan->periode_akhir,
+            $laporan->id_posyandu
+        );
 
-        $pdf = Pdf::loadView('laporan.pdf', [
-            'laporan'   => $laporan,
-            'ringkasan' => $ringkasan,
-            'detail'    => $detail,
-        ])->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadView('laporan.pdf', compact('laporan', 'ringkasan', 'detail'))
+            ->setPaper('a4', 'portrait');
 
-        $namaFile = 'Laporan_' . $laporan->jenis_laporan . '_'
-            . $laporan->periode_awal->format('Y-m') . '.pdf';
+        $namaFile = "Laporan_{$laporan->jenis_laporan}_{$laporan->periode_awal->format('Y-m')}.pdf";
 
         return $pdf->download($namaFile);
     }
 
-    // ----------------------------------------------------------------
-    // KF-010: Export Excel
-    // GET /api/v1/laporan/{id}/export-excel
-    // ----------------------------------------------------------------
+    /**
+     * Export Excel
+     */
     public function exportExcel($id)
     {
-        $laporan = Laporan::with('bidan')->findOrFail($id);
+        $laporan  = Laporan::with(['posyandu', 'bidan'])->findOrFail($id);
+        $namaFile = "Laporan_{$laporan->jenis_laporan}_{$laporan->periode_awal->format('Y-m')}.xlsx";
 
-        $namaFile = 'Laporan_' . $laporan->jenis_laporan . '_'
-            . $laporan->periode_awal->format('Y-m') . '.xlsx';
-
-        return Excel::download(
-            new LaporanExport($laporan),
-            $namaFile
-        );
+        return Excel::download(new LaporanExport($laporan), $namaFile);
     }
 
-    // ----------------------------------------------------------------
-    // Helper: ringkasan statistik
-    // ----------------------------------------------------------------
-    private function getRingkasan($periodeAwal, $periodeAkhir): array
-    {
-        $pemeriksaan = Pemeriksaan::whereBetween('tgl_pemeriksaan', [$periodeAwal, $periodeAkhir])
-            ->with('anak')
-            ->get();
+    // ── Helper: ringkasan statistik ───────────────────────────────────
+    private function getRingkasan(
+        string $jenis,
+        $periodeAwal,
+        $periodeAkhir,
+        ?int $idPosyandu
+    ): array {
+        $ringkasan = [];
 
-        $imunisasi = Imunisasi::whereBetween('tgl_pemberian', [$periodeAwal, $periodeAkhir])
-            ->with(['anak', 'jenisVaksin'])
-            ->get();
+        if (in_array($jenis, ['Pemeriksaan', 'Gabungan'])) {
+            $pemeriksaan = Pemeriksaan::whereBetween('tgl_periksa', [$periodeAwal, $periodeAkhir])
+                ->when($idPosyandu, fn ($q) => $q->where('id_posyandu', $idPosyandu))
+                ->get();
 
-        return [
-            'total_pemeriksaan'    => $pemeriksaan->count(),
-            'total_anak_diperiksa' => $pemeriksaan->pluck('nik_anak')->unique()->count(),
-            'total_imunisasi'      => $imunisasi->count(),
-            'imunisasi_per_vaksin' => $imunisasi->groupBy('jenisVaksin.nama_vaksin')->map->count(),
-            'rata_berat_badan'     => round($pemeriksaan->whereNotNull('berat_badan')->avg('berat_badan'), 2),
-            'rata_tinggi_badan'    => round($pemeriksaan->whereNotNull('tinggi_badan')->avg('tinggi_badan'), 2),
-        ];
+            $ringkasan['pemeriksaan'] = [
+                'total'             => $pemeriksaan->count(),
+                'total_anak'        => $pemeriksaan->pluck('nik_anak')->unique()->count(),
+                'rata_berat_badan'  => round($pemeriksaan->whereNotNull('berat_badan')->avg('berat_badan'), 2),
+                'rata_tinggi_badan' => round($pemeriksaan->whereNotNull('tinggi_badan')->avg('tinggi_badan'), 2),
+                'disetujui'         => $pemeriksaan->where('status_validasi', 'Disetujui')->count(),
+                'menunggu'          => $pemeriksaan->where('status_validasi', 'Menunggu')->count(),
+                'ditolak'           => $pemeriksaan->where('status_validasi', 'Ditolak')->count(),
+            ];
+        }
+
+        if (in_array($jenis, ['Imunisasi', 'Gabungan'])) {
+            $imunisasi = Imunisasi::whereBetween('tgl_pemberian', [$periodeAwal, $periodeAkhir])
+                ->when($idPosyandu, fn ($q) => $q->where('id_posyandu', $idPosyandu))
+                ->with('jenisVaksin')
+                ->get();
+
+            $ringkasan['imunisasi'] = [
+                'total'              => $imunisasi->count(),
+                'total_anak'         => $imunisasi->pluck('nik_anak')->unique()->count(),
+                'per_vaksin'         => $imunisasi
+                    ->groupBy('jenisVaksin.nama_vaksin')
+                    ->map->count(),
+            ];
+        }
+
+        return $ringkasan;
     }
 
-    // ----------------------------------------------------------------
-    // Helper: detail data pemeriksaan untuk tabel di PDF/Excel
-    // ----------------------------------------------------------------
-    private function getDetailPemeriksaan($periodeAwal, $periodeAkhir): \Illuminate\Support\Collection
-    {
-        return Pemeriksaan::whereBetween('tgl_pemeriksaan', [$periodeAwal, $periodeAkhir])
-            ->with(['anak.orangTua', 'kader', 'bidan'])
-            ->orderBy('tgl_pemeriksaan')
-            ->get()
-            ->map(fn ($p) => [
-                'nama_anak'       => $p->anak->nama_anak ?? '-',
-                'nama_ibu'        => $p->anak->orangTua->nama_ibu ?? '-',
-                'tgl_pemeriksaan' => $p->tgl_pemeriksaan->format('d/m/Y'),
-                'berat_badan'     => $p->berat_badan ? $p->berat_badan . ' kg' : '-',
-                'tinggi_badan'    => $p->tinggi_badan ? $p->tinggi_badan . ' cm' : '-',
-                'lingkar_kepala'  => $p->lingkar_kepala ? $p->lingkar_kepala . ' cm' : '-',
-                'keluhan'         => $p->keluhan ?? '-',
-                'nama_kader'      => $p->kader->nama_kader ?? '-',
-                'nama_bidan'      => $p->bidan->nama_bidan ?? '-',
-            ]);
+    // ── Helper: detail data untuk tabel laporan ───────────────────────
+    private function getDetail(
+        string $jenis,
+        $periodeAwal,
+        $periodeAkhir,
+        ?int $idPosyandu
+    ): array {
+        $detail = [];
+
+        if (in_array($jenis, ['Pemeriksaan', 'Gabungan'])) {
+            $detail['pemeriksaan'] = Pemeriksaan::whereBetween('tgl_periksa', [$periodeAwal, $periodeAkhir])
+                ->when($idPosyandu, fn ($q) => $q->where('id_posyandu', $idPosyandu))
+                ->with(['anak.orangTua', 'bidan'])
+                ->orderBy('tgl_periksa')
+                ->get()
+                ->map(fn ($p) => [
+                    'nama_anak'      => $p->anak->nama_anak ?? '-',
+                    'nama_ibu'       => $p->anak->orangTua->nama_ibu ?? '-',
+                    'tgl_periksa'    => $p->tgl_periksa->format('d/m/Y'),
+                    'berat_badan'    => $p->berat_badan ? $p->berat_badan . ' kg' : '-',
+                    'tinggi_badan'   => $p->tinggi_badan ? $p->tinggi_badan . ' cm' : '-',
+                    'lingkar_kepala' => $p->lingkar_kepala ? $p->lingkar_kepala . ' cm' : '-',
+                    'keluhan'        => $p->keluhan ?? '-',
+                    'status'         => $p->status_validasi,
+                    'nama_bidan'     => $p->bidan?->nama_bidan ?? '-',
+                ]);
+        }
+
+        if (in_array($jenis, ['Imunisasi', 'Gabungan'])) {
+            $detail['imunisasi'] = Imunisasi::whereBetween('tgl_pemberian', [$periodeAwal, $periodeAkhir])
+                ->when($idPosyandu, fn ($q) => $q->where('id_posyandu', $idPosyandu))
+                ->with(['anak.orangTua', 'jenisVaksin', 'bidan'])
+                ->orderBy('tgl_pemberian')
+                ->get()
+                ->map(fn ($i) => [
+                    'nama_anak'     => $i->anak->nama_anak ?? '-',
+                    'nama_ibu'      => $i->anak->orangTua->nama_ibu ?? '-',
+                    'nama_vaksin'   => $i->jenisVaksin->nama_vaksin ?? '-',
+                    'tgl_pemberian' => $i->tgl_pemberian->format('d/m/Y'),
+                    'nama_bidan'    => $i->bidan?->nama_bidan ?? '-',
+                    'catatan'       => $i->catatan ?? '-',
+                ]);
+        }
+
+        return $detail;
     }
 }

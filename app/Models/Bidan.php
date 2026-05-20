@@ -1,8 +1,6 @@
 <?php
 // app/Models/Bidan.php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Bidan extends Model
@@ -12,7 +10,7 @@ class Bidan extends Model
     protected $keyType    = 'string';
     public $incrementing  = false;
 
-    protected $fillable = ['nip', 'id_user', 'nama_bidan', 'no_telp', 'id_posyandu'];
+    protected $fillable = ['nip', 'id_user', 'id_posyandu', 'nama_bidan', 'no_telp'];
 
     public function pengguna()
     {
@@ -32,10 +30,5 @@ class Bidan extends Model
     public function imunisasi()
     {
         return $this->hasMany(Imunisasi::class, 'nip_bidan', 'nip');
-    }
-
-    public function laporan()
-    {
-        return $this->hasMany(Laporan::class, 'nip_bidan', 'nip');
     }
 }
