@@ -74,7 +74,6 @@ class PenggunaController extends Controller
             'role'        => 'required|in:Bidan,OrangTua',
             'nama'        => 'required|string',
             'id_posyandu' => 'required|array',
-            'nip'         => 'required_if:role,Bidan|nullable|string|unique:bidan,nip',
         ]);
 
         DB::transaction(function () use ($request) {

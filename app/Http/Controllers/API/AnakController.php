@@ -66,7 +66,7 @@ class AnakController extends Controller
             'jenis_kelamin' => 'required|in:L,P',
             'nama_ayah'     => 'nullable|string|max:100',
             // Data Orang Tua
-            'nik_orang_tua' => 'required|string|size:16',
+            'nik_orang_tua' => 'nullable|string|size:16',
             'nama_ibu'      => 'required|string|max:100',
             'no_telp_ibu'   => 'nullable|string|max:20',
             'alamat'        => 'nullable|string',
@@ -79,7 +79,7 @@ class AnakController extends Controller
 
             // ── 1. Buat atau ambil data OrangTua ──────────────────────
             $orangTua = OrangTua::firstOrNew(
-                ['nik_orang_tua' => $request->nik_orang_tua]
+                ['nik_orang_tua' => $request->nik_orang_tua ?? ('NIK-' . time())]
             );
 
             // Jika OrangTua belum punya akun → buat akun otomatis
@@ -96,7 +96,6 @@ class AnakController extends Controller
                 $orangTua->fill([
                     'id_user'  => $penggunaOrtu->id_user,
                     'nama_ibu' => $request->nama_ibu,
-                    'no_telp'  => $request->no_telp_ibu,
                     'alamat'   => $request->alamat,
                 ]);
                 $orangTua->save();
@@ -104,7 +103,6 @@ class AnakController extends Controller
                 // Update data orang tua jika sudah ada
                 $orangTua->update([
                     'nama_ibu' => $request->nama_ibu,
-                    'no_telp'  => $request->no_telp_ibu ?? $orangTua->no_telp,
                     'alamat'   => $request->alamat ?? $orangTua->alamat,
                 ]);
             }

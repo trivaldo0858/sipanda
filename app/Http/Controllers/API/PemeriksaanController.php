@@ -62,7 +62,6 @@ class PemeriksaanController extends Controller
             'tinggi_badan'  => 'nullable|numeric|min:0|max:300',
             'lingkar_kepala'=> 'nullable|numeric|min:0|max:100',
             'keluhan'       => 'nullable|string',
-            'id_jadwal'     => 'nullable|exists:jadwal_posyandu,id_jadwal',
         ]);
 
         $user       = $request->user();
@@ -72,13 +71,12 @@ class PemeriksaanController extends Controller
             'nik_anak'       => $request->nik_anak,
             'id_posyandu'    => $idPosyandu,
             'nip_bidan'      => null, // Bidan yang validasi nanti
-            'id_jadwal'      => $request->id_jadwal,
             'tgl_periksa'    => $request->tgl_periksa,
             'berat_badan'    => $request->berat_badan,
             'tinggi_badan'   => $request->tinggi_badan,
             'lingkar_kepala' => $request->lingkar_kepala,
             'keluhan'        => $request->keluhan,
-            'status_validasi'=> 'Menunggu',
+            'status_validasi'=> 'Disetujui',
         ]);
 
         // Notifikasi ke OrangTua
