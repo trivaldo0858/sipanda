@@ -63,9 +63,7 @@ class ImunisasiController extends Controller
             'nik_anak'      => $request->nik_anak,
             'nip_bidan'     => $bidan?->nip,
             'id_vaksin'     => $request->id_vaksin,
-            'id_posyandu'   => $idPosyandu,
             'tgl_pemberian' => $request->tgl_pemberian,
-            'catatan'       => $request->catatan,
         ]);
 
         // Notifikasi ke OrangTua
