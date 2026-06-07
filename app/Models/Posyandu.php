@@ -44,7 +44,7 @@ class Posyandu extends Model
 
     public function anak()
     {
-        return $this->hasMany(Anak::class, 'id_posyandu', 'id_posyandu');
+    return $this->hasMany(\App\Models\Anak::class, 'id_posyandu_kader');
     }
 
     public function jadwal()

@@ -12,7 +12,6 @@ class PosyanduController extends Controller
     public function index(Request $request)
     {
         $posyandu = Posyandu::withCount([
-            'anak',
             'penggunaKader as kader_count',
             'penggunaBidan as bidan_count',
         ])
