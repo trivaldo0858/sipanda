@@ -320,7 +320,7 @@ class AuthController extends Controller
 
         $newHash = Hash::make($request->password_baru);
 
-        // Update password_kader di tabel posyandu
+        // Update password_kader di tabel posyand
         DB::table('posyandu')
             ->where('id_posyandu', $user->id_posyandu)
             ->update(['password_kader' => $newHash, 'updated_at' => now()]);
