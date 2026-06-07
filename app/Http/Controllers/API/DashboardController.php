@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Anak;
 use App\Models\Imunisasi;
 use App\Models\JadwalPosyandu;
+use App\Models\OrangTua;
 use App\Models\Pemeriksaan;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,11 @@ class DashboardController extends Controller
     {
         $idPosyandu = $user->getPosyanduAktifId();
 
-        $totalAnak = Anak::where('id_posyandu', $idPosyandu)->count();
+        // Anak tidak punya id_posyandu — query via orang_tua
+        $nikOrtuList = OrangTua::where('id_posyandu', $idPosyandu)
+            ->pluck('nik_orang_tua');
+
+        $totalAnak = Anak::whereIn('nik_orang_tua', $nikOrtuList)->count();
 
         $pemeriksaanBulanIni = Pemeriksaan::where('id_posyandu', $idPosyandu)
             ->whereMonth('tgl_periksa', now()->month)
@@ -50,12 +55,12 @@ class DashboardController extends Controller
             ->take(5)
             ->get()
             ->map(fn ($p) => [
-                'nik_anak'       => $p->nik_anak,
-                'nama_anak'      => $p->anak->nama_anak ?? '-',
-                'tgl_periksa'    => $p->tgl_periksa->format('Y-m-d H:i:s'),
-                'berat_badan'    => $p->berat_badan,
-                'tinggi_badan'   => $p->tinggi_badan,
-                'status_validasi'=> $p->status_validasi,
+                'nik_anak'        => $p->nik_anak,
+                'nama_anak'       => $p->anak->nama_anak ?? '-',
+                'tgl_periksa'     => $p->tgl_periksa->format('Y-m-d H:i:s'),
+                'berat_badan'     => $p->berat_badan,
+                'tinggi_badan'    => $p->tinggi_badan,
+                'status_validasi' => $p->status_validasi,
             ]);
 
         return response()->json([
@@ -83,14 +88,17 @@ class DashboardController extends Controller
         $idPosyandu = $user->getPosyanduAktifId();
         $nip        = $user->bidan?->nip;
 
-        $totalAnak = Anak::where('id_posyandu', $idPosyandu)->count();
+        // Anak tidak punya id_posyandu — query via orang_tua
+        $nikOrtuList = OrangTua::where('id_posyandu', $idPosyandu)
+            ->pluck('nik_orang_tua');
+
+        $totalAnak = Anak::whereIn('nik_orang_tua', $nikOrtuList)->count();
 
         $totalPemeriksaan = Pemeriksaan::where('id_posyandu', $idPosyandu)
             ->whereMonth('tgl_periksa', now()->month)
             ->whereYear('tgl_periksa', now()->year)
             ->count();
 
-        // Fix: imunisasi tidak punya id_posyandu — query via nip_bidan
         $totalImunisasi = $nip
             ? Imunisasi::where('nip_bidan', $nip)
                 ->whereMonth('tgl_pemberian', now()->month)
@@ -107,7 +115,6 @@ class DashboardController extends Controller
             ->orderBy('tgl_kegiatan')
             ->first();
 
-        // Aktivitas imunisasi terbaru oleh bidan ini
         $aktivitasImunisasi = $nip
             ? Imunisasi::where('nip_bidan', $nip)
                 ->with(['anak:nik_anak,nama_anak', 'jenisVaksin:id_vaksin,nama_vaksin'])
@@ -115,33 +122,33 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get()
                 ->map(fn ($i) => [
-                    'nik_anak'     => $i->nik_anak,
-                    'nama_anak'    => $i->anak?->nama_anak ?? '-',
-                    'nama_vaksin'  => $i->jenisVaksin?->nama_vaksin ?? '-',
-                    'tgl_pemberian'=> $i->tgl_pemberian->format('Y-m-d H:i:s'),
+                    'nik_anak'      => $i->nik_anak,
+                    'nama_anak'     => $i->anak?->nama_anak ?? '-',
+                    'nama_vaksin'   => $i->jenisVaksin?->nama_vaksin ?? '-',
+                    'tgl_pemberian' => $i->tgl_pemberian->format('Y-m-d H:i:s'),
                 ])
             : [];
 
         return response()->json([
             'success' => true,
             'data'    => [
-                'role'                         => 'Bidan',
-                'nama_posyandu'                => $user->posyandu?->nama_posyandu,
-                'profil_bidan'                 => $user->bidan ? [
+                'role'                          => 'Bidan',
+                'nama_posyandu'                 => $user->posyandu?->nama_posyandu,
+                'profil_bidan'                  => $user->bidan ? [
                     'nip'        => $user->bidan->nip,
                     'nama_bidan' => $user->bidan->nama_bidan,
                 ] : null,
-                'total_anak'                   => $totalAnak,
-                'total_pemeriksaan_bulan'      => $totalPemeriksaan,
-                'balita_perlu_imunisasi'       => $totalImunisasi,
-                'imunisasi_bulan_ini'          => $totalImunisasi,
-                'pemeriksaan_menunggu_validasi'=> $menungguValidasi,
-                'jadwal_terdekat'              => $jadwalTerdekat ? [
+                'total_anak'                    => $totalAnak,
+                'total_pemeriksaan_bulan'       => $totalPemeriksaan,
+                'balita_perlu_imunisasi'        => $totalImunisasi,
+                'imunisasi_bulan_ini'           => $totalImunisasi,
+                'pemeriksaan_menunggu_validasi' => $menungguValidasi,
+                'jadwal_terdekat'               => $jadwalTerdekat ? [
                     'id_jadwal'    => $jadwalTerdekat->id_jadwal,
                     'tgl_kegiatan' => $jadwalTerdekat->tgl_kegiatan->format('Y-m-d'),
                     'lokasi'       => $jadwalTerdekat->lokasi,
                 ] : null,
-                'aktivitas_imunisasi'          => $aktivitasImunisasi,
+                'aktivitas_imunisasi' => $aktivitasImunisasi,
             ],
         ]);
     }
@@ -160,34 +167,32 @@ class DashboardController extends Controller
 
         $anakList = $orangTua->anak()
             ->with([
-                'posyandu:id_posyandu,nama_posyandu',
                 'pemeriksaan' => fn ($q) => $q
                     ->where('status_validasi', 'Disetujui')
                     ->latest('tgl_periksa')
                     ->take(1),
-                'imunisasi' => fn ($q) => $q
-                    ->latest('tgl_pemberian')
-                    ->take(1)
-                    ->with('jenisVaksin'),
             ])
             ->get()
             ->map(fn ($a) => [
-                'nik_anak'      => $a->nik_anak,
-                'nama_anak'     => $a->nama_anak,
-                'tgl_lahir'     => $a->tgl_lahir->format('Y-m-d'),
-                'jenis_kelamin' => $a->jenis_kelamin,
-                'umur_bulan'    => $a->umur_bulan,
-                'umur_format'   => $a->umur_format,
-                'nama_posyandu' => $a->posyandu?->nama_posyandu,
+                'nik_anak'        => $a->nik_anak,
+                'nama_anak'       => $a->nama_anak,
+                'tgl_lahir'       => $a->tgl_lahir->format('Y-m-d'),
+                'jenis_kelamin'   => $a->jenis_kelamin,
+                'umur_bulan'      => $a->umur_bulan,
+                'umur_format'     => $a->umur_format,
                 'berat_terakhir'  => $a->pemeriksaan->first()?->berat_badan,
                 'tinggi_terakhir' => $a->pemeriksaan->first()?->tinggi_badan,
+                'lingkar_terakhir'=> $a->pemeriksaan->first()?->lingkar_kepala,
             ]);
 
-        $posyanduIds     = $orangTua->anak->pluck('id_posyandu')->unique();
-        $jadwalTerdekat  = JadwalPosyandu::whereIn('id_posyandu', $posyanduIds)
-            ->where('tgl_kegiatan', '>=', today())
-            ->orderBy('tgl_kegiatan')
-            ->first();
+        // Jadwal terdekat via posyandu orang tua
+        $idPosyandu     = $orangTua->id_posyandu;
+        $jadwalTerdekat = $idPosyandu
+            ? JadwalPosyandu::where('id_posyandu', $idPosyandu)
+                ->where('tgl_kegiatan', '>=', today())
+                ->orderBy('tgl_kegiatan')
+                ->first()
+            : null;
 
         $notifBelumBaca = $user->notifikasi()
             ->where('status', 'Belum Dibaca')
@@ -203,8 +208,9 @@ class DashboardController extends Controller
                     'id_jadwal'    => $jadwalTerdekat->id_jadwal,
                     'tgl_kegiatan' => $jadwalTerdekat->tgl_kegiatan->format('Y-m-d'),
                     'lokasi'       => $jadwalTerdekat->lokasi,
+                    'agenda'       => $jadwalTerdekat->agenda,
                 ] : null,
-                'notifikasi_unread'=> $notifBelumBaca,
+                'notifikasi_unread' => $notifBelumBaca,
             ],
         ]);
     }
