@@ -28,7 +28,7 @@ class DashboardController extends Controller
     private function dashboardKader($user)
     {
         $idPosyandu = $user->getPosyanduAktifId();
-        $totalAnak = Pemeriksaan::where('id_posyandu', $idPosyandu)->distinct('nik_anak')->count('nik_anak');
+        $totalAnak = \App\Models\Anak::whereHas('orangTua.pengguna', fn($q) => $q->where('id_posyandu', $idPosyandu))->count();
         $pemeriksaanBulanIni = Pemeriksaan::where('id_posyandu', $idPosyandu)
             ->whereMonth('tgl_periksa', now()->month)
             ->whereYear('tgl_periksa', now()->year)
@@ -81,7 +81,7 @@ class DashboardController extends Controller
     {
         $idPosyandu = $user->getPosyanduAktifId();
         $nip        = $user->bidan?->nip;
-        $totalAnak = Pemeriksaan::where('id_posyandu', $idPosyandu)->distinct('nik_anak')->count('nik_anak');
+        $totalAnak = \App\Models\Anak::whereHas('orangTua.pengguna', fn($q) => $q->where('id_posyandu', $idPosyandu))->count();
         $totalPemeriksaan = Pemeriksaan::where('id_posyandu', $idPosyandu)
             ->whereMonth('tgl_periksa', now()->month)
             ->whereYear('tgl_periksa', now()->year)

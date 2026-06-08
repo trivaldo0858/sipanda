@@ -66,7 +66,6 @@ class AnakController extends Controller
             'nama_anak'     => 'required|string|max:100',
             'tgl_lahir'     => 'required|date',
             'jenis_kelamin' => 'required|in:L,P',
-            'nama_ayah'     => 'nullable|string|max:100',
             // Data Orang Tua
             'nik_orang_tua' => 'nullable|string|size:16',
             'nama_ibu'      => 'required|string|max:100',
@@ -90,9 +89,9 @@ class AnakController extends Controller
                 // Kredensial: NIK Balita + Tanggal Lahir (dihandle di loginOrangTua)
                 // Akun ini tidak butuh username/password karena login pakai NIK+TglLahir
                 $penggunaOrtu = Pengguna::create([
-                    'username'   => null,
-                    'password'   => null,
-                    'role'       => 'OrangTua',
+                    'username'    => 'ortu_' . time(),
+                    'password'    => bcrypt('ortu_' . time()),
+                    'role'        => 'OrangTua',
                     'id_posyandu' => $idPosyandu,
                 ]);
 
@@ -114,11 +113,9 @@ class AnakController extends Controller
             $anak = Anak::create([
                 'nik_anak'      => $request->nik_anak,
                 'nik_orang_tua' => $orangTua->nik_orang_tua,
-                'id_posyandu'   => $idPosyandu,
                 'nama_anak'     => $request->nama_anak,
                 'tgl_lahir'     => $request->tgl_lahir,
                 'jenis_kelamin' => $request->jenis_kelamin,
-                'nama_ayah'     => $request->nama_ayah,
             ]);
 
             // ── 3. Kirim notifikasi sambutan ke OrangTua ──────────────

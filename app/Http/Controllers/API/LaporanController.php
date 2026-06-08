@@ -176,7 +176,9 @@ class LaporanController extends Controller
         }
 
         if (in_array($jenis, ['Imunisasi', 'Gabungan'])) {
+            $nikAnakPosyandu = \App\Models\Anak::whereHas('orangTua.pengguna', fn($q) => $q->where('id_posyandu', $idPosyandu))->pluck('nik_anak');
             $imunisasi = Imunisasi::whereBetween('tgl_pemberian', [$periodeAwal, $periodeAkhir])
+                ->whereIn('nik_anak', $nikAnakPosyandu)
                 ->with('jenisVaksin')
                 ->get();
 
@@ -220,7 +222,9 @@ class LaporanController extends Controller
         }
 
         if (in_array($jenis, ['Imunisasi', 'Gabungan'])) {
+            $nikAnakPosyandu2 = \App\Models\Anak::whereHas('orangTua.pengguna', fn($q) => $q->where('id_posyandu', $idPosyandu))->pluck('nik_anak');
             $detail['imunisasi'] = Imunisasi::whereBetween('tgl_pemberian', [$periodeAwal, $periodeAkhir])
+                ->whereIn('nik_anak', $nikAnakPosyandu2)
                 ->with(['anak.orangTua', 'jenisVaksin', 'bidan'])
                 ->orderBy('tgl_pemberian')
                 ->get()
