@@ -43,6 +43,7 @@ class RingkasanSheet implements FromCollection, WithTitle, WithHeadings, ShouldA
         $rataBB = $p->whereNotNull('berat_badan')->avg('berat_badan');
         $rataTB = $p->whereNotNull('tinggi_badan')->avg('tinggi_badan');
         return collect([
+            ['Nama Posyandu',            $this->laporan->posyandu?->nama_posyandu ?? '-'],
             ['Nama Petugas',             $this->laporan->bidan?->nama_bidan ?? 'Kader'],
             ['Jenis Laporan',            $this->laporan->jenis_laporan],
             ['Periode Awal',             $awal->format('d/m/Y')],
@@ -65,9 +66,9 @@ class RingkasanSheet implements FromCollection, WithTitle, WithHeadings, ShouldA
         return [AfterSheet::class => function (AfterSheet $e) {
             $s = $e->sheet;
             $s->getStyle('A1:B1')->applyFromArray(['font'=>['bold'=>true,'color'=>['rgb'=>'FFFFFF'],'size'=>12],'fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'1B4F72']],'alignment'=>['horizontal'=>Alignment::HORIZONTAL_CENTER]]);
-            foreach ([7,13] as $r) $s->getStyle("A{$r}:B{$r}")->applyFromArray(['font'=>['bold'=>true,'color'=>['rgb'=>'FFFFFF']],'fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'2E86AB']]]);
-            for ($i=2;$i<=15;$i++) if ($i%2==0) $s->getStyle("A{$i}:B{$i}")->applyFromArray(['fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'EBF5FB']]]);
-            $s->getStyle('A1:B15')->applyFromArray(['borders'=>['allBorders'=>['borderStyle'=>Border::BORDER_THIN,'color'=>['rgb'=>'BDC3C7']]]]);
+            foreach ([8,14] as $r) $s->getStyle("A{$r}:B{$r}")->applyFromArray(['font'=>['bold'=>true,'color'=>['rgb'=>'FFFFFF']],'fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'2E86AB']]]);
+            for ($i=2;$i<=16;$i++) if ($i%2==0) $s->getStyle("A{$i}:B{$i}")->applyFromArray(['fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'EBF5FB']]]);
+            $s->getStyle('A1:B16')->applyFromArray(['borders'=>['allBorders'=>['borderStyle'=>Border::BORDER_THIN,'color'=>['rgb'=>'BDC3C7']]]]);
             $s->getColumnDimension('A')->setWidth(30);
             $s->getColumnDimension('B')->setWidth(25);
         }];
@@ -78,30 +79,59 @@ class PemeriksaanSheet implements FromCollection, WithTitle, WithHeadings, Shoul
 {
     public function __construct(private Laporan $laporan) {}
     public function title(): string { return 'Data Pemeriksaan'; }
-    public function headings(): array { return ['No','Nama Balita','Nama Ibu','Tanggal Periksa','Berat Badan (kg)','Tinggi Badan (cm)','Lingkar Kepala (cm)','Keluhan']; }
+    public function headings(): array
+    {
+        return ['No', 'Nama Balita', 'Nama Ibu', 'Tanggal Periksa', 'BB (kg)', 'TB (cm)', 'LK (cm)', 'Posyandu'];
+    }
     public function collection()
     {
-        return Pemeriksaan::whereBetween('tgl_periksa',[$this->laporan->periode_awal,$this->laporan->periode_akhir])
-            ->with(['anak.orangTua'])->orderBy('tgl_periksa')->get()
-            ->map(function($p,$i){ return [
-                $i+1, $p->anak->nama_anak??'-', $p->anak->orangTua->nama_ibu??'-',
+        $namaPosyandu = $this->laporan->posyandu?->nama_posyandu ?? '-';
+        return Pemeriksaan::whereBetween('tgl_periksa', [
+            $this->laporan->periode_awal,
+            $this->laporan->periode_akhir,
+        ])
+        ->with(['anak.orangTua'])
+        ->orderBy('tgl_periksa')
+        ->get()
+        ->map(function ($p, $i) use ($namaPosyandu) {
+            return [
+                $i + 1,
+                $p->anak->nama_anak ?? '-',
+                $p->anak->orangTua->nama_ibu ?? '-',
                 $p->tgl_periksa->format('d/m/Y'),
-                $p->berat_badan ? number_format($p->berat_badan,2) : '-',
-                $p->tinggi_badan ? number_format($p->tinggi_badan,2) : '-',
-                $p->lingkar_kepala ? number_format($p->lingkar_kepala,2) : '-',
-                $p->keluhan??'-',
-            ]; });
+                $p->berat_badan ? number_format($p->berat_badan, 2) : '-',
+                $p->tinggi_badan ? number_format($p->tinggi_badan, 2) : '-',
+                $p->lingkar_kepala ? number_format($p->lingkar_kepala, 2) : '-',
+                $namaPosyandu,
+            ];
+        });
     }
     public function registerEvents(): array
     {
-        return [AfterSheet::class => function(AfterSheet $e){
-            $s=$e->sheet; $lr=$s->getHighestRow();
-            $s->getStyle('A1:H1')->applyFromArray(['font'=>['bold'=>true,'color'=>['rgb'=>'FFFFFF'],'size'=>11],'fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'1B4F72']],'alignment'=>['horizontal'=>Alignment::HORIZONTAL_CENTER,'vertical'=>Alignment::VERTICAL_CENTER]]);
-            for($i=2;$i<=$lr;$i++) if($i%2==0) $s->getStyle("A{$i}:H{$i}")->applyFromArray(['fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'EBF5FB']]]);
-            $s->getStyle("A1:H{$lr}")->applyFromArray(['borders'=>['allBorders'=>['borderStyle'=>Border::BORDER_THIN,'color'=>['rgb'=>'BDC3C7']]]]);
-            $s->getStyle("A2:A{$lr}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $s->getStyle("D2:D{$lr}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $s->getRowDimension(1)->setRowHeight(25);
+        return [AfterSheet::class => function (AfterSheet $e) {
+            $s = $e->sheet;
+            $lr = $s->getHighestRow();
+            $s->insertNewRowBefore(1, 1);
+            $s->mergeCells('A1:H1');
+            $s->setCellValue('A1', 'DATA PEMERIKSAAN POSYANDU');
+            $s->getStyle('A1')->applyFromArray([
+                'font' => ['bold'=>true,'color'=>['rgb'=>'FFFFFF'],'size'=>13],
+                'fill' => ['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'0D47A1']],
+                'alignment' => ['horizontal'=>Alignment::HORIZONTAL_CENTER,'vertical'=>Alignment::VERTICAL_CENTER],
+            ]);
+            $s->getRowDimension(1)->setRowHeight(28);
+            $s->getStyle('A2:H2')->applyFromArray([
+                'font'=>['bold'=>true,'color'=>['rgb'=>'FFFFFF'],'size'=>11],
+                'fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'1B4F72']],
+                'alignment'=>['horizontal'=>Alignment::HORIZONTAL_CENTER,'vertical'=>Alignment::VERTICAL_CENTER],
+            ]);
+            $s->getRowDimension(2)->setRowHeight(22);
+            for ($i=3;$i<=$lr+1;$i++) {
+                if ($i%2==1) $s->getStyle("A{$i}:H{$i}")->applyFromArray(['fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'EBF5FB']]]);
+            }
+            $s->getStyle("A1:H".($lr+1))->applyFromArray(['borders'=>['allBorders'=>['borderStyle'=>Border::BORDER_THIN,'color'=>['rgb'=>'BDC3C7']]]]);
+            $s->getStyle("A3:A".($lr+1))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $s->getStyle("D3:D".($lr+1))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }];
     }
 }
@@ -110,27 +140,57 @@ class ImunisasiSheet implements FromCollection, WithTitle, WithHeadings, ShouldA
 {
     public function __construct(private Laporan $laporan) {}
     public function title(): string { return 'Data Imunisasi'; }
-    public function headings(): array { return ['No','Nama Balita','Nama Ibu','Nama Vaksin','Tanggal Pemberian','Nama Bidan','Catatan']; }
+    public function headings(): array
+    {
+        return ['No', 'Nama Balita', 'Nama Ibu', 'Nama Vaksin', 'Tanggal Pemberian', 'Nama Bidan', 'Catatan'];
+    }
     public function collection()
     {
-        return Imunisasi::whereBetween('tgl_pemberian',[$this->laporan->periode_awal,$this->laporan->periode_akhir])
-            ->with(['anak.orangTua','jenisVaksin','bidan'])->orderBy('tgl_pemberian')->get()
-            ->map(function($item,$idx){ return [
-                $idx+1, $item->anak->nama_anak??'-', $item->anak->orangTua->nama_ibu??'-',
-                $item->jenisVaksin->nama_vaksin??'-', $item->tgl_pemberian->format('d/m/Y'),
-                $item->bidan->nama_bidan??'-', $item->catatan??'-',
-            ]; });
+        return Imunisasi::whereBetween('tgl_pemberian', [
+            $this->laporan->periode_awal,
+            $this->laporan->periode_akhir,
+        ])
+        ->with(['anak.orangTua', 'jenisVaksin', 'bidan'])
+        ->orderBy('tgl_pemberian')
+        ->get()
+        ->map(function ($item, $idx) {
+            return [
+                $idx + 1,
+                $item->anak->nama_anak ?? '-',
+                $item->anak->orangTua->nama_ibu ?? '-',
+                $item->jenisVaksin->nama_vaksin ?? '-',
+                $item->tgl_pemberian->format('d/m/Y'),
+                $item->bidan->nama_bidan ?? '-',
+                $item->catatan ?? '-',
+            ];
+        });
     }
     public function registerEvents(): array
     {
-        return [AfterSheet::class => function(AfterSheet $e){
-            $s=$e->sheet; $lr=$s->getHighestRow();
-            $s->getStyle('A1:G1')->applyFromArray(['font'=>['bold'=>true,'color'=>['rgb'=>'FFFFFF'],'size'=>11],'fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'1B4F72']],'alignment'=>['horizontal'=>Alignment::HORIZONTAL_CENTER,'vertical'=>Alignment::VERTICAL_CENTER]]);
-            for($i=2;$i<=$lr;$i++) if($i%2==0) $s->getStyle("A{$i}:G{$i}")->applyFromArray(['fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'EBF5FB']]]);
-            $s->getStyle("A1:G{$lr}")->applyFromArray(['borders'=>['allBorders'=>['borderStyle'=>Border::BORDER_THIN,'color'=>['rgb'=>'BDC3C7']]]]);
-            $s->getStyle("A2:A{$lr}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $s->getStyle("E2:E{$lr}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $s->getRowDimension(1)->setRowHeight(25);
+        return [AfterSheet::class => function (AfterSheet $e) {
+            $s = $e->sheet;
+            $lr = $s->getHighestRow();
+            $s->insertNewRowBefore(1, 1);
+            $s->mergeCells('A1:G1');
+            $s->setCellValue('A1', 'DATA IMUNISASI POSYANDU');
+            $s->getStyle('A1')->applyFromArray([
+                'font' => ['bold'=>true,'color'=>['rgb'=>'FFFFFF'],'size'=>13],
+                'fill' => ['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'4A148C']],
+                'alignment' => ['horizontal'=>Alignment::HORIZONTAL_CENTER,'vertical'=>Alignment::VERTICAL_CENTER],
+            ]);
+            $s->getRowDimension(1)->setRowHeight(28);
+            $s->getStyle('A2:G2')->applyFromArray([
+                'font'=>['bold'=>true,'color'=>['rgb'=>'FFFFFF'],'size'=>11],
+                'fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'1B4F72']],
+                'alignment'=>['horizontal'=>Alignment::HORIZONTAL_CENTER,'vertical'=>Alignment::VERTICAL_CENTER],
+            ]);
+            $s->getRowDimension(2)->setRowHeight(22);
+            for ($i=3;$i<=$lr+1;$i++) {
+                if ($i%2==1) $s->getStyle("A{$i}:G{$i}")->applyFromArray(['fill'=>['fillType'=>Fill::FILL_SOLID,'startColor'=>['rgb'=>'F3E5F5']]]);
+            }
+            $s->getStyle("A1:G".($lr+1))->applyFromArray(['borders'=>['allBorders'=>['borderStyle'=>Border::BORDER_THIN,'color'=>['rgb'=>'BDC3C7']]]]);
+            $s->getStyle("A3:A".($lr+1))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $s->getStyle("E3:E".($lr+1))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }];
     }
 }
