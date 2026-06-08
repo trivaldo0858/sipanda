@@ -174,7 +174,12 @@ class DashboardController extends Controller
             ]);
 
         // Jadwal terdekat via posyandu orang tua
-        $idPosyandu     = $orangTua->id_posyandu;
+        $idPosyandu = $orangTua->pengguna?->id_posyandu
+            ?? $orangTua->anak()->with('pemeriksaan')->get()
+                ->flatMap(fn($a) => $a->pemeriksaan)
+                ->pluck('id_posyandu')
+                ->filter()
+                ->first();
         $jadwalTerdekat = $idPosyandu
             ? JadwalPosyandu::where('id_posyandu', $idPosyandu)
                 ->where('tgl_kegiatan', '>=', today())
