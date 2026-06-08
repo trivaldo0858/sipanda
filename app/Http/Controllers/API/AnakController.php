@@ -28,7 +28,12 @@ class AnakController extends Controller
             // OrangTua hanya lihat anaknya sendiri
             $query->where('nik_orang_tua', $user->orangTua->nik_orang_tua);
         } elseif ($user->isKader() || $user->isBidan()) {
-            // Filter by posyandu aktif
+            if ($idPosyandu) {
+                $nikOrtu = \App\Models\OrangTua::whereHas('pengguna', fn($q) =>
+                    $q->where('id_posyandu', $idPosyandu)
+                )->pluck('nik_orang_tua');
+                $query->whereIn('nik_orang_tua', $nikOrtu);
+            }
         }
 
         if ($request->filled('search')) {
@@ -85,9 +90,10 @@ class AnakController extends Controller
                 // Kredensial: NIK Balita + Tanggal Lahir (dihandle di loginOrangTua)
                 // Akun ini tidak butuh username/password karena login pakai NIK+TglLahir
                 $penggunaOrtu = Pengguna::create([
-                    'username' => null,
-                    'password' => null,
-                    'role'     => 'OrangTua',
+                    'username'   => null,
+                    'password'   => null,
+                    'role'       => 'OrangTua',
+                    'id_posyandu' => $idPosyandu,
                 ]);
 
                 $orangTua->fill([
