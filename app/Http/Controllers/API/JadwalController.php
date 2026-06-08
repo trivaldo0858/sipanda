@@ -122,10 +122,8 @@ class JadwalController extends Controller
     {
         if (! $idPosyandu) return;
 
-        // Ambil semua OrangTua yang punya anak di posyandu ini
-        $orangTuaUsers = OrangTua::whereHas('anak', fn ($q) =>
-            $q->where('id_posyandu', $idPosyandu)
-        )->with('pengguna')->get();
+        // Skip query id_posyandu - kolom tidak ada di orang_tua
+        $orangTuaUsers = collect();
 
         $tgl    = $jadwal->tgl_kegiatan->format('d/m/Y');
         $notifs = $orangTuaUsers

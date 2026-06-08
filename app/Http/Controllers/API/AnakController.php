@@ -29,9 +29,6 @@ class AnakController extends Controller
             $query->where('nik_orang_tua', $user->orangTua->nik_orang_tua);
         } elseif ($user->isKader() || $user->isBidan()) {
             // Filter by posyandu aktif
-            if ($idPosyandu) {
-                $query->where('id_posyandu', $idPosyandu);
-            }
         }
 
         if ($request->filled('search')) {

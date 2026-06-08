@@ -177,7 +177,6 @@ class LaporanController extends Controller
 
         if (in_array($jenis, ['Imunisasi', 'Gabungan'])) {
             $imunisasi = Imunisasi::whereBetween('tgl_pemberian', [$periodeAwal, $periodeAkhir])
-                ->when($idPosyandu, fn ($q) => $q->where('id_posyandu', $idPosyandu))
                 ->with('jenisVaksin')
                 ->get();
 
@@ -204,7 +203,6 @@ class LaporanController extends Controller
 
         if (in_array($jenis, ['Pemeriksaan', 'Gabungan'])) {
             $detail['pemeriksaan'] = Pemeriksaan::whereBetween('tgl_periksa', [$periodeAwal, $periodeAkhir])
-                ->when($idPosyandu, fn ($q) => $q->where('id_posyandu', $idPosyandu))
                 ->with(['anak.orangTua', 'bidan'])
                 ->orderBy('tgl_periksa')
                 ->get()
@@ -223,7 +221,6 @@ class LaporanController extends Controller
 
         if (in_array($jenis, ['Imunisasi', 'Gabungan'])) {
             $detail['imunisasi'] = Imunisasi::whereBetween('tgl_pemberian', [$periodeAwal, $periodeAkhir])
-                ->when($idPosyandu, fn ($q) => $q->where('id_posyandu', $idPosyandu))
                 ->with(['anak.orangTua', 'jenisVaksin', 'bidan'])
                 ->orderBy('tgl_pemberian')
                 ->get()

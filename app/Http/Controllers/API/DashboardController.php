@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Anak;
 use App\Models\Imunisasi;
 use App\Models\JadwalPosyandu;
+use App\Models\OrangTua;
 use App\Models\Pemeriksaan;
 use Illuminate\Http\Request;
 
@@ -27,12 +28,7 @@ class DashboardController extends Controller
     private function dashboardKader($user)
     {
         $idPosyandu = $user->getPosyanduAktifId();
-
-        // Hitung balita unik berdasarkan pemeriksaan di posyandu ini
-        $totalAnak = Pemeriksaan::where('id_posyandu', $idPosyandu)
-            ->distinct('nik_anak')
-            ->count('nik_anak');
-
+        $totalAnak = \App\Models\Anak::count();
         $pemeriksaanBulanIni = Pemeriksaan::where('id_posyandu', $idPosyandu)
             ->whereMonth('tgl_periksa', now()->month)
             ->whereYear('tgl_periksa', now()->year)
@@ -86,11 +82,7 @@ class DashboardController extends Controller
         $idPosyandu = $user->getPosyanduAktifId();
         $nip        = $user->bidan?->nip;
 
-        // Hitung balita unik berdasarkan pemeriksaan di posyandu ini
-        $totalAnak = Pemeriksaan::where('id_posyandu', $idPosyandu)
-            ->distinct('nik_anak')
-            ->count('nik_anak');
-
+        $totalAnak = \App\Models\Anak::count();
         $totalPemeriksaan = Pemeriksaan::where('id_posyandu', $idPosyandu)
             ->whereMonth('tgl_periksa', now()->month)
             ->whereYear('tgl_periksa', now()->year)
@@ -182,16 +174,8 @@ class DashboardController extends Controller
                 'lingkar_terakhir'=> $a->pemeriksaan->first()?->lingkar_kepala,
             ]);
 
-        // Jadwal via pemeriksaan anak — ambil id_posyandu dari pemeriksaan terakhir
-        $idPosyandu = null;
-        if ($orangTua->anak->isNotEmpty()) {
-            $pemeriksaanTerakhir = Pemeriksaan::whereIn(
-                'nik_anak',
-                $orangTua->anak->pluck('nik_anak')
-            )->latest('tgl_periksa')->first();
-            $idPosyandu = $pemeriksaanTerakhir?->id_posyandu;
-        }
-
+        // Jadwal terdekat via posyandu orang tua
+        $idPosyandu     = $orangTua->id_posyandu;
         $jadwalTerdekat = $idPosyandu
             ? JadwalPosyandu::where('id_posyandu', $idPosyandu)
                 ->where('tgl_kegiatan', '>=', today())
@@ -206,10 +190,10 @@ class DashboardController extends Controller
         return response()->json([
             'success' => true,
             'data'    => [
-                'role'              => 'OrangTua',
-                'nama_ibu'          => $orangTua->nama_ibu,
-                'daftar_anak'       => $anakList,
-                'jadwal_terdekat'   => $jadwalTerdekat ? [
+                'role'             => 'OrangTua',
+                'nama_ibu'         => $orangTua->nama_ibu,
+                'daftar_anak'      => $anakList,
+                'jadwal_terdekat'  => $jadwalTerdekat ? [
                     'id_jadwal'    => $jadwalTerdekat->id_jadwal,
                     'tgl_kegiatan' => $jadwalTerdekat->tgl_kegiatan->format('Y-m-d'),
                     'lokasi'       => $jadwalTerdekat->lokasi,
