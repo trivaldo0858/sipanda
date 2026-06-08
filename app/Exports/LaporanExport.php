@@ -38,7 +38,8 @@ class RingkasanSheet implements FromCollection, WithTitle, WithHeadings, ShouldA
     {
         $awal  = $this->laporan->periode_awal;
         $akhir = $this->laporan->periode_akhir;
-        $p = Pemeriksaan::whereBetween('tgl_periksa', [$awal, $akhir])->get();
+        $idPosyandu = $this->laporan->id_posyandu;
+        $p = Pemeriksaan::whereBetween('tgl_periksa', [$awal, $akhir])->where('id_posyandu', $idPosyandu)->get();
         $nikAnak = \App\Models\Anak::whereHas('orangTua.pengguna', fn($q) => $q->where('id_posyandu', $this->laporan->id_posyandu))->pluck('nik_anak');
         $i = Imunisasi::whereBetween('tgl_pemberian', [$awal, $akhir])->whereIn('nik_anak', $nikAnak)->get();
         $rataBB = $p->whereNotNull('berat_badan')->avg('berat_badan');
@@ -87,10 +88,12 @@ class PemeriksaanSheet implements FromCollection, WithTitle, WithHeadings, Shoul
     public function collection()
     {
         $namaPosyandu = $this->laporan->posyandu?->nama_posyandu ?? '-';
+        $idPosyandu = $this->laporan->id_posyandu;
         return Pemeriksaan::whereBetween('tgl_periksa', [
             $this->laporan->periode_awal,
             $this->laporan->periode_akhir,
         ])
+        ->where('id_posyandu', $idPosyandu)
         ->with(['anak.orangTua'])
         ->orderBy('tgl_periksa')
         ->get()
