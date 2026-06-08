@@ -48,7 +48,7 @@ class RingkasanSheet implements FromCollection, WithTitle, WithHeadings, ShouldA
         $periodeAwal  = $this->laporan->periode_awal;
         $periodeAkhir = $this->laporan->periode_akhir;
 
-        $pemeriksaan = Pemeriksaan::whereBetween('tgl_pemeriksaan', [$periodeAwal, $periodeAkhir])->get();
+        $pemeriksaan = Pemeriksaan::whereBetween('tgl_periksa', [$periodeAwal, $periodeAkhir])->get();
         $imunisasi   = Imunisasi::whereBetween('tgl_pemberian', [$periodeAwal, $periodeAkhir])->get();
 
         return collect([
@@ -102,24 +102,24 @@ class PemeriksaanSheet implements FromCollection, WithTitle, WithHeadings, Shoul
 
     public function collection()
     {
-        $data = Pemeriksaan::whereBetween('tgl_pemeriksaan', [
+        $data = Pemeriksaan::whereBetween('tgl_periksa', [
             $this->laporan->periode_awal,
             $this->laporan->periode_akhir,
         ])
-        ->with(['anak.orangTua', 'kader', 'bidan'])
-        ->orderBy('tgl_pemeriksaan')
+        ->with(['anak.orangTua', 'bidan'])
+        ->orderBy('tgl_periksa')
         ->get();
 
         return $data->map(fn ($p, $i) => [
             $i + 1,
             $p->anak->nama_anak ?? '-',
             $p->anak->orangTua->nama_ibu ?? '-',
-            $p->tgl_pemeriksaan->format('d/m/Y'),
+            $p->tgl_periksa->format('d/m/Y'),
             $p->berat_badan ?? '-',
             $p->tinggi_badan ?? '-',
             $p->lingkar_kepala ?? '-',
             $p->keluhan ?? '-',
-            $p->kader->nama_kader ?? '-',
+            '-',
             $p->bidan->nama_bidan ?? '-',
         ]);
     }
