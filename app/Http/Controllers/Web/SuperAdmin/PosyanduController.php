@@ -11,18 +11,41 @@ class PosyanduController extends Controller
 {
     public function index(Request $request)
     {
-        $posyandu = Posyandu::withCount([
-            'penggunaKader as kader_count',
-            'penggunaBidan as bidan_count',
-        ])
-        ->when(
-            $request->search,
-            fn($q) => $q->where('nama_posyandu', 'like', '%' . $request->search . '%')
-        )
-        ->paginate(10)
-        ->withQueryString();
+        $wilayah = Posyandu::query()
+            ->whereNotNull('kecamatan')
+            ->where('kecamatan', '!=', '')
+            ->select('kecamatan')
+            ->distinct()
+            ->orderBy('kecamatan')
+            ->pluck('kecamatan');
 
-        return view('superadmin.posyandu.index', compact('posyandu'));
+        $posyandu = Posyandu::query()
+
+            // SEARCH
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $query->where(
+                    'nama_posyandu',
+                    'like',
+                    '%' . $request->search . '%'
+                );
+            })
+
+            // FILTER WILAYAH
+            ->when($request->filled('wilayah'), function ($query) use ($request) {
+                $query->where(
+                    'kecamatan',
+                    $request->wilayah
+                );
+            })
+
+            ->orderBy('nama_posyandu')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view(
+            'superadmin.posyandu.index',
+            compact('posyandu', 'wilayah')
+        );
     }
 
     public function create()
@@ -33,25 +56,36 @@ class PosyanduController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_posyandu'  => 'required|string|max:100',
-            'kecamatan'      => 'required|string|max:100',
+            'nama_posyandu' => 'required|string|max:100',
+            'kecamatan' => 'required|string|max:100',
             'desa_kelurahan' => 'required|string|max:100',
-            'alamat'         => 'required|string',
+            'alamat' => 'required|string',
             'kabupaten_kota' => 'nullable|string|max:100',
             'password_kader' => 'required|string|min:6',
         ]);
 
         Posyandu::create([
-            'nama_posyandu'  => $request->nama_posyandu,
-            'kecamatan'      => $request->kecamatan,
+            'nama_posyandu' => $request->nama_posyandu,
+            'kecamatan' => $request->kecamatan,
             'desa_kelurahan' => $request->desa_kelurahan,
-            'alamat'         => $request->alamat,
+            'alamat' => $request->alamat,
             'kabupaten_kota' => $request->kabupaten_kota ?? 'Indramayu',
             'password_kader' => Hash::make($request->password_kader),
         ]);
 
         return redirect()->route('superadmin.posyandu.index')
             ->with('success', 'Posyandu berhasil ditambahkan.');
+    }
+
+    public function show($id)
+    {
+        $posyandu = Posyandu::with([
+            'bidan',
+        ])
+            ->withCount('anak')
+            ->findOrFail($id);
+
+        return view('superadmin.posyandu.show', compact('posyandu'));
     }
 
     public function edit($id)
@@ -65,19 +99,19 @@ class PosyanduController extends Controller
         $posyandu = Posyandu::findOrFail($id);
 
         $request->validate([
-            'nama_posyandu'  => 'required|string|max:100',
-            'kecamatan'      => 'required|string|max:100',
+            'nama_posyandu' => 'required|string|max:100',
+            'kecamatan' => 'required|string|max:100',
             'desa_kelurahan' => 'required|string|max:100',
-            'alamat'         => 'required|string',
+            'alamat' => 'required|string',
             'kabupaten_kota' => 'nullable|string|max:100',
             'password_kader' => 'nullable|string|min:6',
         ]);
 
         $data = [
-            'nama_posyandu'  => $request->nama_posyandu,
-            'kecamatan'      => $request->kecamatan,
+            'nama_posyandu' => $request->nama_posyandu,
+            'kecamatan' => $request->kecamatan,
             'desa_kelurahan' => $request->desa_kelurahan,
-            'alamat'         => $request->alamat,
+            'alamat' => $request->alamat,
             'kabupaten_kota' => $request->kabupaten_kota ?? 'Indramayu',
         ];
 

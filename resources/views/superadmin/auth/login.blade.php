@@ -1,14 +1,14 @@
 @extends('layouts.auth')
 
-@section('title', 'SIPANDA')
+@section('title', 'Posyandu-In')
 
 @section('content')
     <div class="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 font-sans">
 
         {{-- Header Section sesuai mockup --}}
         <div class="text-center mb-10">
-            <h1 class="text-5xl font-black text-blue-600 tracking-tighter">SIPANDA</h1>
-            <p class="text-slate-500 font-medium text-sm mt-2">Sistem Posyandu Anak Digital</p>
+            <h1 class="text-5xl font-black text-blue-600 tracking-tighter">Posyandu-In</h1>
+            <p class="text-slate-500 font-medium text-sm mt-2">Sistem Posyandu Kabupaten Indramayu</p>
         </div>
 
         {{-- Login Card Modern --}}

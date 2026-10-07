@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Posyandu extends Model
 {
-    protected $table      = 'posyandu';
+    protected $table = 'posyandu';
     protected $primaryKey = 'id_posyandu';
 
     protected $fillable = [
@@ -16,16 +16,26 @@ class Posyandu extends Model
         'alamat',
         'kabupaten_kota',
         'password_kader',
+        'latitude',
+        'longitude',
     ];
 
     protected $hidden = ['password_kader'];
+    protected $appends = ['total_balita'];
 
     // ── Relasi ────────────────────────────────────────────────────────
 
     // Bidan terhubung ke posyandu via pengguna.id_posyandu
     public function bidan()
     {
-        return $this->hasMany(Bidan::class, 'id_posyandu', 'id_posyandu');
+        return $this->hasManyThrough(
+            Bidan::class,
+            Pengguna::class,
+            'id_posyandu',
+            'id_user',
+            'id_posyandu',
+            'id_user'
+        );
     }
 
     // Kader tidak punya id_posyandu langsung —
@@ -33,18 +43,22 @@ class Posyandu extends Model
     public function penggunaKader()
     {
         return $this->hasMany(Pengguna::class, 'id_posyandu', 'id_posyandu')
-                    ->where('role', 'Kader');
+            ->where('role', 'Kader');
     }
 
     public function penggunaBidan()
     {
         return $this->hasMany(Pengguna::class, 'id_posyandu', 'id_posyandu')
-                    ->where('role', 'Bidan');
+            ->where('role', 'Bidan');
     }
 
     public function anak()
     {
-    return $this->hasMany(\App\Models\Anak::class, 'id_posyandu_kader');
+        return $this->hasMany(
+            \App\Models\Anak::class,
+            'id_posyandu',
+            'id_posyandu'
+        );
     }
 
     public function jadwal()

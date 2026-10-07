@@ -75,8 +75,11 @@
             class="w-72 bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 flex flex-col p-8 sticky top-6 h-[calc(100vh-3rem)] transition-all">
 
             {{-- Brand Section --}}
-            <div class="flex items-center gap-4 mb-12 px-2">
-                <h1 class="text-xl font-bold text-slate-700 tracking-tight">SIPANDA</h1>
+            <div class="flex items-center justify-center mb-8">
+                <h1 class="text-[24px] leading-[53px] font-black text-[#155DFC] tracking-[-0.5px]"
+                    style="-webkit-text-stroke: 0.5px #155dfc;">
+                    Posyandu-In
+                </h1>
             </div>
 
             {{-- Navigasi Menu --}}
@@ -132,7 +135,7 @@
                             <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg>
-                        <span class="font-bold text-sm">Manajemen Pengguna</span>
+                        <span class="font-bold text-sm">Pengguna</span>
                     </a>
                 </div>
 
