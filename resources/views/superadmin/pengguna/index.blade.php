@@ -115,17 +115,17 @@
                                         </span>
                                     </td>
 
-                                    <td class="px-6 py-5">
-                                        <div class="flex flex-wrap gap-2 max-w-md">
-                                            @forelse($item->posyanduList as $ps)
-                                                <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
-                                                    {{ $ps->nama_posyandu }}
-                                                </span>
-                                            @empty
-                                                <span class="text-slate-400 text-sm italic">Belum ditentukan</span>
-                                            @endforelse
-                                        </div>
-                                    </td>
+<td class="px-6 py-5">
+    @if($item->posyandu)
+        <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm">
+            {{ $item->posyandu->nama_posyandu }}
+        </span>
+    @else
+        <span class="text-slate-400 text-sm italic">
+            Belum ditentukan
+        </span>
+    @endif
+</td>
 
                                     <td class="px-6 py-5">
                                         <div class="flex items-center justify-end gap-3 pr-6">

@@ -16,15 +16,15 @@ class DashboardController extends Controller
         $user = $request->user();
 
         return match ($user->role) {
-            'Kader'    => $this->dashboardKader($user),
-            'Bidan'    => $this->dashboardBidan($user),
+            'Posyandu' => $this->dashboardPosyandu($user),
+            'Bidan' => $this->dashboardBidan($user),
             'OrangTua' => $this->dashboardOrangTua($user),
-            default    => response()->json(['success' => false, 'message' => 'Role tidak dikenal.'], 403),
+            default => response()->json(['success' => false, 'message' => 'Role tidak dikenal.'], 403),
         };
     }
 
-    // ── Dashboard Kader ───────────────────────────────────────────────
-    private function dashboardKader($user)
+    // ── Dashboard Posyandu ───────────────────────────────────────────────
+    private function dashboardPosyandu($user)
     {
         $idPosyandu = $user->getPosyanduAktifId();
 
@@ -52,28 +52,28 @@ class DashboardController extends Controller
             ->orderBy('tgl_periksa', 'desc')
             ->take(5)
             ->get()
-            ->map(fn ($p) => [
-                'nik_anak'        => $p->nik_anak,
-                'nama_anak'       => $p->anak->nama_anak ?? '-',
-                'tgl_periksa'     => $p->tgl_periksa->format('Y-m-d H:i:s'),
-                'berat_badan'     => $p->berat_badan,
-                'tinggi_badan'    => $p->tinggi_badan,
+            ->map(fn($p) => [
+                'nik_anak' => $p->nik_anak,
+                'nama_anak' => $p->anak->nama_anak ?? '-',
+                'tgl_periksa' => $p->tgl_periksa->format('Y-m-d H:i:s'),
+                'berat_badan' => $p->berat_badan,
+                'tinggi_badan' => $p->tinggi_badan,
                 'status_validasi' => $p->status_validasi,
             ]);
 
         return response()->json([
             'success' => true,
-            'data'    => [
-                'role'                  => 'Kader',
-                'nama_posyandu'         => $user->posyandu?->nama_posyandu,
-                'total_balita'          => $totalAnak,
+            'data' => [
+                'role' => 'Posyandu',
+                'nama_posyandu' => $user->posyandu?->nama_posyandu,
+                'total_balita' => $totalAnak,
                 'pemeriksaan_bulan_ini' => $pemeriksaanBulanIni,
-                'menunggu_validasi'     => $menungguValidasi,
-                'jadwal_terdekat'       => $jadwalTerdekat ? [
-                    'id_jadwal'    => $jadwalTerdekat->id_jadwal,
+                'menunggu_validasi' => $menungguValidasi,
+                'jadwal_terdekat' => $jadwalTerdekat ? [
+                    'id_jadwal' => $jadwalTerdekat->id_jadwal,
                     'tgl_kegiatan' => $jadwalTerdekat->tgl_kegiatan->format('Y-m-d'),
-                    'lokasi'       => $jadwalTerdekat->lokasi,
-                    'agenda'       => $jadwalTerdekat->agenda,
+                    'lokasi' => $jadwalTerdekat->lokasi,
+                    'agenda' => $jadwalTerdekat->agenda,
                 ] : null,
                 'aktivitas_terbaru' => $aktivitasTerbaru,
             ],
@@ -84,7 +84,7 @@ class DashboardController extends Controller
     private function dashboardBidan($user)
     {
         $idPosyandu = $user->getPosyanduAktifId();
-        $nip        = $user->bidan?->nip;
+        $nip = $user->bidan?->nip;
 
         // Hitung balita unik berdasarkan pemeriksaan di posyandu ini
         $totalAnak = Pemeriksaan::where('id_posyandu', $idPosyandu)
@@ -118,32 +118,32 @@ class DashboardController extends Controller
                 ->orderBy('tgl_pemberian', 'desc')
                 ->take(5)
                 ->get()
-                ->map(fn ($i) => [
-                    'nik_anak'      => $i->nik_anak,
-                    'nama_anak'     => $i->anak?->nama_anak ?? '-',
-                    'nama_vaksin'   => $i->jenisVaksin?->nama_vaksin ?? '-',
+                ->map(fn($i) => [
+                    'nik_anak' => $i->nik_anak,
+                    'nama_anak' => $i->anak?->nama_anak ?? '-',
+                    'nama_vaksin' => $i->jenisVaksin?->nama_vaksin ?? '-',
                     'tgl_pemberian' => $i->tgl_pemberian->format('Y-m-d H:i:s'),
                 ])
             : [];
 
         return response()->json([
             'success' => true,
-            'data'    => [
-                'role'                          => 'Bidan',
-                'nama_posyandu'                 => $user->posyandu?->nama_posyandu,
-                'profil_bidan'                  => $user->bidan ? [
-                    'nip'        => $user->bidan->nip,
+            'data' => [
+                'role' => 'Bidan',
+                'nama_posyandu' => $user->posyandu?->nama_posyandu,
+                'profil_bidan' => $user->bidan ? [
+                    'nip' => $user->bidan->nip,
                     'nama_bidan' => $user->bidan->nama_bidan,
                 ] : null,
-                'total_anak'                    => $totalAnak,
-                'total_pemeriksaan_bulan'       => $totalPemeriksaan,
-                'balita_perlu_imunisasi'        => $totalImunisasi,
-                'imunisasi_bulan_ini'           => $totalImunisasi,
+                'total_anak' => $totalAnak,
+                'total_pemeriksaan_bulan' => $totalPemeriksaan,
+                'balita_perlu_imunisasi' => $totalImunisasi,
+                'imunisasi_bulan_ini' => $totalImunisasi,
                 'pemeriksaan_menunggu_validasi' => $menungguValidasi,
-                'jadwal_terdekat'               => $jadwalTerdekat ? [
-                    'id_jadwal'    => $jadwalTerdekat->id_jadwal,
+                'jadwal_terdekat' => $jadwalTerdekat ? [
+                    'id_jadwal' => $jadwalTerdekat->id_jadwal,
                     'tgl_kegiatan' => $jadwalTerdekat->tgl_kegiatan->format('Y-m-d'),
-                    'lokasi'       => $jadwalTerdekat->lokasi,
+                    'lokasi' => $jadwalTerdekat->lokasi,
                 ] : null,
                 'aktivitas_imunisasi' => $aktivitasImunisasi,
             ],
@@ -155,7 +155,7 @@ class DashboardController extends Controller
     {
         $orangTua = $user->orangTua;
 
-        if (! $orangTua) {
+        if (!$orangTua) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data orang tua tidak ditemukan.',
@@ -164,22 +164,22 @@ class DashboardController extends Controller
 
         $anakList = $orangTua->anak()
             ->with([
-                'pemeriksaan' => fn ($q) => $q
+                'pemeriksaan' => fn($q) => $q
                     ->where('status_validasi', 'Disetujui')
                     ->latest('tgl_periksa')
                     ->take(1),
             ])
             ->get()
-            ->map(fn ($a) => [
-                'nik_anak'        => $a->nik_anak,
-                'nama_anak'       => $a->nama_anak,
-                'tgl_lahir'       => $a->tgl_lahir->format('Y-m-d'),
-                'jenis_kelamin'   => $a->jenis_kelamin,
-                'umur_bulan'      => $a->umur_bulan,
-                'umur_format'     => $a->umur_format,
-                'berat_terakhir'  => $a->pemeriksaan->first()?->berat_badan,
+            ->map(fn($a) => [
+                'nik_anak' => $a->nik_anak,
+                'nama_anak' => $a->nama_anak,
+                'tgl_lahir' => $a->tgl_lahir->format('Y-m-d'),
+                'jenis_kelamin' => $a->jenis_kelamin,
+                'umur_bulan' => $a->umur_bulan,
+                'umur_format' => $a->umur_format,
+                'berat_terakhir' => $a->pemeriksaan->first()?->berat_badan,
                 'tinggi_terakhir' => $a->pemeriksaan->first()?->tinggi_badan,
-                'lingkar_terakhir'=> $a->pemeriksaan->first()?->lingkar_kepala,
+                'lingkar_terakhir' => $a->pemeriksaan->first()?->lingkar_kepala,
             ]);
 
         // Jadwal via pemeriksaan anak — ambil id_posyandu dari pemeriksaan terakhir
@@ -205,15 +205,15 @@ class DashboardController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => [
-                'role'              => 'OrangTua',
-                'nama_ibu'          => $orangTua->nama_ibu,
-                'daftar_anak'       => $anakList,
-                'jadwal_terdekat'   => $jadwalTerdekat ? [
-                    'id_jadwal'    => $jadwalTerdekat->id_jadwal,
+            'data' => [
+                'role' => 'OrangTua',
+                'nama_ibu' => $orangTua->nama_ibu,
+                'daftar_anak' => $anakList,
+                'jadwal_terdekat' => $jadwalTerdekat ? [
+                    'id_jadwal' => $jadwalTerdekat->id_jadwal,
                     'tgl_kegiatan' => $jadwalTerdekat->tgl_kegiatan->format('Y-m-d'),
-                    'lokasi'       => $jadwalTerdekat->lokasi,
-                    'agenda'       => $jadwalTerdekat->agenda,
+                    'lokasi' => $jadwalTerdekat->lokasi,
+                    'agenda' => $jadwalTerdekat->agenda,
                 ] : null,
                 'notifikasi_unread' => $notifBelumBaca,
             ],

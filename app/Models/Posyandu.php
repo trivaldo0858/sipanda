@@ -15,12 +15,10 @@ class Posyandu extends Model
         'desa_kelurahan',
         'alamat',
         'kabupaten_kota',
-        'password_kader',
         'latitude',
         'longitude',
     ];
 
-    protected $hidden = ['password_kader'];
     protected $appends = ['total_balita'];
 
     // ── Relasi ────────────────────────────────────────────────────────
@@ -36,14 +34,6 @@ class Posyandu extends Model
             'id_posyandu',
             'id_user'
         );
-    }
-
-    // Kader tidak punya id_posyandu langsung —
-    // terhubung via pengguna.id_posyandu
-    public function penggunaKader()
-    {
-        return $this->hasMany(Pengguna::class, 'id_posyandu', 'id_posyandu')
-            ->where('role', 'Kader');
     }
 
     public function penggunaBidan()
@@ -73,12 +63,11 @@ class Posyandu extends Model
 
     public function penggunaAkses()
     {
-        return $this->belongsToMany(
+        return $this->hasOne(
             Pengguna::class,
-            'pengguna_posyandu',
             'id_posyandu',
-            'id_user'
-        )->withTimestamps();
+            'id_posyandu'
+        )->where('role', 'Posyandu');
     }
 
     // ── Accessor ──────────────────────────────────────────────────────
@@ -86,11 +75,6 @@ class Posyandu extends Model
     public function getTotalBalitaAttribute(): int
     {
         return $this->anak()->count();
-    }
-
-    public function getTotalKaderAttribute(): int
-    {
-        return $this->penggunaKader()->count();
     }
 
     public function getTotalBidanAttribute(): int

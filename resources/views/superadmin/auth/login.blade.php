@@ -15,7 +15,7 @@
         <div
             class="w-full max-w-[440px] bg-white p-12 rounded-[3rem] shadow-2xl shadow-slate-200/60 border border-slate-50">
 
-            <form action="{{ url('/superadmin/login') }}" method="POST" class="space-y-10">
+            <form action="{{ route('superadmin.login.post') }}" method="POST" class="space-y-10">
                 @csrf
 
                 {{-- Input Group: Nama Pengguna --}}

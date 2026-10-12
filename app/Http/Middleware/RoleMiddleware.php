@@ -14,7 +14,7 @@ class RoleMiddleware
     {
         $user = $request->user();
 
-        if (! $user) {
+        if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthenticated.',
@@ -22,7 +22,7 @@ class RoleMiddleware
         }
 
         // Cocokkan role user dengan yang diizinkan
-        if (! in_array($user->role, $roles)) {
+        if (!in_array($user->role, $roles)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akses ditolak. Role tidak diizinkan.',

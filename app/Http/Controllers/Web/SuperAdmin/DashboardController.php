@@ -33,10 +33,32 @@ class DashboardController extends Controller
             )
             ->get();
 
+        $lastMapSync = now();
 
         return view('superadmin.dashboard.index', compact(
             'stats',
-            'posyanduMap'
+            'posyanduMap',
+            'lastMapSync'
         ));
     }
+    public function mapData()
+{
+    $posyanduMap = Posyandu::with('bidan')
+        ->select(
+            'id_posyandu',
+            'nama_posyandu',
+            'desa_kelurahan',
+            'kecamatan',
+            'alamat',
+            'latitude',
+            'longitude'
+        )
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $posyanduMap,
+        'last_updated' => now()->toIso8601String(),
+    ]);
+}
 }

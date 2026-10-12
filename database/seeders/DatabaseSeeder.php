@@ -18,30 +18,48 @@ class DatabaseSeeder extends Seeder
             ['username' => 'superadmin'],
             [
                 'password' => Hash::make('admin123'),
-                'role'     => 'SuperAdmin',
+                'role' => 'SuperAdmin',
             ]
         );
 
-        // ── Posyandu ──────────────────────────────────────────────────
+
+        // ── Data Posyandu ─────────────────────────────────────────────
         $posyandu1 = Posyandu::updateOrCreate(
             ['nama_posyandu' => 'Posyandu Mawar'],
             [
-                'kecamatan'      => 'Lohbener',
+                'kecamatan' => 'Lohbener',
                 'desa_kelurahan' => 'Lohbener',
-                'alamat'         => 'Jl. Mawar No. 10',
+                'alamat' => 'Jl. Mawar No. 10',
                 'kabupaten_kota' => 'Indramayu',
-                'password_kader' => Hash::make('kader123'),
             ]
         );
 
         $posyandu2 = Posyandu::updateOrCreate(
             ['nama_posyandu' => 'Posyandu Melati'],
             [
-                'kecamatan'      => 'Sindang',
+                'kecamatan' => 'Sindang',
                 'desa_kelurahan' => 'Sindang',
-                'alamat'         => 'Jl. Melati No. 5',
+                'alamat' => 'Jl. Melati No. 5',
                 'kabupaten_kota' => 'Indramayu',
-                'password_kader' => Hash::make('kader123'),
+            ]
+        );
+
+        // ── Akun Posyandu ─────────────────────────────────────────────
+        Pengguna::updateOrCreate(
+            ['id_posyandu' => $posyandu1->id_posyandu, 'role' => 'Posyandu'],
+            [
+                'username' => 'posyandu_mawar',
+                'password' => Hash::make('kader123'),
+                'role' => 'Posyandu',
+            ]
+        );
+
+        Pengguna::updateOrCreate(
+            ['id_posyandu' => $posyandu2->id_posyandu, 'role' => 'Posyandu'],
+            [
+                'username' => 'posyandu_melati',
+                'password' => Hash::make('kader123'),
+                'role' => 'Posyandu',
             ]
         );
 
@@ -49,9 +67,9 @@ class DatabaseSeeder extends Seeder
         $bidanUser1 = Pengguna::updateOrCreate(
             ['username' => 'bidan_sari'],
             [
-                'password'          => Hash::make('password123'),
-                'role'              => 'Bidan',
-                'id_posyandu'       => $posyandu1->id_posyandu,
+                'password' => Hash::make('password123'),
+                'role' => 'Bidan',
+                'id_posyandu' => $posyandu1->id_posyandu,
                 'id_posyandu_aktif' => $posyandu1->id_posyandu,
             ]
         );
@@ -60,9 +78,9 @@ class DatabaseSeeder extends Seeder
         Bidan::updateOrCreate(
             ['nip' => '199001012020012001'],
             [
-                'id_user'    => $bidanUser1->id_user,
+                'id_user' => $bidanUser1->id_user,
                 'nama_bidan' => 'Sari Dewi, A.Md.Keb',
-                'no_telp'    => '081234567890',
+                'no_telp' => '081234567890',
             ]
         );
 
@@ -70,9 +88,9 @@ class DatabaseSeeder extends Seeder
         $bidanUser2 = Pengguna::updateOrCreate(
             ['username' => 'bidan_rina'],
             [
-                'password'          => Hash::make('password123'),
-                'role'              => 'Bidan',
-                'id_posyandu'       => $posyandu2->id_posyandu,
+                'password' => Hash::make('password123'),
+                'role' => 'Bidan',
+                'id_posyandu' => $posyandu2->id_posyandu,
                 'id_posyandu_aktif' => $posyandu2->id_posyandu,
             ]
         );
@@ -80,26 +98,26 @@ class DatabaseSeeder extends Seeder
         Bidan::updateOrCreate(
             ['nip' => '199501012021012002'],
             [
-                'id_user'    => $bidanUser2->id_user,
+                'id_user' => $bidanUser2->id_user,
                 'nama_bidan' => 'Rina Susanti, A.Md.Keb',
-                'no_telp'    => '082345678901',
+                'no_telp' => '082345678901',
             ]
         );
 
         // ── Jenis Vaksin ──────────────────────────────────────────────
         $vaksinList = [
-            ['nama_vaksin' => 'BCG',        'deskripsi' => 'Vaksin tuberkulosis'],
+            ['nama_vaksin' => 'BCG', 'deskripsi' => 'Vaksin tuberkulosis'],
             ['nama_vaksin' => 'Hepatitis B', 'deskripsi' => 'Vaksin Hepatitis B'],
             ['nama_vaksin' => 'DPT-HB-Hib', 'deskripsi' => 'Vaksin kombinasi'],
-            ['nama_vaksin' => 'Polio',       'deskripsi' => 'Vaksin polio oral'],
-            ['nama_vaksin' => 'Campak',      'deskripsi' => 'Vaksin campak rubela'],
-            ['nama_vaksin' => 'IPV',         'deskripsi' => 'Vaksin polio suntik'],
+            ['nama_vaksin' => 'Polio', 'deskripsi' => 'Vaksin polio oral'],
+            ['nama_vaksin' => 'Campak', 'deskripsi' => 'Vaksin campak rubela'],
+            ['nama_vaksin' => 'IPV', 'deskripsi' => 'Vaksin polio suntik'],
         ];
 
         foreach ($vaksinList as $v) {
             JenisVaksin::updateOrCreate(
                 ['nama_vaksin' => $v['nama_vaksin']],
-                ['deskripsi'   => $v['deskripsi']]
+                ['deskripsi' => $v['deskripsi']]
             );
         }
     }

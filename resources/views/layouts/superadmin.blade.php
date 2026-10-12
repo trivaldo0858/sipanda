@@ -1,7 +1,3 @@
-{{-- resources/views/layouts/superadmin.blade.php --}}
-<!DOCTYPE html>
-<html lang="id">
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -62,6 +58,7 @@
             border-radius: 10px;
         }
     </style>
+    @stack('styles')
 </head>
 
 <body class="bg-softbg text-slate-800 font-sans">
@@ -160,12 +157,12 @@
         </aside>
 
         <!-- Konten Utama -->
-        <main class="flex-1 bg-white rounded-[2.5rem] shadow-sm border border-slate-50 p-10 overflow-y-auto">
+        <main class="flex-1 min-w-0 bg-white rounded-[2.5rem] shadow-sm border border-slate-50 p-10 overflow-y-auto">
             @yield('content')
         </main>
 
     </div>
-    @stack('scripts') {{-- Tempat script dari halaman lain akan menempel --}}
+    @stack('scripts')
 </body>
 
 </html>

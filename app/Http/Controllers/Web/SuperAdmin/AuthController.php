@@ -42,14 +42,14 @@ class AuthController extends Controller
             ->first();
 
         // Validasi username
-        if (! $pengguna) {
+        if (!$pengguna) {
             return back()
                 ->withInput($request->only('username'))
                 ->withErrors(['username' => 'Username tidak ditemukan atau bukan Super Admin.']);
         }
 
         // Validasi password
-        if (! Hash::check($request->password, $pengguna->password)) {
+        if (!Hash::check($request->password, $pengguna->password)) {
             return back()
                 ->withInput($request->only('username'))
                 ->withErrors(['password' => 'Password salah.']);

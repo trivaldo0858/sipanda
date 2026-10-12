@@ -12,7 +12,7 @@ class Pengguna extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $table      = 'pengguna';
+    protected $table = 'pengguna';
     protected $primaryKey = 'id_user';
 
     protected $fillable = [
@@ -24,7 +24,7 @@ class Pengguna extends Authenticatable
     ];
 
     protected $hidden = ['password', 'remember_token'];
-    protected $casts  = ['password' => 'hashed'];
+    protected $casts = ['password' => 'hashed'];
 
     public function bidan()
     {
@@ -51,20 +51,24 @@ class Pengguna extends Authenticatable
         return $this->belongsTo(Posyandu::class, 'id_posyandu_aktif', 'id_posyandu');
     }
 
-    public function posyanduList()
+    public function isSuperAdmin(): bool
     {
-        return $this->belongsToMany(
-            Posyandu::class,
-            'pengguna_posyandu',
-            'id_user',
-            'id_posyandu'
-        )->withTimestamps();
+        return $this->role === 'SuperAdmin';
+    }
+    public function isBidan(): bool
+    {
+        return $this->role === 'Bidan';
     }
 
-    public function isSuperAdmin(): bool { return $this->role === 'SuperAdmin'; }
-    public function isBidan(): bool      { return $this->role === 'Bidan'; }
-    public function isKader(): bool      { return $this->role === 'Kader'; }
-    public function isOrangTua(): bool   { return $this->role === 'OrangTua'; }
+    public function isPosyandu(): bool
+    {
+        return $this->role === 'Posyandu';
+    }
+
+    public function isOrangTua(): bool
+    {
+        return $this->role === 'OrangTua';
+    }
 
     public function getPosyanduAktifId(): ?int
     {

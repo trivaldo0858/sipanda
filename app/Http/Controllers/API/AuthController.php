@@ -8,64 +8,53 @@ use App\Models\OrangTua;
 use App\Models\Pengguna;
 use App\Models\Posyandu;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     // ================================================================
-    // LOGIN KADER
-    // ================================================================
-    public function loginKader(Request $request)
+// LOGIN POSYANDU
+// ================================================================
+    public function loginPosyandu(Request $request)
     {
         $request->validate([
-            'id_posyandu'    => 'required|integer|exists:posyandu,id_posyandu',
-            'password_kader' => 'required|string',
+            'id_posyandu' => 'required|integer|exists:posyandu,id_posyandu',
+            'password' => 'required|string',
         ]);
 
-        // Ambil password_kader langsung dari DB (bypass hidden)
-        $passwordKaderHash = DB::table('posyandu')
-            ->where('id_posyandu', $request->id_posyandu)
-            ->value('password_kader');
+        $pengguna = Pengguna::where('id_posyandu', $request->id_posyandu)
+            ->where('role', 'Posyandu')
+            ->first();
 
-        if (! Hash::check($request->password_kader, $passwordKaderHash)) {
+        if (!$pengguna || !Hash::check($request->password, $pengguna->password)) {
             throw ValidationException::withMessages([
-                'password_kader' => ['Password Posyandu salah.'],
+                'password' => ['Password Posyandu salah.'],
             ]);
         }
 
-        $posyandu = Posyandu::findOrFail($request->id_posyandu);
+        $posyandu = $pengguna->posyandu;
 
-        $kaderUser = Pengguna::firstOrCreate(
-            [
-                'role'        => 'Kader',
-                'id_posyandu' => $posyandu->id_posyandu,
-            ],
-            [
-                'username'          => 'kader_' . $posyandu->id_posyandu,
-                'password'          => $passwordKaderHash,
-                'id_posyandu_aktif' => $posyandu->id_posyandu,
-            ]
-        );
+        $pengguna->tokens()->delete();
 
-        $kaderUser->tokens()->delete();
-        $token = $kaderUser->createToken('kader-token')->plainTextToken;
+        $token = $pengguna
+            ->createToken('posyandu-token')
+            ->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil.',
-            'data'    => [
-                'token'    => $token,
-                'role'     => 'Kader',
-                'id_user'  => $kaderUser->id_user,
-                'posyandu' => [
-                    'id_posyandu'    => $posyandu->id_posyandu,
-                    'nama_posyandu'  => $posyandu->nama_posyandu,
-                    'kecamatan'      => $posyandu->kecamatan,
+            'data' => [
+                'token' => $token,
+                'role' => 'Posyandu',
+                'id_user' => $pengguna->id_user,
+                'posyandu' => $posyandu ? [
+                    'id_posyandu' => $posyandu->id_posyandu,
+                    'nama_posyandu' => $posyandu->nama_posyandu,
+                    'kecamatan' => $posyandu->kecamatan,
                     'desa_kelurahan' => $posyandu->desa_kelurahan,
-                    'alamat'         => $posyandu->alamat,
-                ],
+                    'alamat' => $posyandu->alamat,
+                ] : null,
             ],
         ]);
     }
@@ -84,7 +73,7 @@ class AuthController extends Controller
             ->where('role', 'Bidan')
             ->first();
 
-        if (! $pengguna || ! Hash::check($request->password, $pengguna->password)) {
+        if (!$pengguna || !Hash::check($request->password, $pengguna->password)) {
             throw ValidationException::withMessages([
                 'username' => ['Username atau password salah.'],
             ]);
@@ -96,17 +85,17 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil.',
-            'data'    => [
-                'token'    => $token,
-                'role'     => 'Bidan',
-                'id_user'  => $pengguna->id_user,
-                'profil'   => $pengguna->bidan ? [
-                    'nip'        => $pengguna->bidan->nip,
+            'data' => [
+                'token' => $token,
+                'role' => 'Bidan',
+                'id_user' => $pengguna->id_user,
+                'profil' => $pengguna->bidan ? [
+                    'nip' => $pengguna->bidan->nip,
                     'nama_bidan' => $pengguna->bidan->nama_bidan,
-                    'no_telp'    => $pengguna->bidan->no_telp,
+                    'no_telp' => $pengguna->bidan->no_telp,
                 ] : null,
                 'posyandu' => $pengguna->posyandu ? [
-                    'id_posyandu'   => $pengguna->posyandu->id_posyandu,
+                    'id_posyandu' => $pengguna->posyandu->id_posyandu,
                     'nama_posyandu' => $pengguna->posyandu->nama_posyandu,
                 ] : null,
             ],
@@ -119,7 +108,7 @@ class AuthController extends Controller
     public function loginOrangTua(Request $request)
     {
         $request->validate([
-            'nik_anak'  => 'required|string',
+            'nik_anak' => 'required|string',
             'tgl_lahir' => 'required|date_format:Y-m-d',
         ]);
 
@@ -127,7 +116,7 @@ class AuthController extends Controller
             ->whereDate('tgl_lahir', $request->tgl_lahir)
             ->first();
 
-        if (! $anak) {
+        if (!$anak) {
             throw ValidationException::withMessages([
                 'nik_anak' => ['NIK Balita atau Tanggal Lahir tidak sesuai.'],
             ]);
@@ -135,7 +124,7 @@ class AuthController extends Controller
 
         $orangTua = OrangTua::where('nik_orang_tua', $anak->nik_orang_tua)->first();
 
-        if (! $orangTua || ! $orangTua->id_user) {
+        if (!$orangTua || !$orangTua->id_user) {
             throw ValidationException::withMessages([
                 'nik_anak' => ['Akun Orang Tua belum tersedia. Hubungi Kader.'],
             ]);
@@ -145,7 +134,7 @@ class AuthController extends Controller
             ->where('role', 'OrangTua')
             ->first();
 
-        if (! $pengguna) {
+        if (!$pengguna) {
             throw ValidationException::withMessages([
                 'nik_anak' => ['Akun tidak ditemukan.'],
             ]);
@@ -157,22 +146,22 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil.',
-            'data'    => [
-                'token'      => $token,
-                'role'       => 'OrangTua',
-                'id_user'    => $pengguna->id_user,
-                'profil'     => [
+            'data' => [
+                'token' => $token,
+                'role' => 'OrangTua',
+                'id_user' => $pengguna->id_user,
+                'profil' => [
                     'nik_orang_tua' => $orangTua->nik_orang_tua,
-                    'nama_ibu'      => $orangTua->nama_ibu,
-                    'alamat'        => $orangTua->alamat,
+                    'nama_ibu' => $orangTua->nama_ibu,
+                    'alamat' => $orangTua->alamat,
                 ],
                 'anak_login' => [
-                    'nik_anak'      => $anak->nik_anak,
-                    'nama_anak'     => $anak->nama_anak,
-                    'tgl_lahir'     => $anak->tgl_lahir->format('Y-m-d'),
+                    'nik_anak' => $anak->nik_anak,
+                    'nama_anak' => $anak->nama_anak,
+                    'tgl_lahir' => $anak->tgl_lahir->format('Y-m-d'),
                     'jenis_kelamin' => $anak->jenis_kelamin,
-                    'umur_bulan'    => $anak->umur_bulan,
-                    'umur_format'   => $anak->umur_format,
+                    'umur_bulan' => $anak->umur_bulan,
+                    'umur_format' => $anak->umur_format,
                 ],
             ],
         ]);
@@ -193,7 +182,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $list,
+            'data' => $list,
         ]);
     }
 
@@ -218,40 +207,40 @@ class AuthController extends Controller
         $user = $request->user();
         $data = [
             'id_user' => $user->id_user,
-            'role'    => $user->role,
+            'role' => $user->role,
         ];
 
         if ($user->isBidan() && $user->bidan) {
             $data['profil'] = [
-                'nip'        => $user->bidan->nip,
+                'nip' => $user->bidan->nip,
                 'nama_bidan' => $user->bidan->nama_bidan,
-                'no_telp'    => $user->bidan->no_telp,
+                'no_telp' => $user->bidan->no_telp,
             ];
             $data['posyandu'] = $user->posyandu ? [
-                'id_posyandu'   => $user->posyandu->id_posyandu,
+                'id_posyandu' => $user->posyandu->id_posyandu,
                 'nama_posyandu' => $user->posyandu->nama_posyandu,
             ] : null;
         }
 
-        if ($user->isKader()) {
+        if ($user->isPosyandu()) {
             $data['posyandu'] = $user->posyandu ? [
-                'id_posyandu'    => $user->posyandu->id_posyandu,
-                'nama_posyandu'  => $user->posyandu->nama_posyandu,
+                'id_posyandu' => $user->posyandu->id_posyandu,
+                'nama_posyandu' => $user->posyandu->nama_posyandu,
                 'desa_kelurahan' => $user->posyandu->desa_kelurahan,
-                'kecamatan'      => $user->posyandu->kecamatan,
+                'kecamatan' => $user->posyandu->kecamatan,
             ] : null;
         }
 
         if ($user->isOrangTua() && $user->orangTua) {
             $data['profil'] = [
                 'nik_orang_tua' => $user->orangTua->nik_orang_tua,
-                'nama_ibu'      => $user->orangTua->nama_ibu,
+                'nama_ibu' => $user->orangTua->nama_ibu,
             ];
             $data['anak_list'] = $user->orangTua->anak()
                 ->select('nik_anak', 'nama_anak', 'tgl_lahir', 'jenis_kelamin')
                 ->get()
-                ->map(fn ($a) => array_merge($a->toArray(), [
-                    'umur_bulan'  => $a->umur_bulan,
+                ->map(fn($a) => array_merge($a->toArray(), [
+                    'umur_bulan' => $a->umur_bulan,
                     'umur_format' => $a->umur_format,
                 ]));
         }
@@ -271,7 +260,7 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        if (! Hash::check($request->password_lama, $user->password)) {
+        if (!Hash::check($request->password_lama, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Password lama tidak sesuai.',
@@ -287,10 +276,9 @@ class AuthController extends Controller
     }
 
     // ================================================================
-    // UBAH PASSWORD KADER (password posyandu)
-    // Gunakan DB::table langsung untuk bypass $hidden di model Posyandu
-    // ================================================================
-    public function ubahPasswordKader(Request $request)
+// UBAH PASSWORD POSYANDU
+// ================================================================
+    public function ubahPasswordPosyandu(Request $request)
     {
         $request->validate([
             'password_lama' => 'required|string',
@@ -299,36 +287,30 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        if (! $user->id_posyandu) {
+        if (!$user->isPosyandu()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses hanya untuk akun Posyandu.',
+            ], 403);
+        }
+
+        if (!$user->id_posyandu) {
             return response()->json([
                 'success' => false,
                 'message' => 'Posyandu tidak ditemukan.',
             ], 404);
         }
 
-        // Bypass $hidden — ambil langsung dari DB
-        $passwordKaderHash = DB::table('posyandu')
-            ->where('id_posyandu', $user->id_posyandu)
-            ->value('password_kader');
-
-        if (! Hash::check($request->password_lama, $passwordKaderHash)) {
+        if (!Hash::check($request->password_lama, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Password lama tidak sesuai.',
             ], 422);
         }
 
-        $newHash = Hash::make($request->password_baru);
-
-        // Update password_kader di tabel posyand
-        DB::table('posyandu')
-            ->where('id_posyandu', $user->id_posyandu)
-            ->update(['password_kader' => $newHash, 'updated_at' => now()]);
-
-        // Sync ke semua virtual user Kader di posyandu ini
-        Pengguna::where('role', 'Kader')
-            ->where('id_posyandu', $user->id_posyandu)
-            ->update(['password' => $newHash]);
+        $user->update([
+            'password' => Hash::make($request->password_baru),
+        ]);
 
         return response()->json([
             'success' => true,

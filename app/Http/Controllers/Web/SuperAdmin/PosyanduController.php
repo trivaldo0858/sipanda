@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Posyandu;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Pengguna;
 
 class PosyanduController extends Controller
 {
@@ -52,30 +52,42 @@ class PosyanduController extends Controller
     {
         return view('superadmin.posyandu.form');
     }
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'nama_posyandu' => 'required|string|max:100',
+        'kecamatan' => 'required|string|max:100',
+        'desa_kelurahan' => 'required|string|max:100',
+        'alamat' => 'required|string',
+        'kabupaten_kota' => 'nullable|string|max:100',
+        'latitude' => 'nullable|numeric|between:-90,90',
+        'longitude' => 'nullable|numeric|between:-180,180',
+        'username' => 'required|string|max:255|unique:pengguna,username',
+        'password' => 'required|string|min:6',
+    ]);
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama_posyandu' => 'required|string|max:100',
-            'kecamatan' => 'required|string|max:100',
-            'desa_kelurahan' => 'required|string|max:100',
-            'alamat' => 'required|string',
-            'kabupaten_kota' => 'nullable|string|max:100',
-            'password_kader' => 'required|string|min:6',
-        ]);
+    $posyandu = Posyandu::create([
+        'nama_posyandu' => $validated['nama_posyandu'],
+        'kecamatan' => $validated['kecamatan'],
+        'desa_kelurahan' => $validated['desa_kelurahan'],
+        'alamat' => $validated['alamat'],
+        'kabupaten_kota' => $validated['kabupaten_kota'] ?? 'Indramayu',
+        'latitude' => $validated['latitude'] ?? null,
+        'longitude' => $validated['longitude'] ?? null,
+    ]);
 
-        Posyandu::create([
-            'nama_posyandu' => $request->nama_posyandu,
-            'kecamatan' => $request->kecamatan,
-            'desa_kelurahan' => $request->desa_kelurahan,
-            'alamat' => $request->alamat,
-            'kabupaten_kota' => $request->kabupaten_kota ?? 'Indramayu',
-            'password_kader' => Hash::make($request->password_kader),
-        ]);
+    Pengguna::create([
+        'username' => $validated['username'],
+        'password' => $validated['password'],
+        'role' => 'Posyandu',
+        'id_posyandu' => $posyandu->id_posyandu,
+        'id_posyandu_aktif' => $posyandu->id_posyandu,
+    ]);
 
-        return redirect()->route('superadmin.posyandu.index')
-            ->with('success', 'Posyandu berhasil ditambahkan.');
-    }
+    return redirect()->route('superadmin.posyandu.index')
+        ->with('success', 'Posyandu dan akun akses berhasil ditambahkan.');
+}
+
 
     public function show($id)
     {
@@ -93,37 +105,45 @@ class PosyanduController extends Controller
         $posyandu = Posyandu::findOrFail($id);
         return view('superadmin.posyandu.form', compact('posyandu'));
     }
+public function update(Request $request, $id)
+{
+    $posyandu = Posyandu::findOrFail($id);
 
-    public function update(Request $request, $id)
-    {
-        $posyandu = Posyandu::findOrFail($id);
+    $validated = $request->validate([
+        'nama_posyandu' => 'required|string|max:100',
+        'kecamatan' => 'required|string|max:100',
+        'desa_kelurahan' => 'required|string|max:100',
+        'alamat' => 'required|string',
+        'kabupaten_kota' => 'nullable|string|max:100',
+        'latitude' => 'nullable|numeric|between:-90,90',
+        'longitude' => 'nullable|numeric|between:-180,180',
+        'password' => 'nullable|string|min:6',
+    ]);
 
-        $request->validate([
-            'nama_posyandu' => 'required|string|max:100',
-            'kecamatan' => 'required|string|max:100',
-            'desa_kelurahan' => 'required|string|max:100',
-            'alamat' => 'required|string',
-            'kabupaten_kota' => 'nullable|string|max:100',
-            'password_kader' => 'nullable|string|min:6',
-        ]);
+    $posyandu->update([
+        'nama_posyandu' => $validated['nama_posyandu'],
+        'kecamatan' => $validated['kecamatan'],
+        'desa_kelurahan' => $validated['desa_kelurahan'],
+        'alamat' => $validated['alamat'],
+        'kabupaten_kota' => $validated['kabupaten_kota'] ?? 'Indramayu',
+        'latitude' => $validated['latitude'] ?? null,
+        'longitude' => $validated['longitude'] ?? null,
+    ]);
 
-        $data = [
-            'nama_posyandu' => $request->nama_posyandu,
-            'kecamatan' => $request->kecamatan,
-            'desa_kelurahan' => $request->desa_kelurahan,
-            'alamat' => $request->alamat,
-            'kabupaten_kota' => $request->kabupaten_kota ?? 'Indramayu',
-        ];
+    if ($request->filled('password')) {
+        $pengguna = $posyandu->penggunaAkses;
 
-        if ($request->filled('password_kader')) {
-            $data['password_kader'] = Hash::make($request->password_kader);
+        if ($pengguna) {
+            $pengguna->update([
+                'password' => $validated['password'],
+            ]);
         }
-
-        $posyandu->update($data);
-
-        return redirect()->route('superadmin.posyandu.index')
-            ->with('success', 'Posyandu berhasil diperbarui.');
     }
+
+    return redirect()->route('superadmin.posyandu.index')
+        ->with('success', 'Data Posyandu berhasil diperbarui.');
+}
+
 
     public function destroy($id)
     {

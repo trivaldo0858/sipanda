@@ -18,12 +18,9 @@ class ValidasiController extends Controller
         $nip = $request->user()->bidan->nip;
 
         $pemeriksaan = Pemeriksaan::menungguValidasi()
-            ->with(['anak', 'kader'])
-            ->whereHas('kader', function ($q) use ($request) {
-                // Filter per posyandu bidan
-                $q->where('id_posyandu', $request->user()->id_posyandu);
-            })
-            ->orderBy('tgl_pemeriksaan', 'desc')
+            ->with(['anak', 'posyandu'])
+            ->where('id_posyandu', $request->user()->id_posyandu)
+            ->orderBy('tgl_periksa', 'desc')
             ->get();
 
         $imunisasi = Imunisasi::menungguValidasi()
@@ -33,10 +30,10 @@ class ValidasiController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => [
+            'data' => [
                 'pemeriksaan' => $pemeriksaan,
-                'imunisasi'   => $imunisasi,
-                'total'       => $pemeriksaan->count() + $imunisasi->count(),
+                'imunisasi' => $imunisasi,
+                'total' => $pemeriksaan->count() + $imunisasi->count(),
             ],
         ]);
     }
@@ -47,28 +44,28 @@ class ValidasiController extends Controller
     public function validasiPemeriksaan(Request $request, $id)
     {
         $request->validate([
-            'status_validasi'   => 'required|in:Disetujui,Ditolak',
-            'catatan_validasi'  => 'nullable|string',
+            'status_validasi' => 'required|in:Disetujui,Ditolak',
+            'catatan_validasi' => 'nullable|string',
         ]);
 
         $pemeriksaan = Pemeriksaan::with('anak.orangTua.pengguna')->findOrFail($id);
-        $nip         = $request->user()->bidan->nip;
+        $nip = $request->user()->bidan->nip;
 
         $pemeriksaan->update([
-            'status_validasi'  => $request->status_validasi,
+            'status_validasi' => $request->status_validasi,
             'catatan_validasi' => $request->catatan_validasi,
-            'nip_validator'    => $nip,
+            'nip_validator' => $nip,
         ]);
 
         // Notifikasi ke orang tua
         if ($pemeriksaan->anak->orangTua?->pengguna) {
             $status = $request->status_validasi === 'Disetujui' ? 'disetujui' : 'ditolak';
             Notifikasi::create([
-                'id_user'     => $pemeriksaan->anak->orangTua->pengguna->id_user,
-                'nik_anak'    => $pemeriksaan->nik_anak,
-                'pesan'       => "Hasil pemeriksaan {$pemeriksaan->anak->nama_anak} telah {$status} oleh Bidan.",
-                'tgl_kirim'   => now(),
-                'status'      => 'Belum Dibaca',
+                'id_user' => $pemeriksaan->anak->orangTua->pengguna->id_user,
+                'nik_anak' => $pemeriksaan->nik_anak,
+                'pesan' => "Hasil pemeriksaan {$pemeriksaan->anak->nama_anak} telah {$status} oleh Bidan.",
+                'tgl_kirim' => now(),
+                'status' => 'Belum Dibaca',
                 'jenis_notif' => 'Posyandu',
             ]);
         }
@@ -76,7 +73,7 @@ class ValidasiController extends Controller
         return response()->json([
             'success' => true,
             'message' => "Pemeriksaan berhasil {$request->status_validasi}.",
-            'data'    => $pemeriksaan->fresh(['anak', 'kader', 'validator']),
+            'data' => $pemeriksaan->fresh(['anak', 'posyandu', 'bidan']),
         ]);
     }
 
@@ -86,14 +83,14 @@ class ValidasiController extends Controller
     public function validasiImunisasi(Request $request, $id)
     {
         $request->validate([
-            'status_validasi'  => 'required|in:Disetujui,Ditolak',
+            'status_validasi' => 'required|in:Disetujui,Ditolak',
             'catatan_validasi' => 'nullable|string',
         ]);
 
         $imunisasi = Imunisasi::with('anak.orangTua.pengguna', 'jenisVaksin')->findOrFail($id);
 
         $imunisasi->update([
-            'status_validasi'  => $request->status_validasi,
+            'status_validasi' => $request->status_validasi,
             'catatan_validasi' => $request->catatan_validasi,
         ]);
 
@@ -101,11 +98,11 @@ class ValidasiController extends Controller
         if ($imunisasi->anak->orangTua?->pengguna) {
             $status = $request->status_validasi === 'Disetujui' ? 'disetujui' : 'ditolak';
             Notifikasi::create([
-                'id_user'     => $imunisasi->anak->orangTua->pengguna->id_user,
-                'nik_anak'    => $imunisasi->nik_anak,
-                'pesan'       => "Imunisasi {$imunisasi->jenisVaksin->nama_vaksin} untuk {$imunisasi->anak->nama_anak} telah {$status}.",
-                'tgl_kirim'   => now(),
-                'status'      => 'Belum Dibaca',
+                'id_user' => $imunisasi->anak->orangTua->pengguna->id_user,
+                'nik_anak' => $imunisasi->nik_anak,
+                'pesan' => "Imunisasi {$imunisasi->jenisVaksin->nama_vaksin} untuk {$imunisasi->anak->nama_anak} telah {$status}.",
+                'tgl_kirim' => now(),
+                'status' => 'Belum Dibaca',
                 'jenis_notif' => 'Imunisasi',
             ]);
         }
@@ -113,7 +110,7 @@ class ValidasiController extends Controller
         return response()->json([
             'success' => true,
             'message' => "Imunisasi berhasil {$request->status_validasi}.",
-            'data'    => $imunisasi->fresh(['anak', 'jenisVaksin']),
+            'data' => $imunisasi->fresh(['anak', 'jenisVaksin']),
         ]);
     }
 }

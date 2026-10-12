@@ -20,10 +20,10 @@
             </div>
 
             <a href="{{ route('superadmin.posyandu.create') }}" class="shrink-0 h-[60px] px-8 bg-blue-600 hover:bg-blue-700
-                                       text-white rounded-full
-                                       flex items-center justify-center gap-4
-                                       font-bold text-[16px]
-                                       transition-all">
+                                           text-white rounded-full
+                                           flex items-center justify-center gap-4
+                                           font-bold text-[16px]
+                                           transition-all">
                 <span class="text-[24px] leading-none">+</span>
                 <span>Registrasi Unit Baru</span>
             </a>
@@ -33,10 +33,10 @@
 
         {{-- SEARCH & FILTER --}}
         <div class="bg-white/60 backdrop-blur-md
-                border border-white
-                rounded-[32px]
-                shadow-sm
-                p-3">
+                    border border-white
+                    rounded-[32px]
+                    shadow-sm
+                    p-3">
 
             <form action="{{ route('superadmin.posyandu.index') }}" method="GET" class="flex flex-col lg:flex-row gap-3">
 
@@ -57,16 +57,16 @@
                     {{-- Input Search --}}
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Cari nama unit Posyandu..." class="w-full h-[56px]
-                           pl-14 pr-6
-                           bg-[#F2F3FF]
-                           border-0
-                           rounded-full
-                           text-[16px]
-                           text-slate-700
-                           placeholder:text-[#737687]
-                           focus:ring-2
-                           focus:ring-blue-200
-                           outline-none">
+                               pl-14 pr-6
+                               bg-[#F2F3FF]
+                               border-0
+                               rounded-full
+                               text-[16px]
+                               text-slate-700
+                               placeholder:text-[#737687]
+                               focus:ring-2
+                               focus:ring-blue-200
+                               outline-none">
 
                 </div>
 
@@ -75,18 +75,18 @@
                 <div class="relative">
 
                     <select name="wilayah" class="h-[56px]
-                           min-w-[180px]
-                           appearance-none
-                           pl-11 pr-10
-                           bg-[#F2F3FF]
-                           border-0
-                           rounded-full
-                           text-[12px]
-                           font-medium
-                           text-[#434656]
-                           focus:ring-2
-                           focus:ring-blue-200
-                           outline-none">
+                               min-w-[180px]
+                               appearance-none
+                               pl-11 pr-10
+                               bg-[#F2F3FF]
+                               border-0
+                               rounded-full
+                               text-[12px]
+                               font-medium
+                               text-[#434656]
+                               focus:ring-2
+                               focus:ring-blue-200
+                               outline-none">
 
                         <option value="">
                             Semua Wilayah
@@ -107,8 +107,8 @@
 
                     {{-- Icon Filter --}}
                     <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2
-                           w-4 h-4 text-slate-500
-                           pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                               w-4 h-4 text-slate-500
+                               pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18M6 8h12M10 12h4" />
 
@@ -117,8 +117,8 @@
 
                     {{-- Icon Dropdown --}}
                     <svg xmlns="http://www.w3.org/2000/svg" class="absolute right-4 top-1/2 -translate-y-1/2
-                           w-4 h-4 text-slate-500
-                           pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                               w-4 h-4 text-slate-500
+                               pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 
                         <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
 
@@ -129,14 +129,14 @@
 
                 {{-- BUTTON CARI --}}
                 <button type="submit" class="h-[56px]
-                       px-10
-                       bg-blue-600
-                       hover:bg-blue-700
-                       text-white
-                       rounded-full
-                       font-bold
-                       text-[16px]
-                       transition-all">
+                           px-10
+                           bg-blue-600
+                           hover:bg-blue-700
+                           text-white
+                           rounded-full
+                           font-bold
+                           text-[16px]
+                           transition-all">
 
                     Cari
 
@@ -148,10 +148,10 @@
 
         {{-- TABLE --}}
         <div class="bg-white
-                                    border border-slate-50
-                                    rounded-[40px]
-                                    shadow-sm
-                                    overflow-hidden">
+                                        border border-slate-50
+                                        rounded-[40px]
+                                        shadow-sm
+                                        overflow-hidden">
 
             <div class="overflow-x-auto">
 
@@ -163,42 +163,42 @@
                         <tr class="bg-slate-50/50">
 
                             <th class="px-8 py-6
-                                                       text-left
-                                                       text-[11px]
-                                                       font-black
-                                                       tracking-[1.65px]
-                                                       uppercase
-                                                       text-slate-700">
+                                                           text-left
+                                                           text-[11px]
+                                                           font-black
+                                                           tracking-[1.65px]
+                                                           uppercase
+                                                           text-slate-700">
                                 Informasi Unit
                             </th>
 
                             <th class="px-8 py-6
-                                                       text-left
-                                                       text-[11px]
-                                                       font-black
-                                                       tracking-[1.65px]
-                                                       uppercase
-                                                       text-slate-700">
+                                                           text-left
+                                                           text-[11px]
+                                                           font-black
+                                                           tracking-[1.65px]
+                                                           uppercase
+                                                           text-slate-700">
                                 Lokasi Wilayah
                             </th>
 
                             <th class="px-8 py-6
-                                                       text-left
-                                                       text-[11px]
-                                                       font-black
-                                                       tracking-[1.65px]
-                                                       uppercase
-                                                       text-slate-700">
+                                                           text-left
+                                                           text-[11px]
+                                                           font-black
+                                                           tracking-[1.65px]
+                                                           uppercase
+                                                           text-slate-700">
                                 Alamat Lengkap
                             </th>
 
                             <th class="px-8 py-6
-                                                       text-center
-                                                       text-[11px]
-                                                       font-black
-                                                       tracking-[1.65px]
-                                                       uppercase
-                                                       text-slate-700">
+                                                           text-center
+                                                           text-[11px]
+                                                           font-black
+                                                           tracking-[1.65px]
+                                                           uppercase
+                                                           text-slate-700">
                                 Aksi
                             </th>
 
@@ -218,10 +218,10 @@
                                 <td class="px-8 py-6">
 
                                     <span class="block
-                                                                                     text-[18px]
-                                                                                     leading-7
-                                                                                     font-bold
-                                                                                     text-slate-800">
+                                                                                             text-[18px]
+                                                                                             leading-7
+                                                                                             font-bold
+                                                                                             text-slate-800">
                                         {{ $item->nama_posyandu }}
                                     </span>
 
@@ -266,9 +266,9 @@
                                 <td class="px-8 py-6">
 
                                     <p class="max-w-[280px]
-                                                                                  text-[14px]
-                                                                                  leading-6
-                                                                                  text-slate-500">
+                                                                                          text-[14px]
+                                                                                          leading-6
+                                                                                          text-slate-500">
                                         {{ $item->alamat ?? '-' }}
                                     </p>
 
@@ -283,12 +283,12 @@
                                         {{-- DETAIL --}}
                                         <a href="{{ route('superadmin.posyandu.show', $item->id_posyandu) }}"
                                             title="Lihat Detail" class="w-10 h-10
-                                                                                       bg-blue-50
-                                                                                       text-blue-600
-                                                                                       rounded-xl
-                                                                                       flex items-center justify-center
-                                                                                       hover:bg-blue-100
-                                                                                       transition-all">
+                                                                                               bg-blue-50
+                                                                                               text-blue-600
+                                                                                               rounded-xl
+                                                                                               flex items-center justify-center
+                                                                                               hover:bg-blue-100
+                                                                                               transition-all">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -301,12 +301,12 @@
                                         {{-- EDIT --}}
                                         <a href="{{ route('superadmin.posyandu.edit', $item->id_posyandu) }}" title="Edit"
                                             class="w-10 h-10
-                                                                                       bg-amber-50
-                                                                                       text-amber-600
-                                                                                       rounded-xl
-                                                                                       flex items-center justify-center
-                                                                                       hover:bg-amber-100
-                                                                                       transition-all">
+                                                                                               bg-amber-50
+                                                                                               text-amber-600
+                                                                                               rounded-xl
+                                                                                               flex items-center justify-center
+                                                                                               hover:bg-amber-100
+                                                                                               transition-all">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -323,12 +323,12 @@
                                             @method('DELETE')
 
                                             <button type="submit" title="Hapus" class="w-10 h-10
-                                                                                           bg-red-50
-                                                                                           text-red-600
-                                                                                           rounded-xl
-                                                                                           flex items-center justify-center
-                                                                                           hover:bg-red-100
-                                                                                           transition-all">
+                                                                                                   bg-red-50
+                                                                                                   text-red-600
+                                                                                                   rounded-xl
+                                                                                                   flex items-center justify-center
+                                                                                                   hover:bg-red-100
+                                                                                                   transition-all">
 
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -355,11 +355,11 @@
                                     <div class="flex flex-col items-center">
 
                                         <div class="w-16 h-16
-                                                                                        rounded-full
-                                                                                        bg-slate-50
-                                                                                        flex items-center justify-center
-                                                                                        text-slate-300
-                                                                                        mb-4">
+                                                                                                rounded-full
+                                                                                                bg-slate-50
+                                                                                                flex items-center justify-center
+                                                                                                text-slate-300
+                                                                                                mb-4">
 
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
