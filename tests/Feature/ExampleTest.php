@@ -11,7 +11,7 @@ class ExampleTest extends TestCase
      */
     public function test_superadmin_login_page_returns_successful_response(): void
     {
-        $response = $this->get('/superadmin/login');
+        $response = $this->get('/superadmin');
 
         $response->assertStatus(200);
     }
@@ -22,7 +22,7 @@ class ExampleTest extends TestCase
      */
     public function test_api_login_endpoint_exists(): void
     {
-        $response = $this->postJson('/api/v1/auth/login', []);
+        $response = $this->postJson('/api/v1/auth/login/bidan', []);
 
         // Harusnya 422 (validasi) bukan 404 (tidak ditemukan)
         $response->assertStatus(422);
@@ -33,7 +33,7 @@ class ExampleTest extends TestCase
      */
     public function test_api_login_ortu_endpoint_exists(): void
     {
-        $response = $this->postJson('/api/v1/auth/login-ortu', []);
+        $response = $this->postJson('/api/v1/auth/login/orang-tua', []);
 
         $response->assertStatus(422);
     }

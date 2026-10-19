@@ -1,199 +1,359 @@
 @extends('layouts.superadmin')
 
-@section('title', isset($posyandu) ? 'Edit Unit - SIPANDA' : 'SIPANDA')
+@section('title', 'Registrasi Unit Posyandu')
 
 @section('content')
-    <div class="max-w-4xl mx-auto">
-        {{-- Header Section --}}
-        <div class="mb-8">
-            <h1 class="text-[30px] leading-[38px] font-bold text-slate-800">
-                {{ isset($posyandu) ? 'Pembaruan Data Unit' : 'Pendaftaran Unit Posyandu Baru' }}
-            </h1>
-            <p class="mt-2 text-[16px] leading-6 text-slate-500">
-                {{ isset($posyandu) ? 'Perbarui informasi unit layanan yang sudah terdaftar di sistem.' : 'Lengkapi formulir di bawah ini untuk mendaftarkan unit layanan baru.' }}
-            </p>
+    @php
+        $isEdit = isset($posyandu);
+        $namaPosyandu = old('nama_posyandu', $posyandu->nama_posyandu ?? '');
+        $alamat = old('alamat', $posyandu->alamat ?? '');
+        $kecamatan = old('kecamatan', $posyandu->kecamatan ?? '');
+        $desa = old('desa_kelurahan', $posyandu->desa_kelurahan ?? '');
+        $latitude = old('latitude', $posyandu->latitude ?? '');
+        $longitude = old('longitude', $posyandu->longitude ?? '');
+        $username = old('username', $posyandu->penggunaAkses->username ?? '');
+    @endphp
+
+    <div class="mx-auto max-w-[1400px] space-y-7 pb-10">
+
+        {{-- Header --}}
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-slate-800">
+                    {{ $isEdit ? 'Edit Unit Posyandu' : 'Registrasi Unit Posyandu' }}
+                </h1>
+                <p class="mt-2 text-base leading-6 text-slate-500">
+                    {{ $isEdit
+    ? 'Perbarui informasi unit layanan dan akun akses Posyandu.'
+    : 'Tambahkan data Posyandu dan akun akses untuk Posyandu.' }}
+                </p>
+            </div>
+
+            <a href="{{ route('superadmin.posyandu.index') }}"
+                class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali ke Daftar
+            </a>
         </div>
 
-        {{-- Form Utama --}}
+        {{-- Pesan Error --}}
+        @if ($errors->any())
+            <div class="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700">
+                <p class="mb-2 font-bold">Data belum berhasil disimpan.</p>
+                <ul class="ml-5 list-disc space-y-1 text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form
-            action="{{ isset($posyandu) ? route('superadmin.posyandu.update', $posyandu->id_posyandu) : route('superadmin.posyandu.store') }}"
-            method="POST" class="space-y-8">
+            action="{{ $isEdit
+    ? route('superadmin.posyandu.update', $posyandu->id_posyandu)
+    : route('superadmin.posyandu.store') }}"
+            method="POST"
+            class="space-y-6">
 
             @csrf
-            @if(isset($posyandu))
+            @if ($isEdit)
                 @method('PUT')
             @endif
 
-            {{-- Card 1: Identitas Unit --}}
-            <div class="bg-white p-8 rounded-xl3 border border-line shadow-card space-y-6">
-                <h3 class="font-bold text-slate-800 flex items-center gap-3">
-                    <span class="w-8 h-[2px] bg-primary"></span> IDENTITAS UNIT
-                </h3>
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Nama Posyandu</label>
-                    <input type="text" name="nama_posyandu"
-                        value="{{ old('nama_posyandu', $posyandu->nama_posyandu ?? '') }}"
-                        placeholder="Contoh: Posyandu Melati I" required
-                        class="w-full px-5 py-4 bg-softbg border-none rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-slate-700 font-medium transition-all">
-                </div>
-            </div>
+            {{-- Layout dua kolom seperti Figma --}}
+            <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
 
-            {{-- Card 2: Lokasi & Wilayah --}}
-            <div class="bg-white p-8 rounded-xl3 border border-line shadow-card space-y-6">
-                <h3 class="font-bold text-slate-800 flex items-center gap-3">
-                    <span class="w-8 h-[2px] bg-primary"></span> LOKASI & WILAYAH
-                </h3>
+                {{-- Kartu Informasi Posyandu --}}
+                <section class="space-y-6 rounded-xl border border-slate-100 bg-white p-6 shadow-sm sm:p-7 xl:col-span-7">
 
-                <div class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- Kabupaten/Kota --}}
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-[2px] ml-1">Kabupaten /
-                                Kota</label>
-                            <input type="text" value="Indramayu" readonly
-                                class="w-full px-5 py-4 bg-softbg border-none rounded-2xl text-slate-400 cursor-not-allowed font-semibold outline-none">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-blue-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 21h18M5 21V7l8-4v18m6 0V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01M15 13v.01M15 16v.01M15 19v.01" />
+                            </svg>
                         </div>
-
-                        {{-- Kecamatan --}}
-                        <div class="space-y-2">
-                            <label
-                                class="text-[11px] font-bold text-slate-400 uppercase tracking-[2px] ml-1">Kecamatan</label>
-                            <div class="relative group">
-                                <select id="kecamatan" name="kecamatan" required
-                                    class="w-full px-5 py-4 bg-softbg border-2 border-transparent rounded-2xl text-slate-700 appearance-none cursor-pointer focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all duration-300">
-                                    <option value="" disabled selected>Pilih Kecamatan</option>
-                                </select>
-                                <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Desa & Alamat --}}
-                    <div class="space-y-6">
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-[2px] ml-1">Desa /
-                                Kelurahan</label>
-                            <div class="relative group">
-                                <select id="desa" name="desa_kelurahan" required disabled
-                                    class="w-full px-5 py-4 bg-softbg border-2 border-transparent rounded-2xl text-slate-700 appearance-none cursor-pointer focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all duration-300 disabled:opacity-40">
-                                    <option value="" disabled selected>Pilih Kecamatan Dulu</option>
-                                </select>
-                                <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                            d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-[2px] ml-1">Alamat
-                                Lengkap</label>
-                            <textarea name="alamat" rows="3" placeholder="Contoh: Jl. Lohbener Lama No. 08, RT 01/RW 02"
-                                required
-                                class="w-full px-5 py-4 bg-softbg border-2 border-transparent rounded-2xl text-slate-700 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all duration-300 resize-none">{{ old('alamat', $posyandu->alamat ?? '') }}</textarea>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                                Latitude
-                            </label>
-                            <input type="number" step="any" id="latitude" name="latitude"
-                                value="{{ old('latitude', $posyandu->latitude ?? '') }}" placeholder="-6.40123779"
-                                class="w-full px-5 py-4 bg-softbg rounded-2xl outline-none">
-                        </div>
-
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                                Longitude
-                            </label>
-                            <input type="number" step="any" id="longitude" name="longitude"
-                                value="{{ old('longitude', $posyandu->longitude ?? '') }}" placeholder="108.27668902"
-                                class="w-full px-5 py-4 bg-softbg rounded-2xl outline-none">
-                        </div>
-                    </div>
-                    {{-- Peta Lokasi Posyandu --}}
-                    <div class="space-y-3">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">
-                            Titik Lokasi Posyandu
-                        </label>
-
-                        <p class="text-sm text-slate-500">
-                            Klik peta atau geser marker biru untuk menentukan lokasi Posyandu.
-                        </p>
-
-                        <div id="posyandu-map"
-                            style="height: 350px; width: 100%; border-radius: 16px; overflow: hidden; position: relative; z-index: 0;">
-                        </div>
-
-
-                        <p id="map-status" class="text-sm text-slate-500">
-                            Pilih titik lokasi pada peta.
-                        </p>
-                    </div>
-
-                    {{-- Password Section --}}
-                    {{-- Akun Akses Posyandu --}}
-                    <div class="pt-4 border-t border-line space-y-4">
 
                         <div>
-                            <label class="text-xs font-bold text-slate-700 uppercase tracking-widest mb-2 block">
-                                Akun Akses Posyandu
-                            </label>
+                            <h2 class="text-xl font-semibold tracking-tight text-slate-900">
+                                Informasi Posyandu
+                            </h2>
+                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                                Data administratif unit Posyandu di wilayah kerja Puskesmas.
+                            </p>
+                        </div>
+                    </div>
 
-                            <p class="text-sm text-slate-500">
-                                Akun ini digunakan untuk login ke sistem oleh pengelola Posyandu.
+                    {{-- Nama Posyandu --}}
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <label for="nama_posyandu" class="text-sm font-medium text-slate-800">
+                                Nama Posyandu <span class="text-red-600">*</span>
+                            </label>
+                        </div>
+
+                        <div class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 21h18M5 21V7l8-4v18m6 0V11l-6-4" />
+                            </svg>
+
+                            <input id="nama_posyandu" type="text" name="nama_posyandu"
+                                value="{{ $namaPosyandu }}"
+                                placeholder="Masukkan nama Posyandu (contoh: Posyandu Mawar 1)"
+                                required
+                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] py-3 pl-10 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                        </div>
+                    </div>
+
+                    {{-- Alamat --}}
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <label for="alamat" class="text-sm font-medium text-slate-800">
+                                Alamat Lengkap <span class="text-red-600">*</span>
+                            </label>
+                        </div>
+
+                        <textarea id="alamat" name="alamat" rows="3" required
+                            placeholder="Masukkan alamat lengkap Posyandu (contoh: Jl. Ki Buyut No. 15, RT 02/RW 01)"
+                            class="w-full resize-y rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm leading-5 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">{{ $alamat }}</textarea>
+                    </div>
+
+                    {{-- Kabupaten dan Bidan Pendamping --}}
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-slate-800">
+                                Kabupaten / Kota
+                            </label>
+                            <input type="text" value="Indramayu" readonly
+                                class="w-full cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-500 outline-none">
+                            <p class="text-xs leading-5 text-slate-500">
+                                Kabupaten telah ditetapkan untuk sistem Posyandu-In.
                             </p>
                         </div>
 
+                        {{-- Pertahankan pilihan bidan jika sudah tersedia pada form/controller lama --}}
+                        @if (isset($bidanList))
+                            <div class="space-y-2">
+                                <label for="id_bidan" class="text-sm font-medium text-slate-800">
+                                    Bidan Pendamping
+                                </label>
+                                <select id="id_bidan" name="id_bidan"
+                                    class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                                    <option value="">Pilih Bidan Pendamping</option>
+                                    @foreach ($bidanList as $bidan)
+                                        <option value="{{ $bidan->id_bidan }}"
+                                            {{ (string) old('id_bidan', $posyandu->id_bidan ?? '') === (string) $bidan->id_bidan ? 'selected' : '' }}>
+                                            {{ $bidan->nama_bidan }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-xs leading-5 text-slate-500">
+                                    Pilih bidan yang mendampingi unit Posyandu ini.
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                </section>
+
+                {{-- Kartu Lokasi Posyandu --}}
+                <section class="space-y-6 rounded-xl border border-slate-100 bg-white p-6 shadow-sm sm:p-7 xl:col-span-5">
+
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-blue-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0z" />
+                                <circle cx="12" cy="10" r="2.5" />
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h2 class="text-xl font-semibold tracking-tight text-slate-900">
+                                Lokasi Posyandu
+                            </h2>
+                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                                Tentukan wilayah administratif dan titik lokasi unit.
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Kecamatan --}}
+                    <div class="space-y-2">
+                        <label for="kecamatan" class="text-sm font-medium text-slate-800">
+                            Kecamatan <span class="text-red-600">*</span>
+                        </label>
+
+                        <select id="kecamatan" name="kecamatan" required
+                            class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                            <option value="" disabled {{ $kecamatan === '' ? 'selected' : '' }}>
+                                Pilih Kecamatan
+                            </option>
+                        </select>
+                    </div>
+
+                    {{-- Desa --}}
+                    <div class="space-y-2">
+                        <label for="desa" class="text-sm font-medium text-slate-800">
+                            Desa / Kelurahan <span class="text-red-600">*</span>
+                        </label>
+
+                        <select id="desa" name="desa_kelurahan" required
+                            {{ $kecamatan === '' ? 'disabled' : '' }}
+                            class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed disabled:opacity-60">
+                            <option value="" disabled {{ $desa === '' ? 'selected' : '' }}>
+                                {{ $kecamatan === '' ? 'Pilih Kecamatan Dahulu' : 'Pilih Desa / Kelurahan' }}
+                            </option>
+                        </select>
+                    </div>
+
+                    {{-- Koordinat --}}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="space-y-2">
+                            <label for="latitude" class="text-sm font-medium text-slate-800">
+                                Latitude
+                            </label>
+                            <input type="number" step="any" id="latitude" name="latitude"
+                                value="{{ $latitude }}" placeholder="-6.40123779"
+                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="longitude" class="text-sm font-medium text-slate-800">
+                                Longitude
+                            </label>
+                            <input type="number" step="any" id="longitude" name="longitude"
+                                value="{{ $longitude }}" placeholder="108.27668902"
+                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                        </div>
+                    </div>
+
+                    {{-- Peta --}}
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-sm font-medium text-slate-800">
+                                Titik Lokasi Posyandu
+                            </label>
+                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                                Klik peta atau geser marker biru untuk menentukan lokasi.
+                            </p>
+                        </div>
+
+                        <div id="posyandu-map"
+                            class="w-full overflow-hidden rounded-xl border border-slate-200"
+                            style="height: 300px; position: relative; z-index: 0;">
+                        </div>
+
+                        <p id="map-status" role="status" class="text-xs leading-5 text-slate-500">
+                            Pilih titik lokasi pada peta.
+                        </p>
+                    </div>
+                </section>
+
+                {{-- Kartu Akun Akses --}}
+                <section class="space-y-6 rounded-xl border border-slate-100 bg-white p-6 shadow-sm sm:p-7 xl:col-span-12">
+
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-blue-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <rect x="4" y="10" width="16" height="11" rx="2" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8 10V7a4 4 0 118 0v3m-4 5v2" />
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h2 class="text-xl font-semibold tracking-tight text-slate-900">
+                                Akun Akses Posyandu
+                            </h2>
+                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                                Akun ini digunakan untuk login ke sistem oleh pengelola Posyandu.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                         {{-- Username --}}
                         <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-[2px] ml-1">
+                            <label for="username" class="text-sm font-medium text-slate-800">
                                 Username
+                                @unless ($isEdit)
+                                    <span class="text-red-600">*</span>
+                                @endunless
                             </label>
 
-                            <input type="text" name="username"
-                                value="{{ old('username', $posyandu->penggunaAkses->username ?? '') }}" {{ isset($posyandu) ? 'readonly' : 'required' }} placeholder="Contoh: posyandu_melati"
-                                class="w-full px-5 py-4 bg-softbg border-none rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none font-medium">
+                            <input id="username" type="text" name="username"
+                                value="{{ $username }}"
+                                {{ $isEdit ? 'readonly' : 'required' }}
+                                autocomplete="username"
+                                placeholder="Contoh: posyandu_melati"
+                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50 read-only:cursor-not-allowed read-only:bg-slate-50">
+                            <p class="text-xs leading-5 text-slate-500">
+                                Gunakan username yang mudah dikenali dan belum terdaftar.
+                            </p>
                         </div>
 
                         {{-- Password --}}
                         <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-[2px] ml-1">
-                                {{ isset($posyandu) ? 'Password Baru' : 'Password' }}
+                            <label for="password" class="text-sm font-medium text-slate-800">
+                                {{ $isEdit ? 'Password Baru' : 'Password' }}
+                                @unless ($isEdit)
+                                    <span class="text-red-600">*</span>
+                                @endunless
                             </label>
 
-                            <input type="password" name="password" id="password" {{ isset($posyandu) ? '' : 'required' }}
-                                class="w-full px-5 py-4 bg-softbg border-none rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none font-medium"
-                                placeholder="Minimal 6 karakter">
-                        </div>
+                            <input id="password" type="password" name="password"
+                                {{ $isEdit ? '' : 'required' }}
+                                minlength="6"
+                                autocomplete="new-password"
+                                placeholder="{{ $isEdit ? 'Kosongkan jika tidak diubah' : 'Minimal 6 karakter' }}"
+                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
 
+                            <p class="text-xs leading-5 text-slate-500">
+                                {{ $isEdit ? 'Isi hanya jika ingin mengganti password.' : 'Gunakan password minimal 6 karakter.' }}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </section>
             </div>
 
-            {{-- Actions --}}
-            <div class="flex justify-end items-center gap-6 pt-4">
-                <a href="{{ route('superadmin.posyandu.index') }}"
-                    class="text-slate-500 font-bold hover:text-slate-800 transition-colors">Batal</a>
-                <button type="submit"
-                    class="bg-primary text-white px-10 py-4 rounded-full font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all flex items-center gap-3">
-                    {{ isset($posyandu) ? 'Simpan Perubahan' : 'Daftarkan Unit' }}
-                    <span class="text-lg">→</span>
-                </button>
+            {{-- Informasi dan Tombol --}}
+            <div class="flex flex-col gap-4 rounded-xl border border-blue-100 bg-blue-50/70 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm leading-6 text-slate-600">
+                    <span class="font-semibold text-slate-800">Periksa kembali data.</span>
+                    Pastikan nama, alamat, wilayah, dan titik lokasi Posyandu sudah benar.
+                </p>
+
+                <div class="flex shrink-0 flex-col-reverse gap-3 sm:flex-row">
+                    <a href="{{ route('superadmin.posyandu.index') }}"
+                        class="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">
+                        Batal
+                    </a>
+
+                    <button type="submit"
+                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.99]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M5 13l4 4L19 7" />
+                        </svg>
+                        {{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Unit' }}
+                    </button>
+                </div>
             </div>
         </form>
     </div>
 @endsection
+
 
 
 @push('styles')
@@ -203,11 +363,11 @@
         #posyandu-map {
             display: block;
             width: 100%;
-            height: 400px;
-            min-height: 400px;
+            height: 300px;
+            min-height: 300px;
             position: relative;
             overflow: hidden;
-            border-radius: 16px;
+            border-radius: 12px;
             background: #e5e7eb;
             z-index: 0;
         }

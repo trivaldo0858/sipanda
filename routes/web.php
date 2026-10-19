@@ -40,8 +40,7 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
 
         Route::resource('/posyandu', PosyanduController::class);
 
-        Route::resource('/pengguna', PenggunaController::class)
-            ->except(['show']);
+        Route::resource('/pengguna', PenggunaController::class);
     });
 });
 

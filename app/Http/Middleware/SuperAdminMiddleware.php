@@ -10,7 +10,7 @@ class SuperAdminMiddleware
 {
     public function handle(Request $request, Closure $next): mixed
     {
-        if (! Auth::check() || ! Auth::user()->isSuperAdmin()) {
+        if (!Auth::check() || !Auth::user()->isSuperAdmin()) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,

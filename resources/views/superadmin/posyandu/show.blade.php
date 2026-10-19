@@ -237,6 +237,69 @@
         </div>
 
 
+        {{-- Akun Akses Posyandu --}}
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-100 px-6 py-5">
+                <h2 class="text-lg font-bold text-slate-800">
+                    Akun Akses Posyandu
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                    Informasi akun yang digunakan untuk mengakses sistem sebagai Kader Posyandu.
+                </p>
+            </div>
+
+            <div class="p-6">
+                @if ($akunAkses)
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="8" r="4"></circle>
+                                    <path d="M5 21v-2a7 7 0 0 1 14 0v2"></path>
+                                </svg>
+                            </div>
+
+                            <div>
+                                <p class="text-xs font-medium uppercase tracking-wide text-slate-400">
+                                    Username Login
+                                </p>
+                                <p class="mt-1 text-sm font-semibold text-slate-800">
+                                    {{ $akunAkses->username }}
+                                </p>
+                                <p class="mt-1 text-xs text-slate-500">
+                                    Akun terhubung dengan Posyandu ini
+                                </p>
+                            </div>
+                        </div>
+
+                        <span
+                            class="inline-flex w-fit items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700">
+                            <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                            Akun Terdaftar
+                        </span>
+                    </div>
+                @else
+                    <div class="flex items-start gap-3 rounded-xl bg-amber-50 p-4">
+                        <svg class="mt-0.5 text-amber-600" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 8v4"></path>
+                            <path d="M12 16h.01"></path>
+                        </svg>
+
+                        <div>
+                            <p class="text-sm font-semibold text-amber-800">
+                                Akun akses belum ditemukan
+                            </p>
+                            <p class="mt-1 text-sm text-amber-700">
+                                Belum ada akun dengan role Posyandu yang terhubung ke unit ini.
+                            </p>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
         {{-- Lokasi Posyandu --}}
         <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
@@ -354,12 +417,12 @@
 
             if (latitude === null || longitude === null) {
                 document.getElementById('detail-map').innerHTML = `
-                    <div class="flex h-full items-center justify-center bg-slate-50">
-                        <p class="text-sm text-slate-400">
-                            Koordinat lokasi belum tersedia.
-                        </p>
-                    </div>
-                `;
+                            <div class="flex h-full items-center justify-center bg-slate-50">
+                                <p class="text-sm text-slate-400">
+                                    Koordinat lokasi belum tersedia.
+                                </p>
+                            </div>
+                        `;
 
                 return;
             }
@@ -382,32 +445,32 @@
             const markerIcon = L.divIcon({
                 className: 'detail-marker',
                 html: `
-                    <div style="
-                        width: 38px;
-                        height: 38px;
-                        background: #155DFC;
-                        border: 3px solid white;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        box-shadow: 0 0 0 8px rgba(21, 93, 252, 0.15);
-                    ">
-                        <svg
-                            width="19"
-                            height="19"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="white"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
-                            <circle cx="12" cy="10" r="2.5"></circle>
-                        </svg>
-                    </div>
-                `,
+                            <div style="
+                                width: 38px;
+                                height: 38px;
+                                background: #155DFC;
+                                border: 3px solid white;
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                box-shadow: 0 0 0 8px rgba(21, 93, 252, 0.15);
+                            ">
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="white"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                                    <circle cx="12" cy="10" r="2.5"></circle>
+                                </svg>
+                            </div>
+                        `,
                 iconSize: [38, 38],
                 iconAnchor: [19, 19]
             });
@@ -421,9 +484,9 @@
             )
                 .addTo(map)
                 .bindPopup(`
-                <strong>{{ $posyandu->nama_posyandu }}</strong><br>
-                {{ $posyandu->alamat }}
-            `)
+                        <strong>{{ $posyandu->nama_posyandu }}</strong><br>
+                        {{ $posyandu->alamat }}
+                    `)
                 .openPopup();
 
         });

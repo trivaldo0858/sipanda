@@ -13,34 +13,51 @@ use Illuminate\Validation\Rule;
 
 class PenggunaController extends Controller
 {
+
     public function index(Request $request)
     {
-        $pengguna = Pengguna::with(['bidan', 'posyandu'])
-            ->where('role', 'Bidan')
-            ->when($request->filled('id_posyandu'), function ($query) use ($request) {
-                $query->where('id_posyandu', $request->id_posyandu);
-            })
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $search = '%' . $request->search . '%';
+        $query = Pengguna::with(['bidan', 'posyandu'])
+            ->where('role', 'Bidan');
 
-                $query->where(function ($q) use ($search) {
-                    $q->where('username', 'like', $search)
-                        ->orWhereHas('bidan', function ($bidanQuery) use ($search) {
-                            $bidanQuery->where('nama_bidan', 'like', $search);
-                        });
-                });
-            })
+        // Filter berdasarkan Posyandu.
+        if ($request->filled('id_posyandu')) {
+            $query->where('id_posyandu', $request->id_posyandu);
+        }
+
+        // Pencarian berdasarkan username atau nama Bidan.
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+
+            $query->where(function ($q) use ($search) {
+                $q->where('username', 'like', $search)
+                    ->orWhereHas('bidan', function ($bidanQuery) use ($search) {
+                        $bidanQuery->where('nama_bidan', 'like', $search);
+                    });
+            });
+        }
+
+        // Total data sesuai pencarian dan filter, sebelum pagination.
+        $totalAkun = (clone $query)->count();
+
+        // Data yang ditampilkan pada halaman saat ini.
+        $pengguna = $query
             ->orderBy('username')
             ->paginate(15)
             ->withQueryString();
+
+        // Jumlah baris yang benar-benar ditampilkan pada halaman ini.
+        $jumlahMuncul = $pengguna->count();
 
         $posyanduList = Posyandu::orderBy('nama_posyandu')->get();
 
         return view('superadmin.pengguna.index', compact(
             'pengguna',
-            'posyanduList'
+            'posyanduList',
+            'totalAkun',
+            'jumlahMuncul'
         ));
     }
+
 
     public function create()
     {
@@ -61,7 +78,7 @@ class PenggunaController extends Controller
                 'max:255',
                 'unique:pengguna,username',
             ],
-            'password' => 'required|string|min:6',
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'nama' => 'required|string|max:255',
             'nip' => 'nullable|string|max:50|unique:bidan,nip',
             'id_posyandu' => 'required|exists:posyandu,id_posyandu',
@@ -90,6 +107,17 @@ class PenggunaController extends Controller
             ->route('superadmin.pengguna.index')
             ->with('success', 'Akun Bidan berhasil dibuat.');
     }
+
+
+    public function show($id)
+    {
+        $pengguna_single = Pengguna::with(['bidan', 'posyandu'])
+            ->where('role', 'Bidan')
+            ->findOrFail($id);
+
+        return view('superadmin.pengguna.show', compact('pengguna_single'));
+    }
+
 
     public function edit($id)
     {
@@ -152,15 +180,46 @@ class PenggunaController extends Controller
             ->with('success', 'Akun Bidan berhasil diperbarui.');
     }
 
+
     public function destroy($id)
     {
-        $pengguna = Pengguna::where('role', 'Bidan')->findOrFail($id);
+        // Cari akun yang akan dihapus.
+        // Hanya akun dengan role Bidan yang boleh diproses.
+        $pengguna = Pengguna::where('role', 'Bidan')
+            ->findOrFail($id);
 
-        // Penghapusan perlu memperhatikan foreign key dan riwayat pemeriksaan.
-        // Jangan menghapus riwayat layanan secara tidak sengaja.
-        return back()->with(
-            'error',
-            'Penghapusan akun belum dijalankan. Periksa relasi database terlebih dahulu.'
-        );
+        try {
+            DB::transaction(function () use ($pengguna) {
+
+                // Cari profil Bidan berdasarkan ID pengguna.
+                $bidan = Bidan::where('id_user', $pengguna->id_user)
+                    ->first();
+
+                // Hapus profil Bidan terlebih dahulu jika tersedia.
+                if ($bidan) {
+                    $bidan->delete();
+                }
+
+                // Setelah itu, hapus akun pengguna.
+                $pengguna->delete();
+            });
+
+            return redirect()
+                ->route('superadmin.pengguna.index')
+                ->with('success', 'Akun Bidan berhasil dihapus.');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+
+            // Catat detail error untuk diperiksa jika diperlukan.
+            report($e);
+
+            return redirect()
+                ->route('superadmin.pengguna.index')
+                ->with(
+                    'error',
+                    'Akun Bidan tidak dapat dihapus karena masih terhubung dengan data lain. Periksa relasi database terlebih dahulu.'
+                );
+        }
     }
+
 }
