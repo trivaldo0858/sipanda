@@ -1,6 +1,6 @@
 @extends('layouts.superadmin')
 
-@section('title', 'Registrasi Unit Posyandu')
+@section('title', isset($posyandu) ? 'Edit Unit Posyandu' : 'Registrasi Unit Posyandu')
 
 @section('content')
     @php
@@ -14,36 +14,43 @@
         $username = old('username', $posyandu->penggunaAkses->username ?? '');
     @endphp
 
-    <div class="mx-auto max-w-[1400px] space-y-7 pb-10">
-
-        {{-- Header --}}
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="mx-auto max-w-[1400px] space-y-5 pb-8">
+        {{-- Header halaman --}}
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-3xl font-bold tracking-tight text-slate-800">
+                <h1 class="text-2xl font-bold leading-8 tracking-tight text-slate-800">
                     {{ $isEdit ? 'Edit Unit Posyandu' : 'Registrasi Unit Posyandu' }}
                 </h1>
-                <p class="mt-2 text-base leading-6 text-slate-500">
+                <p class="mt-1 text-sm leading-6 text-slate-500">
                     {{ $isEdit
-    ? 'Perbarui informasi unit layanan dan akun akses Posyandu.'
-    : 'Tambahkan data Posyandu dan akun akses untuk Posyandu.' }}
+                        ? 'Perbarui informasi unit layanan dan akun akses Posyandu.'
+                        : 'Tambahkan data Posyandu dan akun akses untuk Posyandu.' }}
                 </p>
             </div>
 
-            <a href="{{ route('superadmin.posyandu.index') }}"
-                class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <a
+                href="{{ route('superadmin.posyandu.index') }}"
+                class="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#155DFC] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 Kembali ke Daftar
             </a>
         </div>
 
-        {{-- Pesan Error --}}
+        {{-- Pesan validasi --}}
         @if ($errors->any())
-            <div class="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700">
-                <p class="mb-2 font-bold">Data belum berhasil disimpan.</p>
+            <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700" role="alert">
+                <p class="mb-2 text-sm font-semibold">Data belum berhasil disimpan.</p>
                 <ul class="ml-5 list-disc space-y-1 text-sm">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -54,35 +61,35 @@
 
         <form
             action="{{ $isEdit
-    ? route('superadmin.posyandu.update', $posyandu->id_posyandu)
-    : route('superadmin.posyandu.store') }}"
+                ? route('superadmin.posyandu.update', $posyandu->id_posyandu)
+                : route('superadmin.posyandu.store') }}"
             method="POST"
-            class="space-y-6">
-
+            class="space-y-5"
+        >
             @csrf
             @if ($isEdit)
                 @method('PUT')
             @endif
 
-            {{-- Layout dua kolom seperti Figma --}}
-            <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
-
-                {{-- Kartu Informasi Posyandu --}}
-                <section class="space-y-6 rounded-xl border border-slate-100 bg-white p-6 shadow-sm sm:p-7 xl:col-span-7">
-
-                    <div class="flex items-start gap-4">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-blue-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M3 21h18M5 21V7l8-4v18m6 0V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01M15 13v.01M15 16v.01M15 19v.01" />
+            <div class="grid grid-cols-1 items-start gap-5 xl:grid-cols-12">
+                {{-- Kartu informasi Posyandu --}}
+                <section class="space-y-5 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6 xl:col-span-7">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#155DFC]">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18m6 0V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01M15 13v.01M15 16v.01M15 19v.01" />
                             </svg>
                         </div>
-
                         <div>
-                            <h2 class="text-xl font-semibold tracking-tight text-slate-900">
-                                Informasi Posyandu
-                            </h2>
+                            <h2 class="text-base font-bold tracking-tight text-slate-900">Informasi Posyandu</h2>
                             <p class="mt-1 text-xs leading-5 text-slate-500">
                                 Data administratif unit Posyandu di wilayah kerja Puskesmas.
                             </p>
@@ -91,66 +98,78 @@
 
                     {{-- Nama Posyandu --}}
                     <div class="space-y-2">
-                        <div class="flex flex-wrap items-center justify-between gap-2">
-                            <label for="nama_posyandu" class="text-sm font-medium text-slate-800">
-                                Nama Posyandu <span class="text-red-600">*</span>
-                            </label>
-                        </div>
-
+                        <label for="nama_posyandu" class="text-sm font-semibold text-slate-800">
+                            Nama Posyandu <span class="text-red-600">*</span>
+                        </label>
                         <div class="relative">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M3 21h18M5 21V7l8-4v18m6 0V11l-6-4" />
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18m6 0V11l-6-4" />
                             </svg>
-
-                            <input id="nama_posyandu" type="text" name="nama_posyandu"
+                            <input
+                                id="nama_posyandu"
+                                type="text"
+                                name="nama_posyandu"
                                 value="{{ $namaPosyandu }}"
                                 placeholder="Masukkan nama Posyandu (contoh: Posyandu Mawar 1)"
                                 required
-                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] py-3 pl-10 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50"
+                            >
                         </div>
                     </div>
 
-                    {{-- Alamat --}}
+                    {{-- Alamat lengkap --}}
                     <div class="space-y-2">
-                        <div class="flex flex-wrap items-center justify-between gap-2">
-                            <label for="alamat" class="text-sm font-medium text-slate-800">
-                                Alamat Lengkap <span class="text-red-600">*</span>
-                            </label>
-                        </div>
-
-                        <textarea id="alamat" name="alamat" rows="3" required
+                        <label for="alamat" class="text-sm font-semibold text-slate-800">
+                            Alamat Lengkap <span class="text-red-600">*</span>
+                        </label>
+                        <textarea
+                            id="alamat"
+                            name="alamat"
+                            rows="3"
+                            required
                             placeholder="Masukkan alamat lengkap Posyandu (contoh: Jl. Ki Buyut No. 15, RT 02/RW 01)"
-                            class="w-full resize-y rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm leading-5 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">{{ $alamat }}</textarea>
+                            class="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-5 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50"
+                        >{{ $alamat }}</textarea>
                     </div>
 
-                    {{-- Kabupaten dan Bidan Pendamping --}}
-                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                    {{-- Kabupaten dan bidan pendamping --}}
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div class="space-y-2">
-                            <label class="text-sm font-medium text-slate-800">
-                                Kabupaten / Kota
-                            </label>
-                            <input type="text" value="Indramayu" readonly
-                                class="w-full cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-500 outline-none">
+                            <label for="kabupaten" class="text-sm font-semibold text-slate-800">Kabupaten / Kota</label>
+                            <input
+                                id="kabupaten"
+                                type="text"
+                                value="Indramayu"
+                                readonly
+                                class="w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm font-medium text-slate-500 outline-none"
+                            >
                             <p class="text-xs leading-5 text-slate-500">
                                 Kabupaten telah ditetapkan untuk sistem Posyandu-In.
                             </p>
                         </div>
 
-                        {{-- Pertahankan pilihan bidan jika sudah tersedia pada form/controller lama --}}
                         @if (isset($bidanList))
                             <div class="space-y-2">
-                                <label for="id_bidan" class="text-sm font-medium text-slate-800">
-                                    Bidan Pendamping
-                                </label>
-                                <select id="id_bidan" name="id_bidan"
-                                    class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                                <label for="id_bidan" class="text-sm font-semibold text-slate-800">Bidan Pendamping</label>
+                                <select
+                                    id="id_bidan"
+                                    name="id_bidan"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50"
+                                >
                                     <option value="">Pilih Bidan Pendamping</option>
                                     @foreach ($bidanList as $bidan)
-                                        <option value="{{ $bidan->id_bidan }}"
-                                            {{ (string) old('id_bidan', $posyandu->id_bidan ?? '') === (string) $bidan->id_bidan ? 'selected' : '' }}>
+                                        <option
+                                            value="{{ $bidan->id_bidan }}"
+                                            {{ (string) old('id_bidan', $posyandu->id_bidan ?? '') === (string) $bidan->id_bidan ? 'selected' : '' }}
+                                        >
                                             {{ $bidan->nama_bidan }}
                                         </option>
                                     @endforeach
@@ -163,23 +182,25 @@
                     </div>
                 </section>
 
-                {{-- Kartu Lokasi Posyandu --}}
-                <section class="space-y-6 rounded-xl border border-slate-100 bg-white p-6 shadow-sm sm:p-7 xl:col-span-5">
-
-                    <div class="flex items-start gap-4">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-blue-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0z" />
+                {{-- Kartu lokasi Posyandu --}}
+                <section class="space-y-5 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6 xl:col-span-5">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#155DFC]">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0z" />
                                 <circle cx="12" cy="10" r="2.5" />
                             </svg>
                         </div>
-
                         <div>
-                            <h2 class="text-xl font-semibold tracking-tight text-slate-900">
-                                Lokasi Posyandu
-                            </h2>
+                            <h2 class="text-base font-bold tracking-tight text-slate-900">Lokasi Posyandu</h2>
                             <p class="mt-1 text-xs leading-5 text-slate-500">
                                 Tentukan wilayah administratif dan titik lokasi unit.
                             </p>
@@ -188,27 +209,31 @@
 
                     {{-- Kecamatan --}}
                     <div class="space-y-2">
-                        <label for="kecamatan" class="text-sm font-medium text-slate-800">
+                        <label for="kecamatan" class="text-sm font-semibold text-slate-800">
                             Kecamatan <span class="text-red-600">*</span>
                         </label>
-
-                        <select id="kecamatan" name="kecamatan" required
-                            class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
-                            <option value="" disabled {{ $kecamatan === '' ? 'selected' : '' }}>
-                                Pilih Kecamatan
-                            </option>
+                        <select
+                            id="kecamatan"
+                            name="kecamatan"
+                            required
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50"
+                        >
+                            <option value="" disabled {{ $kecamatan === '' ? 'selected' : '' }}>Pilih Kecamatan</option>
                         </select>
                     </div>
 
-                    {{-- Desa --}}
+                    {{-- Desa / kelurahan --}}
                     <div class="space-y-2">
-                        <label for="desa" class="text-sm font-medium text-slate-800">
+                        <label for="desa" class="text-sm font-semibold text-slate-800">
                             Desa / Kelurahan <span class="text-red-600">*</span>
                         </label>
-
-                        <select id="desa" name="desa_kelurahan" required
+                        <select
+                            id="desa"
+                            name="desa_kelurahan"
+                            required
                             {{ $kecamatan === '' ? 'disabled' : '' }}
-                            class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed disabled:opacity-60">
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
                             <option value="" disabled {{ $desa === '' ? 'selected' : '' }}>
                                 {{ $kecamatan === '' ? 'Pilih Kecamatan Dahulu' : 'Pilih Desa / Kelurahan' }}
                             </option>
@@ -218,85 +243,90 @@
                     {{-- Koordinat --}}
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="space-y-2">
-                            <label for="latitude" class="text-sm font-medium text-slate-800">
-                                Latitude
-                            </label>
-                            <input type="number" step="any" id="latitude" name="latitude"
-                                value="{{ $latitude }}" placeholder="-6.40123779"
-                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                            <label for="latitude" class="text-sm font-semibold text-slate-800">Latitude</label>
+                            <input
+                                id="latitude"
+                                type="number"
+                                step="any"
+                                name="latitude"
+                                value="{{ $latitude }}"
+                                placeholder="-6.40123779"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50"
+                            >
                         </div>
-
                         <div class="space-y-2">
-                            <label for="longitude" class="text-sm font-medium text-slate-800">
-                                Longitude
-                            </label>
-                            <input type="number" step="any" id="longitude" name="longitude"
-                                value="{{ $longitude }}" placeholder="108.27668902"
-                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
+                            <label for="longitude" class="text-sm font-semibold text-slate-800">Longitude</label>
+                            <input
+                                id="longitude"
+                                type="number"
+                                step="any"
+                                name="longitude"
+                                value="{{ $longitude }}"
+                                placeholder="108.27668902"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50"
+                            >
                         </div>
                     </div>
 
-                    {{-- Peta --}}
-                    <div class="space-y-3">
+                    {{-- Peta lokasi --}}
+                    <div class="space-y-2">
                         <div>
-                            <label class="text-sm font-medium text-slate-800">
-                                Titik Lokasi Posyandu
-                            </label>
+                            <label class="text-sm font-semibold text-slate-800">Titik Lokasi Posyandu</label>
                             <p class="mt-1 text-xs leading-5 text-slate-500">
                                 Klik peta atau geser marker biru untuk menentukan lokasi.
                             </p>
                         </div>
-
-                        <div id="posyandu-map"
-                            class="w-full overflow-hidden rounded-xl border border-slate-200"
-                            style="height: 300px; position: relative; z-index: 0;">
-                        </div>
-
+                        <div id="posyandu-map" class="w-full overflow-hidden rounded-xl border border-slate-200"></div>
                         <p id="map-status" role="status" class="text-xs leading-5 text-slate-500">
                             Pilih titik lokasi pada peta.
                         </p>
                     </div>
                 </section>
 
-                {{-- Kartu Akun Akses --}}
-                <section class="space-y-6 rounded-xl border border-slate-100 bg-white p-6 shadow-sm sm:p-7 xl:col-span-12">
-
-                    <div class="flex items-start gap-4">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-blue-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                {{-- Kartu akun akses --}}
+                <section class="space-y-5 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6 xl:col-span-12">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#155DFC]">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true"
+                            >
                                 <rect x="4" y="10" width="16" height="11" rx="2" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M8 10V7a4 4 0 118 0v3m-4 5v2" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10V7a4 4 0 118 0v3m-4 5v2" />
                             </svg>
                         </div>
-
                         <div>
-                            <h2 class="text-xl font-semibold tracking-tight text-slate-900">
-                                Akun Akses Posyandu
-                            </h2>
+                            <h2 class="text-base font-bold tracking-tight text-slate-900">Akun Akses Posyandu</h2>
                             <p class="mt-1 text-xs leading-5 text-slate-500">
                                 Akun ini digunakan untuk login ke sistem oleh pengelola Posyandu.
                             </p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         {{-- Username --}}
                         <div class="space-y-2">
-                            <label for="username" class="text-sm font-medium text-slate-800">
+                            <label for="username" class="text-sm font-semibold text-slate-800">
                                 Username
                                 @unless ($isEdit)
                                     <span class="text-red-600">*</span>
                                 @endunless
                             </label>
-
-                            <input id="username" type="text" name="username"
+                            <input
+                                id="username"
+                                type="text"
+                                name="username"
                                 value="{{ $username }}"
                                 {{ $isEdit ? 'readonly' : 'required' }}
                                 autocomplete="username"
                                 placeholder="Contoh: posyandu_melati"
-                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50 read-only:cursor-not-allowed read-only:bg-slate-50">
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50 read-only:cursor-not-allowed read-only:bg-slate-100"
+                            >
                             <p class="text-xs leading-5 text-slate-500">
                                 Gunakan username yang mudah dikenali dan belum terdaftar.
                             </p>
@@ -304,20 +334,22 @@
 
                         {{-- Password --}}
                         <div class="space-y-2">
-                            <label for="password" class="text-sm font-medium text-slate-800">
+                            <label for="password" class="text-sm font-semibold text-slate-800">
                                 {{ $isEdit ? 'Password Baru' : 'Password' }}
                                 @unless ($isEdit)
                                     <span class="text-red-600">*</span>
                                 @endunless
                             </label>
-
-                            <input id="password" type="password" name="password"
+                            <input
+                                id="password"
+                                type="password"
+                                name="password"
                                 {{ $isEdit ? '' : 'required' }}
                                 minlength="6"
                                 autocomplete="new-password"
                                 placeholder="{{ $isEdit ? 'Kosongkan jika tidak diubah' : 'Minimal 6 karakter' }}"
-                                class="w-full rounded-lg border border-transparent bg-[#F2F3FF] px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-50">
-
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50"
+                            >
                             <p class="text-xs leading-5 text-slate-500">
                                 {{ $isEdit ? 'Isi hanya jika ingin mengganti password.' : 'Gunakan password minimal 6 karakter.' }}
                             </p>
@@ -326,25 +358,34 @@
                 </section>
             </div>
 
-            {{-- Informasi dan Tombol --}}
-            <div class="flex flex-col gap-4 rounded-xl border border-blue-100 bg-blue-50/70 p-5 sm:flex-row sm:items-center sm:justify-between">
+            {{-- Informasi dan tombol aksi --}}
+            <div class="flex flex-col gap-4 rounded-2xl border border-blue-100 bg-blue-50/70 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
                 <p class="text-sm leading-6 text-slate-600">
                     <span class="font-semibold text-slate-800">Periksa kembali data.</span>
                     Pastikan nama, alamat, wilayah, dan titik lokasi Posyandu sudah benar.
                 </p>
 
-                <div class="flex shrink-0 flex-col-reverse gap-3 sm:flex-row">
-                    <a href="{{ route('superadmin.posyandu.index') }}"
-                        class="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">
+                <div class="flex shrink-0 flex-col-reverse gap-2 sm:flex-row">
+                    <a
+                        href="{{ route('superadmin.posyandu.index') }}"
+                        class="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-slate-100"
+                    >
                         Batal
                     </a>
-
-                    <button type="submit"
-                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.99]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M5 13l4 4L19 7" />
+                    <button
+                        type="submit"
+                        class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-[#155DFC] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 active:scale-[0.99]"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                         {{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Unit' }}
                     </button>
@@ -353,8 +394,6 @@
         </form>
     </div>
 @endsection
-
-
 
 @push('styles')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -372,16 +411,15 @@
             z-index: 0;
         }
 
-        #posyandu-map .leaflet-tile {
-            max-width: none !important;
-            max-height: none !important;
-            padding: 0 !important;
-            border: 0 !important;
-        }
-
+        #posyandu-map .leaflet-tile,
         #posyandu-map img {
             max-width: none !important;
             max-height: none !important;
+        }
+
+        #posyandu-map .leaflet-tile {
+            padding: 0 !important;
+            border: 0 !important;
         }
     </style>
 @endpush
@@ -391,7 +429,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // 1. Database Wilayah (Diringkas untuk efisiensi)
+            // Daftar kecamatan dan desa di Kabupaten Indramayu.
             const dataWilayah = {
                 "Anjatan": ["Anjatan", "Anjatan Baru", "Anjatan Utara", "Bugis", "Bugis Tua", "Cilandak", "Cilandak Lor", "Kedungwungu", "Kopyah", "Lempuyang", "Mangunjaya", "Salamdarma", "Wanguk"],
                 "Arahan": ["Arahan Kidul", "Arahan Lor", "Cidempet", "Linggajati", "Pranggong", "Sukadadi", "Sukasari", "Tawangsari"],
@@ -423,17 +461,17 @@
                 "Sukra": ["Bogor", "Karanglayung", "Sukra", "Sukra Wetan", "Sumuradem", "Sumuradem Timur", "Tegal Taman", "Ujunggebang"],
                 "Terisi": ["Cibereng", "Cikawung", "Jatimulya", "Jatimunggul", "Karangasem", "Kendayakan", "Maanggungan", "Plosokerep", "Rajasinga"],
                 "Tukdana": ["Bodas", "Cangko", "Gadel", "Karangkerta", "Kerticala", "Lajer", "Mekarsari", "Pagedangan", "Rancajawat", "Sukadana", "Sukamulya", "Sukaperna", "Tukdana"],
-                "Widasari": ["Bangkaloa Ilir", "Bunder", "Kalensari", "Kasmaran", "Kongsijaya", "Leuwigede", "Ujungaris", "Ujungjaya", "Ujung pendok Jaya", "Widasari"],
+                "Widasari": ["Bangkaloa Ilir", "Bunder", "Kalensari", "Kasmaran", "Kongsijaya", "Leuwigede", "Ujungaris", "Ujungjaya", "Ujung pendok Jaya", "Widasari"]
             };
 
             const kecamatanSelect = document.getElementById('kecamatan');
             const desaSelect = document.getElementById('desa');
 
-            // 2. Mengambil data lama dari Laravel
-            const oldKecamatan = "{{ old('kecamatan', $posyandu->kecamatan ?? '') }}";
-            const oldDesa = "{{ old('desa_kelurahan', $posyandu->desa_kelurahan ?? '') }}";
+            // Ambil pilihan sebelumnya dari Laravel.
+            const oldKecamatan = @json(old('kecamatan', $posyandu->kecamatan ?? ''));
+            const oldDesa = @json(old('desa_kelurahan', $posyandu->desa_kelurahan ?? ''));
 
-            // ===== PETA LOKASI POSYANDU =====
+            // Elemen untuk peta dan informasi alamat.
             const latitudeInput = document.getElementById('latitude');
             const longitudeInput = document.getElementById('longitude');
             const alamatInput = document.querySelector('[name="alamat"]');
@@ -497,9 +535,7 @@
                 mapStatus.textContent = 'Mencari alamat berdasarkan titik lokasi...';
 
                 try {
-                    const url = new URL(
-                        'https://nominatim.openstreetmap.org/reverse'
-                    );
+                    const url = new URL('https://nominatim.openstreetmap.org/reverse');
 
                     url.search = new URLSearchParams({
                         format: 'jsonv2',
@@ -512,7 +548,9 @@
 
                     const response = await fetch(url, {
                         signal: lookupController.signal,
-                        headers: { 'Accept': 'application/json' }
+                        headers: {
+                            Accept: 'application/json'
+                        }
                     });
 
                     if (!response.ok) {
@@ -525,27 +563,32 @@
                         throw new Error('Alamat tidak ditemukan.');
                     }
 
-                    const a = result.address;
-
-                    // Cari nama kecamatan dari hasil geocoding
+                    const address = result.address;
                     const namaKecamatan =
-                        a.county || a.city_district || a.state_district || '';
+                        address.county ||
+                        address.city_district ||
+                        address.state_district ||
+                        '';
 
-                    const kecamatanCocok = Object.keys(dataWilayah).find(k =>
-                        k.toLowerCase() === namaKecamatan.toLowerCase()
+                    const kecamatanCocok = Object.keys(dataWilayah).find(
+                        kecamatan => kecamatan.toLowerCase() === namaKecamatan.toLowerCase()
                     );
 
                     if (kecamatanCocok) {
                         kecamatanSelect.value = kecamatanCocok;
 
                         const namaDesa =
-                            a.village || a.suburb || a.neighbourhood ||
-                            a.town || a.city || '';
+                            address.village ||
+                            address.suburb ||
+                            address.neighbourhood ||
+                            address.town ||
+                            address.city ||
+                            '';
 
                         updateDesa(kecamatanCocok);
 
-                        const desaCocok = [...desaSelect.options].find(option =>
-                            option.value.toLowerCase() === namaDesa.toLowerCase()
+                        const desaCocok = [...desaSelect.options].find(
+                            option => option.value.toLowerCase() === namaDesa.toLowerCase()
                         );
 
                         if (desaCocok) {
@@ -553,16 +596,16 @@
                         }
                     }
 
-                    // Isi alamat berdasarkan hasil pencarian
                     if (result.display_name) {
                         alamatInput.value = result.display_name;
                     }
 
                     mapStatus.textContent =
                         'Alamat ditemukan. Periksa kembali kecamatan, desa, dan alamat sebelum menyimpan.';
-
                 } catch (error) {
-                    if (error.name === 'AbortError') return;
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
 
                     console.error(error);
                     mapStatus.textContent =
@@ -570,11 +613,8 @@
                 }
             }
 
-            // Tampilkan marker pada koordinat lama ketika form edit dibuka
-            if (
-                Number.isFinite(savedLat) &&
-                Number.isFinite(savedLng)
-            ) {
+            // Tampilkan marker jika form edit memiliki koordinat tersimpan.
+            if (Number.isFinite(savedLat) && Number.isFinite(savedLng)) {
                 setMarker(savedLat, savedLng, false);
             }
 
@@ -583,42 +623,52 @@
             }
 
             window.addEventListener('load', fixMapSize);
+            window.addEventListener('resize', fixMapSize);
 
             setTimeout(fixMapSize, 300);
             setTimeout(fixMapSize, 1000);
 
-            window.addEventListener('resize', fixMapSize);
-
-
-            // 3. Fungsi Isi Kecamatan
+            // Isi pilihan kecamatan.
             function populateKecamatan() {
-                kecamatanSelect.innerHTML = '<option value="" disabled selected>Pilih Kecamatan</option>';
-                Object.keys(dataWilayah).sort().forEach(kec => {
+                kecamatanSelect.innerHTML =
+                    '<option value="" disabled selected>Pilih Kecamatan</option>';
+
+                Object.keys(dataWilayah).sort().forEach(kecamatan => {
                     const option = document.createElement('option');
-                    option.value = kec;
-                    option.textContent = kec;
-                    if (kec === oldKecamatan) option.selected = true;
+                    option.value = kecamatan;
+                    option.textContent = kecamatan;
+
+                    if (kecamatan === oldKecamatan) {
+                        option.selected = true;
+                    }
+
                     kecamatanSelect.appendChild(option);
                 });
 
-                // Jika ada data kecamatan tersimpan, panggil fungsi pengisi desa
                 if (oldKecamatan) {
                     updateDesa(oldKecamatan, oldDesa);
                 }
             }
 
-            // 4. Fungsi Isi Desa
+            // Isi pilihan desa sesuai kecamatan yang dipilih.
             function updateDesa(kecamatan, selectedDesa = '') {
                 const desaList = dataWilayah[kecamatan];
-                desaSelect.innerHTML = '<option value="" disabled selected>Pilih Desa / Kelurahan</option>';
+
+                desaSelect.innerHTML =
+                    '<option value="" disabled selected>Pilih Desa / Kelurahan</option>';
 
                 if (desaList) {
                     desaSelect.disabled = false;
-                    desaList.sort().forEach(desa => {
+
+                    [...desaList].sort().forEach(desa => {
                         const option = document.createElement('option');
                         option.value = desa;
                         option.textContent = desa;
-                        if (desa === selectedDesa) option.selected = true;
+
+                        if (desa === selectedDesa) {
+                            option.selected = true;
+                        }
+
                         desaSelect.appendChild(option);
                     });
                 } else {
@@ -626,10 +676,8 @@
                 }
             }
 
-            // Jalankan fungsi awal
             populateKecamatan();
 
-            // Event Listener perubahan kecamatan
             kecamatanSelect.addEventListener('change', function () {
                 updateDesa(this.value);
             });

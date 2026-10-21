@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Anak;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Controllers\Web\AuthController as SharedAuthController;
+
 
 class AuthController extends Controller
 {
@@ -16,6 +17,11 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
+        // Periksa session Orang Tua terlebih dahulu.
+        if (session()->has('orang_tua_nik_anak')) {
+            return redirect('/orang-tua/dashboard');
+        }
+
         if (Auth::check()) {
             $user = Auth::user();
 
@@ -42,7 +48,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Proses login Bidan.
+     * Login Bidan menggunakan username dan password.
      */
     public function loginBidan(Request $request)
     {
@@ -66,10 +72,68 @@ class AuthController extends Controller
                 ->withInput($request->only('username'));
         }
 
+        // Bersihkan session Orang Tua jika ada.
+        $request->session()->forget('orang_tua_nik_anak');
+
         Auth::login($pengguna);
         $request->session()->regenerate();
 
         return redirect('/bidan/dashboard')
             ->with('success', 'Login berhasil.');
+    }
+
+    /**
+     * Login Orang Tua menggunakan NIK dan tanggal lahir anak.
+     */
+    public function loginOrangTua(Request $request)
+    {
+        $request->validate([
+            'nik_anak' => 'required|string|digits:16',
+            'tgl_lahir' => 'required|date_format:Y-m-d',
+        ], [
+            'nik_anak.required' => 'NIK anak wajib diisi.',
+            'nik_anak.digits' => 'NIK anak harus terdiri dari 16 digit.',
+            'tgl_lahir.required' => 'Tanggal lahir anak wajib diisi.',
+            'tgl_lahir.date_format' => 'Format tanggal lahir tidak valid.',
+        ]);
+
+        $anak = Anak::where('nik_anak', $request->nik_anak)
+            ->whereDate('tgl_lahir', $request->tgl_lahir)
+            ->first();
+
+        if (!$anak) {
+            return back()
+                ->withErrors([
+                    'nik_anak' => 'NIK atau tanggal lahir anak tidak sesuai.',
+                ])
+                ->withInput($request->only('nik_anak'));
+        }
+
+        // Jangan biarkan autentikasi pengguna sebelumnya tetap aktif.
+        Auth::logout();
+
+        // Simpan identitas anak pada session khusus Orang Tua.
+        $request->session()->forget('orang_tua_nik_anak');
+        $request->session()->regenerate();
+
+        $request->session()->put(
+            'orang_tua_nik_anak',
+            $anak->nik_anak
+        );
+
+        return redirect('/orang-tua/dashboard')
+            ->with('success', 'Login berhasil.');
+    }
+
+    /**
+     * Logout Orang Tua.
+     */
+    public function logoutOrangTua(Request $request)
+    {
+        $request->session()->forget('orang_tua_nik_anak');
+        $request->session()->regenerateToken();
+
+        return redirect('/login')
+            ->with('success', 'Kamu berhasil logout.');
     }
 }

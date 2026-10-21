@@ -8,17 +8,25 @@ use App\Http\Controllers\Web\SuperAdmin\PenggunaController;
 use App\Http\Controllers\Web\SuperAdmin\PosyanduController;
 use App\Http\Controllers\Web\Posyandu\AuthController as PosyanduAuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\OrangTua\DashboardController as OrangTuaDashboardController;
 
-// Halaman utama: login user
+// Halaman utama dan login bersama
 Route::get('/', [SharedAuthController::class, 'showLogin'])
     ->name('home');
 
-// Login bersama Bidan, Posyandu, dan Orang Tua
 Route::get('/login', [SharedAuthController::class, 'showLogin'])
     ->name('login');
 
+// Login Bidan
 Route::post('/login/bidan', [SharedAuthController::class, 'loginBidan'])
     ->name('login.bidan');
+
+// Login dan logout Orang Tua
+Route::post('/login/orang-tua', [SharedAuthController::class, 'loginOrangTua'])
+    ->name('login.orang-tua');
+
+Route::post('/orang-tua/logout', [SharedAuthController::class, 'logoutOrangTua'])
+    ->name('orang-tua.logout');
 
 // Login dan halaman Super Admin
 Route::prefix('superadmin')->name('superadmin.')->group(function () {
@@ -55,3 +63,9 @@ Route::prefix('posyandu')->name('posyandu.')->group(function () {
     Route::post('/logout', [PosyanduAuthController::class, 'logout'])
         ->name('logout');
 });
+
+// Dashboard Orang Tua
+Route::get('/orang-tua/dashboard', [
+    OrangTuaDashboardController::class,
+    'index',
+])->name('orang-tua.dashboard');

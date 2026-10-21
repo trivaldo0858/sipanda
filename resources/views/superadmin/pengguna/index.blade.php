@@ -3,133 +3,178 @@
 @section('title', 'Pengguna')
 
 @section('content')
-    <div class="space-y-6">
+    <div class="space-y-5">
 
         {{-- HEADER --}}
-        <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-[30px] leading-[38px] font-bold text-slate-800">
+                <h1 class="text-2xl font-bold leading-8 text-slate-800">
                     Manajemen Pengguna
                 </h1>
 
-                <p class="mt-2 text-[16px] leading-6 text-slate-500">
-                    Kelola akun bidan yang terdaftar dalam sistem Posyandu-In.
-                </p>
             </div>
 
-            <a href="{{ route('superadmin.pengguna.create') }}" class="flex h-[60px] shrink-0 items-center justify-center gap-4 rounded-full
-                       bg-blue-600 px-8 text-[16px] font-bold text-white
-                       transition-all hover:bg-blue-700">
-                <span class="text-[24px] leading-none">+</span>
+            <a href="{{ route('superadmin.pengguna.create') }}" class="inline-flex h-11 shrink-0 items-center justify-center gap-2
+                          rounded-xl bg-[#155DFC] px-5 text-sm font-semibold text-white
+                          transition hover:bg-blue-700
+                          focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2">
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+                </svg>
+
                 <span>Registrasi Pengguna</span>
             </a>
         </div>
 
         {{-- FLASH MESSAGE --}}
         @if(session('success'))
-            <div class="rounded-2xl border border-emerald-200 bg-emerald-50
-                            px-5 py-4 text-sm text-emerald-700" role="status">
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50
+                                px-4 py-3 text-sm text-emerald-700" role="status">
                 {{ session('success') }}
             </div>
         @endif
 
         @if(session('error'))
-            <div class="rounded-2xl border border-red-200 bg-red-50
-                            px-5 py-4 text-sm text-red-700" role="alert">
+            <div class="rounded-xl border border-red-200 bg-red-50
+                                px-4 py-3 text-sm text-red-700" role="alert">
                 {{ session('error') }}
             </div>
         @endif
 
-        {{-- SEARCH & FILTER --}}
-        <div class="rounded-[32px] border border-white bg-white/60
-                    p-3 shadow-sm backdrop-blur-md">
 
-            <form action="{{ route('superadmin.pengguna.index') }}" method="GET" class="flex flex-col gap-3 lg:flex-row">
+{{-- SEARCH & FILTER --}}
+<div class="rounded-2xl border border-white bg-white/60 p-2 shadow-sm backdrop-blur-md">
+    <form
+        action="{{ route('superadmin.pengguna.index') }}"
+        method="GET"
+        class="flex flex-col gap-2 lg:flex-row"
+    >
+        {{-- SEARCH --}}
+        <div class="relative min-w-0 flex-1">
+            <label for="search-pengguna" class="sr-only">
+                Cari nama bidan atau username
+            </label>
 
-                {{-- SEARCH --}}
-                <div class="relative min-w-0 flex-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-5 top-1/2 h-5 w-5
-                                -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        stroke-width="2" aria-hidden="true">
-                        <circle cx="11" cy="11" r="7" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m16 16 4 4" />
-                    </svg>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m21 21-4.35-4.35m2.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+                />
+            </svg>
 
-                    <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Cari nama bidan atau username..." aria-label="Cari nama bidan atau username" class="h-[56px] w-full rounded-full border-0
-                                  bg-[#F2F3FF] pl-14 pr-6 text-[16px]
-                                  text-slate-700 placeholder:text-[#737687]
-                                  outline-none focus:ring-2 focus:ring-blue-200">
-                </div>
-
-                {{-- FILTER WILAYAH --}}
-                <div class="relative lg:w-[180px] lg:shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute left-4 top-1/2
-                                h-4 w-4 -translate-y-1/2 text-slate-500" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h9m4 0h3M4 17h3m4 0h9M13 4v6M7 14v6" />
-                    </svg>
-
-                    <select name="id_posyandu" aria-label="Filter wilayah Posyandu" class="h-[56px] w-full appearance-none rounded-full
-                                   border-0 bg-[#F2F3FF] pl-10 pr-9
-                                   text-[12px] font-medium text-[#434656]
-                                   outline-none focus:ring-2 focus:ring-blue-200">
-                        <option value="">Semua Wilayah</option>
-
-                        @foreach($posyanduList as $item)
-                            <option value="{{ $item->id_posyandu }}" {{ request('id_posyandu') == $item->id_posyandu ? 'selected' : '' }}>
-                                {{ $item->nama_posyandu }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-4 top-1/2
-                                h-4 w-4 -translate-y-1/2 text-slate-500" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
-                    </svg>
-                </div>
-
-                {{-- BUTTON CARI --}}
-                <button type="submit" class="h-[56px] rounded-full bg-blue-600 px-10
-                               text-[16px] font-bold text-white
-                               transition-all hover:bg-blue-700
-                               lg:shrink-0">
-                    Cari
-                </button>
-            </form>
+            <input
+                id="search-pengguna"
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari nama bidan atau username..."
+                class="h-12 w-full rounded-xl border-0 bg-[#F2F3FF] py-3 pl-11 pr-4 text-sm text-slate-700 outline-none placeholder:text-[#737687] focus:ring-2 focus:ring-blue-200"
+            >
         </div>
 
+        {{-- FILTER WILAYAH --}}
+        <div class="relative shrink-0">
+            <label for="filter-posyandu-pengguna" class="sr-only">
+                Filter wilayah Posyandu
+            </label>
+
+            <select
+                id="filter-posyandu-pengguna"
+                name="id_posyandu"
+                class="h-12 w-full min-w-[180px] appearance-none rounded-xl border-0 bg-[#F2F3FF] py-3 pl-10 pr-9 text-sm font-medium text-[#434656] outline-none focus:ring-2 focus:ring-blue-200"
+            >
+                <option value="">Semua Wilayah</option>
+
+                @foreach ($posyanduList as $item)
+                    <option
+                        value="{{ $item->id_posyandu }}"
+                        {{ request('id_posyandu') == $item->id_posyandu ? 'selected' : '' }}
+                    >
+                        {{ $item->nama_posyandu }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- ICON FILTER --}}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M4 7h9m4 0h3M4 17h3m4 0h9M13 4v6M7 14v6"
+                />
+            </svg>
+
+            {{-- ICON DROPDOWN --}}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m6 9 6 6 6-6"
+                />
+            </svg>
+        </div>
+
+        {{-- BUTTON CARI --}}
+        <button
+            type="submit"
+            class="h-12 shrink-0 rounded-xl bg-blue-600 px-7 text-sm font-bold text-white transition-colors hover:bg-blue-700"
+        >
+            Cari
+        </button>
+    </form>
+</div>
+
+
         {{-- TABEL PENGGUNA --}}
-        <div class="overflow-hidden rounded-[40px] border border-slate-50
-                    bg-white shadow-sm">
-
+        <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-left">
-
+                <table class="w-full border-collapse">
                     {{-- TABLE HEADER --}}
                     <thead>
-                        <tr class="bg-slate-50/50">
-                            <th class="px-8 py-6 text-[11px] font-black
-                                       uppercase tracking-[1.65px] text-slate-700">
+                        <tr class="bg-slate-50/70">
+                            <th class="whitespace-nowrap px-5 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-700">
                                 Informasi Bidan
                             </th>
 
-                            <th class="px-8 py-6 text-[11px] font-black
-                                       uppercase tracking-[1.65px] text-slate-700">
+                            <th class="whitespace-nowrap px-5 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-700">
                                 Posyandu Pendamping
                             </th>
 
-                            <th class="px-8 py-6 text-center text-[11px] font-black
-                                       uppercase tracking-[1.65px] text-slate-700">
+                            <th class="px-5 py-4 text-center text-[11px] font-bold uppercase tracking-wider text-slate-700">
                                 Aksi
                             </th>
                         </tr>
                     </thead>
 
                     {{-- TABLE BODY --}}
-                    <tbody class="divide-y divide-slate-50">
-
+                    <tbody class="divide-y divide-slate-100">
                         @forelse($pengguna as $item)
                             @if($item->role === 'Bidan')
                                 @php
@@ -142,25 +187,24 @@
                                         ->implode('');
                                 @endphp
 
-                                <tr class="transition-colors hover:bg-blue-50/30">
+                                <tr class="transition-colors hover:bg-blue-50/40">
 
                                     {{-- INFORMASI BIDAN --}}
-                                    <td class="px-8 py-5">
+                                    <td class="px-5 py-4 sm:px-6">
                                         <div class="flex items-center gap-3">
-                                            <div class="flex h-14 w-14 shrink-0
-                                                                items-center justify-center
-                                                                rounded-full bg-indigo-100
-                                                                text-xl font-semibold text-slate-800">
+                                            <div class="flex h-10 w-10 shrink-0
+                                                                    items-center justify-center
+                                                                    rounded-full bg-indigo-50
+                                                                    text-sm font-semibold text-indigo-700">
                                                 {{ $inisial ?: 'B' }}
                                             </div>
 
-                                            <div>
-                                                <p class="text-[18px] leading-7
-                                                                  font-bold text-slate-800">
+                                            <div class="min-w-0">
+                                                <p class="text-sm font-semibold leading-5 text-slate-800">
                                                     {{ $nama }}
                                                 </p>
 
-                                                <p class="mt-0.5 text-[14px] text-slate-500">
+                                                <p class="mt-1 text-xs text-slate-500">
                                                     @ {{ $item->username }}
                                                 </p>
                                             </div>
@@ -168,20 +212,19 @@
                                     </td>
 
                                     {{-- POSYANDU PENDAMPING --}}
-                                    <td class="px-8 py-5">
+                                    <td class="px-5 py-4 sm:px-6">
                                         @if($item->posyandu)
-                                            <p class="text-[18px] leading-7
-                                                                  font-bold text-slate-800">
+                                            <p class="text-sm font-semibold leading-5 text-slate-800">
                                                 {{ $item->posyandu->nama_posyandu }}
                                             </p>
 
                                             @if($item->posyandu->desa_kelurahan ?? false)
-                                                <p class="mt-0.5 text-[14px] text-slate-500">
-                                                    • {{ $item->posyandu->desa_kelurahan }}
+                                                <p class="mt-1 text-xs text-slate-500">
+                                                    {{ $item->posyandu->desa_kelurahan }}
                                                 </p>
                                             @elseif($item->posyandu->kecamatan ?? false)
-                                                <p class="mt-0.5 text-[14px] text-slate-500">
-                                                    • Kec. {{ $item->posyandu->kecamatan }}
+                                                <p class="mt-1 text-xs text-slate-500">
+                                                    Kec. {{ $item->posyandu->kecamatan }}
                                                 </p>
                                             @endif
                                         @else
@@ -192,132 +235,98 @@
                                     </td>
 
                                     {{-- AKSI --}}
-                                    
-{{-- AKSI --}}
-<td class="px-8 py-5">
-    <div class="flex items-center justify-center gap-2">
+                                    <td class="px-5 py-4 sm:px-6">
+                                        <div class="flex items-center justify-center gap-2">
 
-        {{-- 1. LIHAT DETAIL --}}
-        <a href="{{ route('superadmin.pengguna.show', $item->id_user) }}"
-           title="Lihat Detail"
-           aria-label="Lihat detail {{ $nama }}"
-           class="flex h-10 w-10 items-center justify-center
-                  rounded-xl bg-blue-50 text-blue-600
-                  transition-all hover:bg-blue-100
-                  focus:outline-none focus:ring-2 focus:ring-blue-200">
+                                            {{-- LIHAT DETAIL --}}
+                                            <a href="{{ route('superadmin.pengguna.show', $item->id_user) }}" title="Lihat Detail"
+                                                aria-label="Lihat detail {{ $nama }}" class="flex h-9 w-9 items-center justify-center
+                                                                  rounded-lg bg-blue-50 text-blue-600
+                                                                  transition hover:bg-blue-100
+                                                                  focus:outline-none focus:ring-2 focus:ring-blue-200">
 
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 class="h-5 w-5"
-                 fill="none"
-                 viewBox="0 0 24 24"
-                 stroke="currentColor"
-                 stroke-width="2"
-                 aria-hidden="true">
-                <path stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12
-                         18 18.75 12 18.75 2.25 12 2.25 12Z"/>
-                <circle cx="12" cy="12" r="2.5"/>
-            </svg>
-        </a>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z" />
+                                                    <circle cx="12" cy="12" r="2.5" />
+                                                </svg>
+                                            </a>
 
-        {{-- 2. EDIT --}}
-        <a href="{{ route('superadmin.pengguna.edit', $item->id_user) }}"
-           title="Edit"
-           aria-label="Edit akun {{ $nama }}"
-           class="flex h-10 w-10 items-center justify-center
-                  rounded-xl bg-amber-50 text-amber-600
-                  transition-all hover:bg-amber-100
-                  focus:outline-none focus:ring-2 focus:ring-amber-200">
+                                            {{-- EDIT --}}
+                                            <a href="{{ route('superadmin.pengguna.edit', $item->id_user) }}" title="Edit"
+                                                aria-label="Edit akun {{ $nama }}" class="flex h-9 w-9 items-center justify-center
+                                                                  rounded-lg bg-amber-50 text-amber-600
+                                                                  transition hover:bg-amber-100
+                                                                  focus:outline-none focus:ring-2 focus:ring-amber-200">
 
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 class="h-5 w-5"
-                 fill="none"
-                 viewBox="0 0 24 24"
-                 stroke="currentColor"
-                 stroke-width="2"
-                 aria-hidden="true">
-                <path stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1
-                         2.652 2.652l-1.687 1.688m-2.652-2.652-8.15
-                         8.15a4.5 4.5 0 0 0-1.128 1.902L6.75 17.25
-                         l2.711-.834a4.5 4.5 0 0 0 1.902-1.128
-                         l8.15-8.15m-2.652-2.652 2.652 2.652"/>
-            </svg>
-        </a>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652l-1.687 1.688m-2.652-2.652-8.15 8.15a4.5 4.5 0 0 0-1.128 1.902L6.75 17.25l2.711-.834a4.5 4.5 0 0 0 1.902-1.128l8.15-8.15m-2.652-2.652 2.652 2.652" />
+                                                </svg>
+                                            </a>
 
-        {{-- 3. HAPUS --}}
-        <form method="POST"
-              action="{{ route('superadmin.pengguna.destroy', $item->id_user) }}"
-              onsubmit="return confirm('Yakin ingin menghapus akun bidan {{ $nama }}?')">
+                                            {{-- HAPUS --}}
+                                            <form method="POST" action="{{ route('superadmin.pengguna.destroy', $item->id_user) }}"
+                                                onsubmit="return confirm('Yakin ingin menghapus akun bidan {{ $nama }}?')">
 
-            @csrf
-            @method('DELETE')
+                                                @csrf
+                                                @method('DELETE')
 
-            <button type="submit"
-                    title="Hapus"
-                    aria-label="Hapus akun {{ $nama }}"
-                    class="flex h-10 w-10 items-center justify-center
-                           rounded-xl bg-red-50 text-red-600
-                           transition-all hover:bg-red-100
-                           focus:outline-none focus:ring-2 focus:ring-red-200">
+                                                <button type="submit" title="Hapus" aria-label="Hapus akun {{ $nama }}" class="flex h-9 w-9 items-center justify-center
+                                                                           rounded-lg bg-red-50 text-red-600
+                                                                           transition hover:bg-red-100
+                                                                           focus:outline-none focus:ring-2 focus:ring-red-200">
 
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="h-5 w-5"
-                     fill="none"
-                     viewBox="0 0 24 24"
-                     stroke="currentColor"
-                     stroke-width="2"
-                     aria-hidden="true">
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 7h12m-9 0V4h6v3m-7 0 1 13h6l1-13
-                             M10 11v6m4-6v6"/>
-                </svg>
-            </button>
-        </form>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                                                        aria-hidden="true">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M6 7h12m-9 0V4h6v3m-7 0 1 13h6l1-13M10 11v6m4-6v6" />
+                                                    </svg>
+                                                </button>
+                                            </form>
 
-    </div>
-</td>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endif
                         @empty
                             <tr>
-                                <td colspan="3" class="px-8 py-20 text-center">
+                                <td colspan="3" class="px-5 py-14 text-center sm:px-6">
                                     <div class="flex flex-col items-center">
-                                        <div class="mb-4 flex h-16 w-16 items-center
-                                                        justify-center rounded-full
-                                                        bg-slate-50 text-slate-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none"
+                                        <div class="mb-3 flex h-12 w-12 items-center
+                                                            justify-center rounded-full
+                                                            bg-slate-50 text-slate-300">
+
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m6-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm6-1a4 4 0 0 1 0 8m2 3h2v-2a4 4 0 0 0-3-3.87" />
                                             </svg>
                                         </div>
 
-                                        <p class="font-semibold text-slate-500">
+                                        <p class="text-sm font-medium text-slate-500">
                                             Belum ada data pengguna.
                                         </p>
                                     </div>
                                 </td>
                             </tr>
                         @endforelse
-
                     </tbody>
-                    
                 </table>
             </div>
 
             {{-- PAGINATION --}}
             @if(method_exists($pengguna, 'links'))
                 @if($pengguna->hasPages())
-                    <div class="border-t border-slate-100 px-8 py-5">
+                    <div class="border-t border-slate-100 px-5 py-4 sm:px-6">
                         {{ $pengguna->links() }}
                     </div>
                 @endif
             @endif
+
         </div>
     </div>
-    
 @endsection

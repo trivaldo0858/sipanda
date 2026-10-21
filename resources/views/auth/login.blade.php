@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title', 'Login Posyandu-In')
+@section('title')
 
 @section('content')
     <div class="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 font-sans">
@@ -169,12 +169,12 @@
             password.required = role !== 'OrangTua';
 
             if (role === 'Bidan') {
-                form.action = "{{ url('/login/bidan') }}";
-            } else if (role === 'Posyandu') {
-                form.action = "{{ url('/login/posyandu') }}";
-            } else {
-                form.action = "{{ url('/login/orang-tua') }}";
-            }
+    form.action = "{{ url('/login/bidan') }}";
+} else if (role === 'Posyandu') {
+    form.action = "{{ url('/posyandu/login') }}";
+} else if (role === 'OrangTua') {
+    form.action = "{{ url('/login/orang-tua') }}";
+}
 
             roleButtons.forEach(button => {
     const aktif = button.dataset.role === role;
