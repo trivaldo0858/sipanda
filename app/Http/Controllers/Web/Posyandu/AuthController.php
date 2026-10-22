@@ -14,12 +14,12 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Auth::check() && Auth::user()->isPosyandu()) {
-            return redirect()->route('posyandu.dashboard');
+            return redirect()->route('posyandu.anak.index');
         }
 
         $posyandu = Posyandu::orderBy('nama_posyandu')->get();
 
-        return view('posyandu.auth.login', compact('posyandu'));
+        return view('auth.login', compact('posyandu'));
     }
 
     public function login(Request $request)
@@ -47,7 +47,7 @@ class AuthController extends Controller
         Auth::login($pengguna);
         $request->session()->regenerate();
 
-        return redirect()->route('posyandu.dashboard')
+        return redirect()->route('posyandu.anak.index')
             ->with('success', 'Login berhasil.');
     }
 

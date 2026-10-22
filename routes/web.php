@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\Posyandu\AnakController as PosyanduAnakController;
 use App\Http\Controllers\Web\AuthController as SharedAuthController;
 use App\Http\Controllers\Web\SuperAdmin\AuthController;
 use App\Http\Controllers\Web\SuperAdmin\DashboardController;
@@ -52,7 +53,7 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     });
 });
 
-// Login Posyandu lama: tetap dipertahankan
+// Login dan halaman Posyandu
 Route::prefix('posyandu')->name('posyandu.')->group(function () {
     Route::get('/login', [PosyanduAuthController::class, 'showLogin'])
         ->name('login');
@@ -60,9 +61,21 @@ Route::prefix('posyandu')->name('posyandu.')->group(function () {
     Route::post('/login', [PosyanduAuthController::class, 'login'])
         ->name('login.post');
 
-    Route::post('/logout', [PosyanduAuthController::class, 'logout'])
-        ->name('logout');
+    Route::middleware('posyandu')->group(function () {
+        Route::post('/logout', [PosyanduAuthController::class, 'logout'])
+            ->name('logout');
+
+        Route::get('/anak', [PosyanduAnakController::class, 'index'])
+            ->name('anak.index');
+
+        Route::get('/anak/create', [PosyanduAnakController::class, 'create'])
+            ->name('anak.create');
+
+        Route::post('/anak', [PosyanduAnakController::class, 'store'])
+            ->name('anak.store');
+    });
 });
+
 
 // Dashboard Orang Tua
 Route::get('/orang-tua/dashboard', [

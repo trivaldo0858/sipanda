@@ -5,46 +5,50 @@ namespace App\Http\Controllers\Web\OrangTua;
 use App\Http\Controllers\Controller;
 use App\Models\Anak;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil NIK anak dari session login Orang Tua.
+        // Ambil identitas anak dari session login Orang Tua.
         $nikAnak = $request->session()->get('orang_tua_nik_anak');
 
-        // Jika session tidak ada, kembalikan ke halaman login.
         if (!$nikAnak) {
-            return redirect('/login')
-                ->withErrors([
-                    'login' => 'Silakan login terlebih dahulu.',
-                ]);
+            return redirect('/login')->withErrors([
+                'login' => 'Silakan login terlebih dahulu.',
+            ]);
         }
 
-        // Ambil hanya data anak yang sesuai dengan session.
-        $anak = Anak::with([
-            'posyandu',
-            'pemeriksaan',
-            'imunisasi',
-        ])->where('nik_anak', $nikAnak)->first();
+        // Ambil profil anak beserta Posyandu tempat anak terdaftar.
+        $anak = Anak::with('posyandu')
+            ->where('nik_anak', $nikAnak)
+            ->first();
 
-        // Jika data anak sudah tidak ditemukan, hapus session.
         if (!$anak) {
             $request->session()->forget('orang_tua_nik_anak');
 
-            return redirect('/login')
-                ->withErrors([
-                    'login' => 'Data anak tidak ditemukan. Silakan login kembali.',
-                ]);
+            return redirect('/login')->withErrors([
+                'login' => 'Data anak tidak ditemukan. Silakan login kembali.',
+            ]);
         }
 
-        // Pemeriksaan terbaru berdasarkan relasi pemeriksaan.
-        $pemeriksaanTerakhir = $anak->pemeriksaan->first();
+        // Ambil pemeriksaan terbaru milik anak yang sedang login.
+        $pemeriksaanTerakhir = DB::table('pemeriksaan')
+            ->where('nik_anak', $anak->nik_anak)
+            ->orderByDesc('tgl_periksa')
+            ->orderByDesc('id_periksa')
+            ->first();
 
-        // Jadwal akan ditambahkan setelah struktur tabel jadwal diperiksa.
-        $jadwalTerdekat = null;
+        // Ambil jadwal mendatang di Posyandu tempat anak terdaftar.
+        $jadwalTerdekat = DB::table('jadwal_posyandu')
+            ->where('id_posyandu', $anak->id_posyandu)
+            ->whereDate('tgl_kegiatan', '>=', now()->toDateString())
+            ->orderBy('tgl_kegiatan')
+            ->orderBy('id_jadwal')
+            ->first();
 
-        // Prediksi akan dihubungkan setelah sumber data prediksi diperiksa.
+        // Belum menampilkan prediksi sebelum mekanismenya tersedia.
         $prediksiStunting = null;
 
         return view('orang_tua.dashboard', compact(
