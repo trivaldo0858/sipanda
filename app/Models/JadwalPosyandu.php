@@ -8,7 +8,7 @@ class JadwalPosyandu extends Model
     protected $table      = 'jadwal_posyandu';
     protected $primaryKey = 'id_jadwal';
 
-    protected $fillable = ['id_posyandu', 'tgl_kegiatan', 'lokasi', 'agenda'];
+    protected $fillable = ['id_posyandu', 'id_kader', 'tgl_kegiatan', 'lokasi', 'agenda'];
 
     protected $casts = ['tgl_kegiatan' => 'date'];
 

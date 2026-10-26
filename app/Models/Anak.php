@@ -13,12 +13,12 @@ class Anak extends Model
 
     protected $fillable = [
         'nik_anak',
+        'nik_orang_tua',
         'id_posyandu',
         'nama_anak',
         'tgl_lahir',
         'jenis_kelamin',
         'nama_ayah',
-        'nama_ibu',
     ];
 
     protected $casts = [
@@ -31,6 +31,15 @@ class Anak extends Model
             Posyandu::class,
             'id_posyandu',
             'id_posyandu'
+        );
+    }
+
+    public function orangTua()
+    {
+        return $this->belongsTo(
+            OrangTua::class,
+            'nik_orang_tua',
+            'nik_orang_tua'
         );
     }
 

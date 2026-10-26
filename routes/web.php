@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Web\Posyandu\AnakController as PosyanduAnakController;
+use App\Http\Controllers\Web\Posyandu\PemeriksaanController as PosyanduPemeriksaanController;
+use App\Http\Controllers\Web\Posyandu\JadwalController as PosyanduJadwalController;
 use App\Http\Controllers\Web\AuthController as SharedAuthController;
 use App\Http\Controllers\Web\SuperAdmin\AuthController;
 use App\Http\Controllers\Web\SuperAdmin\DashboardController;
@@ -73,6 +75,24 @@ Route::prefix('posyandu')->name('posyandu.')->group(function () {
 
         Route::post('/anak', [PosyanduAnakController::class, 'store'])
             ->name('anak.store');
+
+        Route::view('/laporan', 'posyandu.anak.laporan')
+            ->name('laporan.index');
+
+        Route::get('/pemeriksaan', [PosyanduPemeriksaanController::class, 'index'])
+            ->name('pemeriksaan.index');
+
+        Route::post('/pemeriksaan', [PosyanduPemeriksaanController::class, 'store'])
+            ->name('pemeriksaan.store');
+
+        Route::get('/jadwal', [PosyanduJadwalController::class, 'index'])
+            ->name('jadwal.index');
+
+        Route::post('/jadwal', [PosyanduJadwalController::class, 'store'])
+            ->name('jadwal.store');
+
+        Route::post('/jadwal/hubungkan-akun', [PosyanduJadwalController::class, 'linkCurrentUser'])
+            ->name('jadwal.link-current-user');
     });
 });
 

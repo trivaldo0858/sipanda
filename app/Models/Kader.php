@@ -8,7 +8,7 @@ class Kader extends Model
     protected $table      = 'kader';
     protected $primaryKey = 'id_kader';
 
-    protected $fillable = ['id_posyandu', 'nama_kader', 'no_telp'];
+    protected $fillable = ['id_user', 'id_posyandu', 'nama_kader', 'no_telp'];
 
     public function posyandu()
     {

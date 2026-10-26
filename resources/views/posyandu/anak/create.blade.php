@@ -93,7 +93,7 @@
             <div class="border-t border-slate-100 pt-5">
                 <h2 class="font-bold text-slate-800">Data Orang Tua</h2>
                 <p class="mt-1 text-sm text-slate-500">
-                    Data ibu disimpan bersama data anak.
+                    Data ibu ditautkan ke data orang tua anak.
                 </p>
             </div>
 
