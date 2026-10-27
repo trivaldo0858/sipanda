@@ -102,3 +102,13 @@ Route::get('/orang-tua/dashboard', [
     OrangTuaDashboardController::class,
     'index',
 ])->name('orang-tua.dashboard');
+
+// ==========================================
+// RUTE DARURAT LOGOUT (Diletakkan paling bawah)
+// ==========================================
+Route::get('/keluar-darurat', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/login');
+});
