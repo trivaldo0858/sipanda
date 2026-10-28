@@ -19,22 +19,22 @@ class AuthController extends Controller
     {
         // Periksa session Orang Tua terlebih dahulu.
         if (session()->has('orang_tua_nik_anak')) {
-            return redirect('/orang-tua/dashboard');
+            return redirect()->route('orang-tua.dashboard');
         }
 
         if (Auth::check()) {
             $user = Auth::user();
 
             if ($user->isBidan()) {
-                return redirect('/bidan/dashboard');
+                return redirect()->route('bidan.dashboard');
             }
 
             if ($user->isPosyandu()) {
-                return redirect('/posyandu/dashboard');
+                return redirect()->route('posyandu.dashboard');
             }
 
             if ($user->isOrangTua()) {
-                return redirect('/orang-tua/dashboard');
+                return redirect()->route('orang-tua.dashboard');
             }
 
             if ($user->isSuperAdmin()) {
@@ -78,7 +78,7 @@ class AuthController extends Controller
         Auth::login($pengguna);
         $request->session()->regenerate();
 
-        return redirect('/bidan/dashboard')
+        return redirect()->route('bidan.dashboard')
             ->with('success', 'Login berhasil.');
     }
 
@@ -121,7 +121,7 @@ class AuthController extends Controller
             $anak->nik_anak
         );
 
-        return redirect('/orang-tua/dashboard')
+        return redirect()->route('orang-tua.dashboard')
             ->with('success', 'Login berhasil.');
     }
 
@@ -133,7 +133,7 @@ class AuthController extends Controller
         $request->session()->forget('orang_tua_nik_anak');
         $request->session()->regenerateToken();
 
-        return redirect('/login')
+        return redirect()->route('login')
             ->with('success', 'Kamu berhasil logout.');
     }
 }

@@ -175,13 +175,11 @@
         #appShell.sidebar-collapsed #sidebar nav .group::after {
             display: none;
         }
-        
     </style>
     @stack('styles')
 </head>
 
 <body class="bg-softbg text-slate-800 font-sans">
-    {{-- Sisa kode Container Utama (Sidebar & Content) tetap sama --}}
 
     <!-- Container Utama (Sidebar & Content) -->
     <div id="appShell" class="min-h-screen bg-[#f3f4f9] p-6 flex gap-6">
@@ -195,11 +193,6 @@
                 <h1 class="brand-name text-xl font-extrabold text-[#155DFC] tracking-tight">
                     Posyandu-In
                 </h1>
-
-                <span class="brand-mark items-center justify-center
-        w-10 h-10 rounded-xl bg-[#155DFC] text-white font-extrabold">
-                    P
-                </span>
 
                 <button type="button" id="sidebar-toggle" aria-label="Perkecil sidebar" aria-expanded="true"
                     title="Perkecil sidebar" class="flex items-center justify-center w-9 h-9
@@ -223,8 +216,9 @@
                 <div class="relative group">
                     {{-- Indikator Aktif (Garis Pink di mockup) --}}
                     @if(request()->routeIs('superadmin.dashboard'))
-                        <div class="sidebar-active-indicator absolute -left-8 top-1/2
-                                                        -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full">
+                        <div
+                            class="sidebar-active-indicator absolute -left-8 top-1/2
+                                                                        -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full">
                         </div>
                     @endif
 
@@ -243,7 +237,7 @@
                 <div class="relative group">
                     @if(request()->routeIs('superadmin.posyandu.*'))
                         <div class="sidebar-active-indicator absolute -left-8 top-1/2
-                                                    -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full">
+                                                                    -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full">
                         </div>
                     @endif
                     <a href="{{ route('superadmin.posyandu.index') }}"
@@ -273,7 +267,7 @@
                 <div class="relative group">
                     @if(request()->routeIs('superadmin.pengguna.*'))
                         <div class="sidebar-active-indicator absolute -left-8 top-1/2
-                                                -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full">
+                                                                -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full">
                         </div>
                     @endif
 

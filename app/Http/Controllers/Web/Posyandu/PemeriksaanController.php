@@ -53,7 +53,7 @@ class PemeriksaanController extends Controller
             : collect();
 
         $chartRecords = $riwayatAnak
-            ->filter(fn ($record) => $record->berat_badan !== null)
+            ->filter(fn($record) => $record->berat_badan !== null)
             ->values();
         $chartPoints = '';
 
@@ -70,7 +70,7 @@ class PemeriksaanController extends Controller
             })->implode(' ');
         }
 
-        return view('posyandu.anak.pemeriksaan', compact(
+        return view('posyandu.pemeriksaan.index', compact(
             'anak',
             'selectedAnak',
             'pemeriksaanHariIni',

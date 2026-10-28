@@ -23,7 +23,7 @@ class JadwalController extends Controller
         abort_unless($user->id_posyandu, 403, 'Akun belum terhubung dengan Posyandu.');
 
         $monthInput = $request->input('month', now()->format('Y-m'));
-        if (! preg_match('/^\d{4}-\d{2}$/', $monthInput)) {
+        if (!preg_match('/^\d{4}-\d{2}$/', $monthInput)) {
             abort(404);
         }
 
@@ -42,7 +42,7 @@ class JadwalController extends Controller
             ->orderBy('tgl_kegiatan')
             ->orderBy('id_jadwal')
             ->get();
-        $schedulesByDate = $schedules->groupBy(fn ($schedule) => $schedule->tgl_kegiatan->toDateString());
+        $schedulesByDate = $schedules->groupBy(fn($schedule) => $schedule->tgl_kegiatan->toDateString());
 
         $selectedDateInput = $request->input('date', now()->toDateString());
         try {
@@ -59,7 +59,7 @@ class JadwalController extends Controller
             $editingSchedule = JadwalPosyandu::where('id_posyandu', $idPosyandu)
                 ->where('id_jadwal', $request->integer('edit'))
                 ->first();
-            abort_if(! $editingSchedule, 404);
+            abort_if(!$editingSchedule, 404);
         }
 
         $calendarStart = $monthStart->copy()->startOfWeek(Carbon::MONDAY);
@@ -77,8 +77,8 @@ class JadwalController extends Controller
         }
 
         $monthCount = $schedules->count();
-        $completedSchedules = $schedules->filter(fn ($schedule) => $schedule->tgl_kegiatan->lt(today()));
-        $todaySchedules = $schedules->filter(fn ($schedule) => $schedule->tgl_kegiatan->isToday());
+        $completedSchedules = $schedules->filter(fn($schedule) => $schedule->tgl_kegiatan->lt(today()));
+        $todaySchedules = $schedules->filter(fn($schedule) => $schedule->tgl_kegiatan->isToday());
         $upcomingSchedules = JadwalPosyandu::where('id_posyandu', $idPosyandu)
             ->whereDate('tgl_kegiatan', '>=', today())
             ->orderBy('tgl_kegiatan')
@@ -89,7 +89,7 @@ class JadwalController extends Controller
             ->count();
 
         $totalChildren = Anak::where('id_posyandu', $idPosyandu)->count();
-        $completedDates = $completedSchedules->map(fn ($schedule) => $schedule->tgl_kegiatan->toDateString());
+        $completedDates = $completedSchedules->map(fn($schedule) => $schedule->tgl_kegiatan->toDateString());
         $attendanceRows = $completedDates->isEmpty()
             ? collect()
             : Pemeriksaan::where('id_posyandu', $idPosyandu)
@@ -98,7 +98,7 @@ class JadwalController extends Controller
                 ->groupBy('tgl_periksa')
                 ->get();
         $averageAttendance = $attendanceRows->isNotEmpty() && $totalChildren > 0
-            ? round($attendanceRows->avg(fn ($row) => min(100, ($row->hadir / $totalChildren) * 100)), 1)
+            ? round($attendanceRows->avg(fn($row) => min(100, ($row->hadir / $totalChildren) * 100)), 1)
             : null;
 
         $staffQuery = Kader::query()
@@ -108,7 +108,7 @@ class JadwalController extends Controller
         $bidan = Bidan::where('id_posyandu', $idPosyandu)->orderBy('nama_bidan')->get(['nip', 'nama_bidan']);
         $unit = $user->posyandu;
 
-        return view('posyandu.anak.jadwal', compact(
+        return view('posyandu.jadwal.index', compact(
             'month',
             'calendarDays',
             'schedules',
@@ -157,7 +157,7 @@ class JadwalController extends Controller
             'agenda' => $validated['agenda'] ?? null,
         ];
 
-        if (! empty($validated['id_jadwal'])) {
+        if (!empty($validated['id_jadwal'])) {
             JadwalPosyandu::where('id_posyandu', $user->id_posyandu)
                 ->where('id_jadwal', $validated['id_jadwal'])
                 ->firstOrFail()
@@ -171,7 +171,7 @@ class JadwalController extends Controller
 
         return redirect()
             ->route('posyandu.jadwal.index', ['month' => Carbon::parse($validated['tgl_kegiatan'])->format('Y-m'), 'date' => $validated['tgl_kegiatan']])
-            ->with('success', ! empty($validated['id_jadwal'])
+            ->with('success', !empty($validated['id_jadwal'])
                 ? 'Jadwal Posyandu berhasil diperbarui.'
                 : 'Jadwal Posyandu berhasil ditambahkan.');
     }

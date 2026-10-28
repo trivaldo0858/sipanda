@@ -123,9 +123,9 @@
 
                     <button type="button" onclick="refreshMap()"
                         class="inline-flex items-center justify-center gap-2 px-5 py-2.5
-                                                                                                               bg-primary hover:bg-blue-700 text-white
-                                                                                                               rounded-full text-sm font-semibold
-                                                                                                               transition duration-200 shadow-sm">
+                                                                                                                       bg-primary hover:bg-blue-700 text-white
+                                                                                                                       rounded-full text-sm font-semibold
+                                                                                                                       transition duration-200 shadow-sm">
 
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -331,8 +331,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                       POPUP POSYANDU
-                                                                                                                                                                    ======================================== */
+                                                                                                                                                                               POPUP POSYANDU
+                                                                                                                                                                            ======================================== */
 
         .leaflet-popup-content-wrapper {
             padding: 0 !important;
@@ -360,8 +360,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                       HEADER
-                                                                                                                                                                    ======================================== */
+                                                                                                                                                                               HEADER
+                                                                                                                                                                            ======================================== */
 
         .popup-title {
             display: flex;
@@ -397,8 +397,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                       ALAMAT
-                                                                                                                                                                    ======================================== */
+                                                                                                                                                                               ALAMAT
+                                                                                                                                                                            ======================================== */
 
         .popup-address {
             margin-top: 13px;
@@ -435,8 +435,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                       BALITA
-                                                                                                                                                                    ======================================== */
+                                                                                                                                                                               BALITA
+                                                                                                                                                                            ======================================== */
 
         .popup-balita {
             display: flex;
@@ -490,8 +490,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                       BIDAN
-                                                                                                                                                                    ======================================== */
+                                                                                                                                                                               BIDAN
+                                                                                                                                                                            ======================================== */
 
         .popup-bidan {
             display: flex;
@@ -515,8 +515,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                       BUTTON
-                                                                                                                                                                    ======================================== */
+                                                                                                                                                                               BUTTON
+                                                                                                                                                                            ======================================== */
 
         .popup-detail-button {
             display: flex;
@@ -542,8 +542,8 @@
         }
 
         /* ========================================
-                                                                                                                                                                       CLOSE BUTTON
-                                                                                                                                                                    ======================================== */
+                                                                                                                                                                               CLOSE BUTTON
+                                                                                                                                                                            ======================================== */
 
         .leaflet-popup-close-button {
             top: 10px !important;
@@ -666,22 +666,22 @@
         const posyanduIcon = L.divIcon({
             className: 'custom-marker',
             html: `
-                            <div class="marker-circle">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="white"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    aria-hidden="true"
-                                >
-                                    <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/>
-                                    <circle cx="12" cy="10" r="3"/>
-                                </svg>
-                            </div>
-                        `,
+                                    <div class="marker-circle">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="white"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            aria-hidden="true"
+                                        >
+                                            <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/>
+                                            <circle cx="12" cy="10" r="3"/>
+                                        </svg>
+                                    </div>
+                                `,
             iconSize: [40, 40],
             iconAnchor: [20, 20],
             popupAnchor: [0, -20],
@@ -711,112 +711,112 @@
             });
 
             marker.bindPopup(`
-                                                                                                                                                                    <div class="posyandu-popup">
+                                                                                                                                                                            <div class="posyandu-popup">
 
-                                                                                                                                                                        <div class="popup-title">
-                                                                                                                                                                            <span class="popup-dot"></span>
-                                                                                                                                                                            ${posyandu.nama_posyandu}
-                                                                                                                                                                        </div>
+                                                                                                                                                                                <div class="popup-title">
+                                                                                                                                                                                    <span class="popup-dot"></span>
+                                                                                                                                                                                    ${posyandu.nama_posyandu}
+                                                                                                                                                                                </div>
 
-                                                                                                                                                                        <div class="popup-location">
-                                                                                                                                                                            ${posyandu.desa_kelurahan}, Kec. ${posyandu.kecamatan}
-                                                                                                                                                                        </div>
+                                                                                                                                                                                <div class="popup-location">
+                                                                                                                                                                                    ${posyandu.desa_kelurahan}, Kec. ${posyandu.kecamatan}
+                                                                                                                                                                                </div>
 
-                                                                                                                                                                        <div class="popup-address">
+                                                                                                                                                                                <div class="popup-address">
 
-                                                                                                                                                                            <div class="popup-label">
-                                                                                                                                                                                <svg
-                                                                                                                                                                                    width="12"
-                                                                                                                                                                                    height="12"
-                                                                                                                                                                                    viewBox="0 0 24 24"
-                                                                                                                                                                                    fill="none"
-                                                                                                                                                                                    stroke="currentColor"
-                                                                                                                                                                                    stroke-width="2"
-                                                                                                                                                                                    stroke-linecap="round"
-                                                                                                                                                                                    stroke-linejoin="round"
+                                                                                                                                                                                    <div class="popup-label">
+                                                                                                                                                                                        <svg
+                                                                                                                                                                                            width="12"
+                                                                                                                                                                                            height="12"
+                                                                                                                                                                                            viewBox="0 0 24 24"
+                                                                                                                                                                                            fill="none"
+                                                                                                                                                                                            stroke="currentColor"
+                                                                                                                                                                                            stroke-width="2"
+                                                                                                                                                                                            stroke-linecap="round"
+                                                                                                                                                                                            stroke-linejoin="round"
+                                                                                                                                                                                        >
+                                                                                                                                                                                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                                                                                                                                                                                            <circle cx="12" cy="10" r="2.5"></circle>
+                                                                                                                                                                                        </svg>
+
+                                                                                                                                                                                        <span>ALAMAT POSYANDU</span>
+                                                                                                                                                                                    </div>
+
+                                                                                                                                                                                    <div class="popup-address-text">
+                                                                                                                                                                                        ${posyandu.alamat}
+                                                                                                                                                                                    </div>
+
+                                                                                                                                                                                </div>
+
+                                                                                                                                                                                <div class="popup-balita">
+
+                                                                                                                                                                                    <div class="popup-icon">
+                                                                                                                                                                                        <svg
+                                                                                                                                                                                            width="18"
+                                                                                                                                                                                            height="18"
+                                                                                                                                                                                            viewBox="0 0 24 24"
+                                                                                                                                                                                            fill="none"
+                                                                                                                                                                                            stroke="currentColor"
+                                                                                                                                                                                            stroke-width="2"
+                                                                                                                                                                                            stroke-linecap="round"
+                                                                                                                                                                                            stroke-linejoin="round"
+                                                                                                                                                                                        >
+                                                                                                                                                                                            <circle cx="12" cy="8" r="3"></circle>
+                                                                                                                                                                                            <path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"></path>
+                                                                                                                                                                                        </svg>
+                                                                                                                                                                                    </div>
+
+                                                                                                                                                                                    <div>
+                                                                                                                                                                                        <div class="popup-small-label">
+                                                                                                                                                                                            Balita Terdaftar
+                                                                                                                                                                                        </div>
+
+                                                                                                                                                                                        <div class="popup-balita-number">
+                                                                                                                                                                                            ${posyandu.total_balita} Balita
+                                                                                                                                                                                        </div>
+                                                                                                                                                                                    </div>
+
+                                                                                                                                                                                </div>
+
+                                                                                                                                                                                <div class="popup-bidan">
+
+                                                                                                                                                                                    <div class="popup-icon">
+                                                                                                                                                                                        <svg
+                                                                                                                                                                                            width="18"
+                                                                                                                                                                                            height="18"
+                                                                                                                                                                                            viewBox="0 0 24 24"
+                                                                                                                                                                                            fill="none"
+                                                                                                                                                                                            stroke="currentColor"
+                                                                                                                                                                                            stroke-width="2"
+                                                                                                                                                                                            stroke-linecap="round"
+                                                                                                                                                                                            stroke-linejoin="round"
+                                                                                                                                                                                        >
+                                                                                                                                                                                            <circle cx="12" cy="8" r="3"></circle>
+                                                                                                                                                                                            <path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"></path>
+                                                                                                                                                                                        </svg>
+                                                                                                                                                                                    </div>
+
+                                                                                                                                                                                    <div>
+                                                                                                                                                                                        <div class="popup-small-label">
+                                                                                                                                                                                            Bidan Pendamping
+                                                                                                                                                                                        </div>
+
+                                                                                                                                                                                        <div class="popup-bidan-name">
+                                                                                                                                                                                            ${posyandu.bidan?.[0]?.nama_bidan ?? 'Belum ditentukan'}
+                                                                                                                                                                                        </div>
+                                                                                                                                                                                    </div>
+
+                                                                                                                                                                                </div>
+
+                                                                                                                                                                                <a
+                                                                                                                                                                                    href="/superadmin/posyandu/${posyandu.id_posyandu}"
+                                                                                                                                                                                    class="popup-detail-button"
                                                                                                                                                                                 >
-                                                                                                                                                                                    <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
-                                                                                                                                                                                    <circle cx="12" cy="10" r="2.5"></circle>
-                                                                                                                                                                                </svg>
+                                                                                                                                                                                    Lihat detail Posyandu
+                                                                                                                                                                                </a>
 
-                                                                                                                                                                                <span>ALAMAT POSYANDU</span>
                                                                                                                                                                             </div>
-
-                                                                                                                                                                            <div class="popup-address-text">
-                                                                                                                                                                                ${posyandu.alamat}
-                                                                                                                                                                            </div>
-
-                                                                                                                                                                        </div>
-
-                                                                                                                                                                        <div class="popup-balita">
-
-                                                                                                                                                                            <div class="popup-icon">
-                                                                                                                                                                                <svg
-                                                                                                                                                                                    width="18"
-                                                                                                                                                                                    height="18"
-                                                                                                                                                                                    viewBox="0 0 24 24"
-                                                                                                                                                                                    fill="none"
-                                                                                                                                                                                    stroke="currentColor"
-                                                                                                                                                                                    stroke-width="2"
-                                                                                                                                                                                    stroke-linecap="round"
-                                                                                                                                                                                    stroke-linejoin="round"
-                                                                                                                                                                                >
-                                                                                                                                                                                    <circle cx="12" cy="8" r="3"></circle>
-                                                                                                                                                                                    <path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"></path>
-                                                                                                                                                                                </svg>
-                                                                                                                                                                            </div>
-
-                                                                                                                                                                            <div>
-                                                                                                                                                                                <div class="popup-small-label">
-                                                                                                                                                                                    Balita Terdaftar
-                                                                                                                                                                                </div>
-
-                                                                                                                                                                                <div class="popup-balita-number">
-                                                                                                                                                                                    ${posyandu.total_balita} Balita
-                                                                                                                                                                                </div>
-                                                                                                                                                                            </div>
-
-                                                                                                                                                                        </div>
-
-                                                                                                                                                                        <div class="popup-bidan">
-
-                                                                                                                                                                            <div class="popup-icon">
-                                                                                                                                                                                <svg
-                                                                                                                                                                                    width="18"
-                                                                                                                                                                                    height="18"
-                                                                                                                                                                                    viewBox="0 0 24 24"
-                                                                                                                                                                                    fill="none"
-                                                                                                                                                                                    stroke="currentColor"
-                                                                                                                                                                                    stroke-width="2"
-                                                                                                                                                                                    stroke-linecap="round"
-                                                                                                                                                                                    stroke-linejoin="round"
-                                                                                                                                                                                >
-                                                                                                                                                                                    <circle cx="12" cy="8" r="3"></circle>
-                                                                                                                                                                                    <path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"></path>
-                                                                                                                                                                                </svg>
-                                                                                                                                                                            </div>
-
-                                                                                                                                                                            <div>
-                                                                                                                                                                                <div class="popup-small-label">
-                                                                                                                                                                                    Bidan Pendamping
-                                                                                                                                                                                </div>
-
-                                                                                                                                                                                <div class="popup-bidan-name">
-                                                                                                                                                                                    ${posyandu.bidan?.[0]?.nama_bidan ?? 'Belum ditentukan'}
-                                                                                                                                                                                </div>
-                                                                                                                                                                            </div>
-
-                                                                                                                                                                        </div>
-
-                                                                                                                                                                        <a
-                                                                                                                                                                            href="/superadmin/posyandu/${posyandu.id_posyandu}"
-                                                                                                                                                                            class="popup-detail-button"
-                                                                                                                                                                        >
-                                                                                                                                                                            Lihat detail Posyandu
-                                                                                                                                                                        </a>
-
-                                                                                                                                                                    </div>
-                                                                                                                                                                `, {
+                                                                                                                                                                        `, {
                 closeButton: true,
                 closeOnClick: false,
                 autoClose: true,
@@ -886,39 +886,39 @@
                     });
 
                     marker.bindPopup(`
-                                                                    <div class="posyandu-popup">
-                                                                        <div class="popup-title">
-                                                                            <span class="popup-dot"></span>
-                                                                            ${posyandu.nama_posyandu ?? '-'}
-                                                                        </div>
-                                                                        <div class="popup-location">
-                                                                            ${posyandu.desa_kelurahan ?? '-'},
-                                                                            Kec. ${posyandu.kecamatan ?? '-'}
-                                                                        </div>
-                                                                        <div class="popup-address">
-                                                                            <div class="popup-label">ALAMAT POSYANDU</div>
-                                                                            <div class="popup-address-text">
-                                                                                ${posyandu.alamat ?? '-'}
+                                                                            <div class="posyandu-popup">
+                                                                                <div class="popup-title">
+                                                                                    <span class="popup-dot"></span>
+                                                                                    ${posyandu.nama_posyandu ?? '-'}
+                                                                                </div>
+                                                                                <div class="popup-location">
+                                                                                    ${posyandu.desa_kelurahan ?? '-'},
+                                                                                    Kec. ${posyandu.kecamatan ?? '-'}
+                                                                                </div>
+                                                                                <div class="popup-address">
+                                                                                    <div class="popup-label">ALAMAT POSYANDU</div>
+                                                                                    <div class="popup-address-text">
+                                                                                        ${posyandu.alamat ?? '-'}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="popup-balita">
+                                                                                    <div class="popup-small-label">Balita Terdaftar</div>
+                                                                                    <div class="popup-balita-number">
+                                                                                        ${posyandu.anak_count ?? posyandu.total_balita ?? 0} Balita
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="popup-bidan">
+                                                                                    <div class="popup-small-label">Bidan Pendamping</div>
+                                                                                    <div class="popup-bidan-name">
+                                                                                        ${posyandu.bidan?.[0]?.nama_bidan ?? 'Belum ditentukan'}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <a href="/superadmin/posyandu/${posyandu.id_posyandu}"
+                                                                                   class="popup-detail-button">
+                                                                                    Lihat detail Posyandu
+                                                                                </a>
                                                                             </div>
-                                                                        </div>
-                                                                        <div class="popup-balita">
-                                                                            <div class="popup-small-label">Balita Terdaftar</div>
-                                                                            <div class="popup-balita-number">
-                                                                                ${posyandu.anak_count ?? posyandu.total_balita ?? 0} Balita
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="popup-bidan">
-                                                                            <div class="popup-small-label">Bidan Pendamping</div>
-                                                                            <div class="popup-bidan-name">
-                                                                                ${posyandu.bidan?.[0]?.nama_bidan ?? 'Belum ditentukan'}
-                                                                            </div>
-                                                                        </div>
-                                                                        <a href="/superadmin/posyandu/${posyandu.id_posyandu}"
-                                                                           class="popup-detail-button">
-                                                                            Lihat detail Posyandu
-                                                                        </a>
-                                                                    </div>
-                                                                `, {
+                                                                        `, {
                         closeButton: true,
                         closeOnClick: false,
                         autoClose: true,

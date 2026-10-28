@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 
-@section('title')
+@section('title', 'Posyandu-In')
 
 @section('content')
     <div class="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-6 font-sans">
