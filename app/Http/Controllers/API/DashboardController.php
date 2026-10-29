@@ -38,10 +38,6 @@ class DashboardController extends Controller
             ->whereYear('tgl_periksa', now()->year)
             ->count();
 
-        $menungguValidasi = Pemeriksaan::where('id_posyandu', $idPosyandu)
-            ->where('status_validasi', 'Menunggu')
-            ->count();
-
         $jadwalTerdekat = JadwalPosyandu::where('id_posyandu', $idPosyandu)
             ->where('tgl_kegiatan', '>=', today())
             ->orderBy('tgl_kegiatan')
@@ -68,7 +64,6 @@ class DashboardController extends Controller
                 'nama_posyandu' => $user->posyandu?->nama_posyandu,
                 'total_balita' => $totalAnak,
                 'pemeriksaan_bulan_ini' => $pemeriksaanBulanIni,
-                'menunggu_validasi' => $menungguValidasi,
                 'jadwal_terdekat' => $jadwalTerdekat ? [
                     'id_jadwal' => $jadwalTerdekat->id_jadwal,
                     'tgl_kegiatan' => $jadwalTerdekat->tgl_kegiatan->format('Y-m-d'),
@@ -103,10 +98,6 @@ class DashboardController extends Controller
                 ->count()
             : 0;
 
-        $menungguValidasi = Pemeriksaan::where('id_posyandu', $idPosyandu)
-            ->where('status_validasi', 'Menunggu')
-            ->count();
-
         $jadwalTerdekat = JadwalPosyandu::where('id_posyandu', $idPosyandu)
             ->where('tgl_kegiatan', '>=', today())
             ->orderBy('tgl_kegiatan')
@@ -139,7 +130,6 @@ class DashboardController extends Controller
                 'total_pemeriksaan_bulan' => $totalPemeriksaan,
                 'balita_perlu_imunisasi' => $totalImunisasi,
                 'imunisasi_bulan_ini' => $totalImunisasi,
-                'pemeriksaan_menunggu_validasi' => $menungguValidasi,
                 'jadwal_terdekat' => $jadwalTerdekat ? [
                     'id_jadwal' => $jadwalTerdekat->id_jadwal,
                     'tgl_kegiatan' => $jadwalTerdekat->tgl_kegiatan->format('Y-m-d'),

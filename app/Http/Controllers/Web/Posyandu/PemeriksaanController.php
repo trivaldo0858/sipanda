@@ -106,11 +106,12 @@ class PemeriksaanController extends Controller
             ...$validated,
             'id_posyandu' => $user->id_posyandu,
             'nip_bidan' => null,
-            'status_validasi' => 'Menunggu',
         ]);
 
         return redirect()
-            ->route('posyandu.pemeriksaan.index', ['nik_anak' => $validated['nik_anak']])
-            ->with('success', 'Data pemeriksaan berhasil disimpan dan menunggu validasi bidan.');
+            ->route('posyandu.pemeriksaan.index', [
+                'nik_anak' => $validated['nik_anak']
+            ])
+            ->with('success', 'Data pemeriksaan berhasil disimpan.');
     }
 }

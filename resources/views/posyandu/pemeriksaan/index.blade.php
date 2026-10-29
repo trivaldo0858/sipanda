@@ -101,7 +101,8 @@
 										<div>
 											<p class="text-[#64748B]">Nama Ibu</p>
 											<p class="mt-1 font-semibold text-[#0F172A]">
-												{{ $selectedAnak->orangTua?->nama_ibu ?? 'Belum tersedia' }}</p>
+												{{ $selectedAnak->orangTua?->nama_ibu ?? 'Belum tersedia' }}
+											</p>
 										</div>
 										<div class="sm:col-span-2">
 											<p class="text-[#64748B]">Kunjungan berikutnya</p>
@@ -193,7 +194,8 @@
 					<div
 						class="flex flex-col-reverse gap-3 border-t border-[#E2E8F0] bg-[#F8FAFC] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
 						<p class="text-xs text-[#64748B]"><i class="fa-solid fa-shield-heart mr-1 text-[#16A34A]"
-								aria-hidden="true"></i>Data akan menunggu validasi bidan.</p>
+								aria-hidden="true"></i>Data pemeriksaan akan langsung tersimpan setelah berhasil dicatat..
+						</p>
 						<button type="submit" @disabled(!$selectedAnak)
 							class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#155DFC] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#155DFC]/90 focus:outline-none focus:ring-2 focus:ring-[#155DFC] focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#E2E8F0] disabled:text-[#64748B]">
 							<i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>Simpan Pemeriksaan
@@ -271,7 +273,8 @@
 							class="mt-5 flex h-48 flex-col items-center justify-center rounded-lg border border-dashed border-[#E2E8F0] bg-[#F8FAFC] px-5 text-center">
 							<i class="fa-solid fa-chart-line text-2xl text-[#64748B]" aria-hidden="true"></i>
 							<p class="mt-3 text-sm font-semibold text-[#64748B]">
-								{{ $selectedAnak ? 'Belum cukup data pengukuran' : 'Pilih balita untuk melihat grafik' }}</p>
+								{{ $selectedAnak ? 'Belum cukup data pengukuran' : 'Pilih balita untuk melihat grafik' }}
+							</p>
 							<p class="mt-1 text-xs text-[#64748B]">Grafik akan terbentuk dari hasil pengukuran yang tersimpan.
 							</p>
 						</div>
@@ -288,8 +291,8 @@
 							<h2 id="recommendation-heading" class="font-bold text-[#0F172A]">Rekomendasi Kader &amp;
 								Konseling Orang Tua</h2>
 							<p class="mt-2 text-sm leading-relaxed text-[#64748B]">Catat hasil ukur sesuai prosedur
-								Posyandu. Konseling dan tindak lanjut gizi dilakukan berdasarkan hasil validasi petugas
-								kesehatan.</p>
+								Posyandu. Pemantauan pertumbuhan dan tindak lanjut gizi dilakukan berdasarkan
+								hasil pengukuran serta kondisi anak.
 						</div>
 					</div>
 				</section>
@@ -308,30 +311,27 @@
 			</div>
 			@if ($riwayatHariIni->isNotEmpty())
 				<div class="overflow-x-auto">
-					<table class="w-full min-w-[700px] text-left text-sm">
+					<table class="w-full min-w-[600px] text-left text-sm">
 						<thead class="bg-[#F8FAFC] text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
 							<tr>
 								<th class="px-5 py-3">Balita</th>
 								<th class="px-5 py-3">Waktu</th>
 								<th class="px-5 py-3">Berat</th>
 								<th class="px-5 py-3">Tinggi</th>
-								<th class="px-5 py-3">Status</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-[#E2E8F0]">
 							@foreach ($riwayatHariIni as $record)
 								<tr>
 									<td class="px-5 py-3.5 font-semibold text-[#0F172A]">
-										{{ $record->anak?->nama_anak ?? 'Data anak tidak tersedia' }}</td>
+										{{ $record->anak?->nama_anak ?? 'Data anak tidak tersedia' }}
+									</td>
 									<td class="px-5 py-3.5 text-[#64748B]">{{ $record->created_at?->format('H:i') ?? '—' }}</td>
 									<td class="px-5 py-3.5 text-[#64748B]">
 										{{ $record->berat_badan !== null ? number_format($record->berat_badan, 1) . ' kg' : '—' }}
 									</td>
 									<td class="px-5 py-3.5 text-[#64748B]">
 										{{ $record->tinggi_badan !== null ? number_format($record->tinggi_badan, 1) . ' cm' : '—' }}
-									</td>
-									<td class="px-5 py-3.5"><span
-											class="rounded-full bg-[#F59E0B]/10 px-2.5 py-1 text-[11px] font-semibold text-[#F59E0B]">{{ $record->status_validasi ?? 'Menunggu' }}</span>
 									</td>
 								</tr>
 							@endforeach
