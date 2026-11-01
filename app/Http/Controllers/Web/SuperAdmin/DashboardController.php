@@ -43,9 +43,7 @@ class DashboardController extends Controller
         $posyanduList = Posyandu::with('bidan')
             ->withCount([
                 'anak as anak_count',
-                'pemeriksaan as pemeriksaan_disetujui_count' => function ($query) {
-                    $query->where('status_validasi', 'Disetujui');
-                },
+                'pemeriksaan as pemeriksaan_count',
             ])
             ->select([
                 'id_posyandu',
@@ -60,7 +58,7 @@ class DashboardController extends Controller
 
         return $posyanduList->map(function ($posyandu) {
             $posyandu->risk_level =
-                $posyandu->pemeriksaan_disetujui_count > 0
+                $posyandu->pemeriksaan_count > 0
                 ? 'perlu_klasifikasi'
                 : 'belum_ada_data';
 

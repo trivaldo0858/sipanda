@@ -22,3 +22,9 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/ml/data/raw/*.csv
+/ml/data/processed/*.csv
+/ml/models/*.joblib
+/ml/models/*.pkl
+/ml/reports/*.csv
+/ml/.venv/

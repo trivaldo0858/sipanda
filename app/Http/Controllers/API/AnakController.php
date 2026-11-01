@@ -246,7 +246,6 @@ class AnakController extends Controller
 
         $pemeriksaan = $anak->pemeriksaan()
             ->select('tgl_periksa', 'berat_badan', 'tinggi_badan', 'lingkar_kepala')
-            ->where('status_validasi', 'Disetujui')
             ->orderBy('tgl_periksa', 'asc')
             ->get()
             ->map(fn($p) => [

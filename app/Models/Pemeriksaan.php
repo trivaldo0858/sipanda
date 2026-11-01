@@ -5,18 +5,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pemeriksaan extends Model
 {
-    protected $table      = 'pemeriksaan';
+    protected $table = 'pemeriksaan';
     protected $primaryKey = 'id_periksa';
 
     protected $fillable = [
-        'nik_anak', 'id_posyandu', 'nip_bidan', 'id_jadwal',
-        'tgl_periksa', 'berat_badan', 'tinggi_badan', 'lingkar_kepala',
-        'keluhan', 'status_validasi', 'catatan_validasi',
+        'nik_anak',
+        'id_posyandu',
+        'nip_bidan',
+        'id_jadwal',
+        'tgl_periksa',
+        'berat_badan',
+        'tinggi_badan',
+        'lingkar_kepala',
+        'keluhan',
     ];
 
     protected $casts = [
-        'tgl_periksa'  => 'date',
-        'berat_badan'  => 'float',
+        'tgl_periksa' => 'date',
+        'berat_badan' => 'float',
         'tinggi_badan' => 'float',
         'lingkar_kepala' => 'float',
     ];
@@ -39,15 +45,5 @@ class Pemeriksaan extends Model
     public function jadwal()
     {
         return $this->belongsTo(JadwalPosyandu::class, 'id_jadwal', 'id_jadwal');
-    }
-
-    public function scopeMenungguValidasi($query)
-    {
-        return $query->where('status_validasi', 'Menunggu');
-    }
-
-    public function scopeDisetujui($query)
-    {
-        return $query->where('status_validasi', 'Disetujui');
     }
 }

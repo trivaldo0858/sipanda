@@ -7,6 +7,8 @@ use App\Models\Anak;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Pemeriksaan;
+use App\Services\AnthropometricService;
 
 class DashboardController extends Controller
 {
@@ -37,7 +39,8 @@ class DashboardController extends Controller
         $hariIni = Carbon::today();
 
         // Pemeriksaan terakhir anak.
-        $pemeriksaanTerakhir = DB::table('pemeriksaan')
+        // Pemeriksaan terakhir anak.
+        $pemeriksaanTerakhir = Pemeriksaan::query()
             ->where('nik_anak', $anak->nik_anak)
             ->orderByDesc('tgl_periksa')
             ->orderByDesc('id_periksa')
@@ -208,8 +211,29 @@ class DashboardController extends Controller
             ->take(1)
             ->values();
 
-        // Prediksi stunting belum diambil karena mekanismenya
-        // belum dipastikan dalam controller ini.
+        // Analisis pertumbuhan berdasarkan pemeriksaan terakhir.
+        $hasilAnalisisPertumbuhan = null;
+
+        if ($pemeriksaanTerakhir) {
+            try {
+                $hasilAnalisisPertumbuhan = app(
+                    AnthropometricService::class
+                )->analyzeAll(
+                        $anak,
+                        $pemeriksaanTerakhir
+                    );
+            } catch (\InvalidArgumentException | \RuntimeException $exception) {
+                report($exception);
+
+                $hasilAnalisisPertumbuhan = [
+                    'tersedia' => false,
+                    'alasan' => 'Data pemeriksaan belum dapat dianalisis.',
+                ];
+            }
+        }
+
+        // Prediksi stunting belum tersedia.
+// Analisis satu pemeriksaan belum termasuk prediksi masa depan.
         $prediksiStunting = null;
 
         return view('orang_tua.dashboard.index', compact(
@@ -220,7 +244,8 @@ class DashboardController extends Controller
             'tanggalTarget',
             'jadwalImunisasiBulanIni',
             'jadwalImunisasiTerdekat',
-            'prediksiStunting'
+            'prediksiStunting',
+            'hasilAnalisisPertumbuhan'
         ));
     }
 }

@@ -54,7 +54,6 @@ class DashboardController extends Controller
                 'tgl_periksa' => $p->tgl_periksa->format('Y-m-d H:i:s'),
                 'berat_badan' => $p->berat_badan,
                 'tinggi_badan' => $p->tinggi_badan,
-                'status_validasi' => $p->status_validasi,
             ]);
 
         return response()->json([
@@ -155,7 +154,6 @@ class DashboardController extends Controller
         $anakList = $orangTua->anak()
             ->with([
                 'pemeriksaan' => fn($q) => $q
-                    ->where('status_validasi', 'Disetujui')
                     ->latest('tgl_periksa')
                     ->take(1),
             ])

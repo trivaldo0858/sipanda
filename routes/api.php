@@ -1,4 +1,4 @@
-x<?php
+<?php
 
 use App\Http\Controllers\API\AnakController;
 use App\Http\Controllers\API\AuthController;
