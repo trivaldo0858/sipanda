@@ -1,0 +1,83 @@
+{
+    "jenis_dataset": "data_simulasi",
+    "jumlah_sampel": 90,
+    "jumlah_anak_simulasi": 90,
+    "distribusi_label": {
+        "sedang": 30,
+        "rendah": 30,
+        "tinggi": 30
+    },
+    "jumlah_label_tidak_cocok": 0,
+    "nilai_kosong_per_kolom": {
+        "group_id": 0,
+        "umur_hari_awal": 0,
+        "jenis_kelamin": 0,
+        "berat_badan_awal_kg": 0,
+        "tinggi_badan_awal_cm": 0,
+        "haz_awal": 0,
+        "waz_awal": 0,
+        "whz_awal": 0,
+        "baz_awal": 0,
+        "jarak_pemeriksaan_sebelumnya_hari": 29,
+        "perubahan_berat_badan_kg": 29,
+        "perubahan_tinggi_badan_cm": 29,
+        "perubahan_haz": 29,
+        "jarak_hari_target": 0,
+        "haz_target": 0,
+        "label_risiko": 0
+    },
+    "rentang_nilai": {
+        "umur_hari_awal": {
+            "minimum": 185.0,
+            "maksimum": 1695.0
+        },
+        "berat_badan_awal_kg": {
+            "minimum": 5.05,
+            "maksimum": 19.93
+        },
+        "tinggi_badan_awal_cm": {
+            "minimum": 53.78,
+            "maksimum": 112.34
+        },
+        "haz_awal": {
+            "minimum": -5.1608,
+            "maksimum": 1.3419
+        },
+        "waz_awal": {
+            "minimum": -3.8083,
+            "maksimum": 1.9699
+        },
+        "whz_awal": {
+            "minimum": -2.7533,
+            "maksimum": 1.4905
+        },
+        "baz_awal": {
+            "minimum": -3.305,
+            "maksimum": 1.1054
+        },
+        "jarak_pemeriksaan_sebelumnya_hari": {
+            "minimum": 62.0,
+            "maksimum": 179.0
+        },
+        "perubahan_berat_badan_kg": {
+            "minimum": 0.11,
+            "maksimum": 0.8
+        },
+        "perubahan_tinggi_badan_cm": {
+            "minimum": 0.54,
+            "maksimum": 2.19
+        },
+        "perubahan_haz": {
+            "minimum": -0.5346,
+            "maksimum": 0.5195
+        },
+        "jarak_hari_target": {
+            "minimum": 75.0,
+            "maksimum": 105.0
+        },
+        "haz_target": {
+            "minimum": -4.4982,
+            "maksimum": 1.4295
+        }
+    }
+}

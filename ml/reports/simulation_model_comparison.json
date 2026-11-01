@@ -1,0 +1,138 @@
+{
+    "jenis_dataset": "data_simulasi",
+    "jumlah_fold": 5,
+    "jumlah_sampel": 90,
+    "catatan": "Hasil hanya untuk pengujian pipeline. Tidak menunjukkan performa klinis pada data anak sebenarnya.",
+    "ringkasan_model": [
+        {
+            "model": "Decision Tree",
+            "accuracy_mean": 0.9444,
+            "accuracy_std": 0.0556,
+            "balanced_accuracy_mean": 0.9444,
+            "balanced_accuracy_std": 0.0556,
+            "precision_macro_mean": 0.9476,
+            "precision_macro_std": 0.0537,
+            "recall_macro_mean": 0.9444,
+            "recall_macro_std": 0.0556,
+            "f1_macro_mean": 0.9443,
+            "f1_macro_std": 0.0557,
+            "recall_tinggi_mean": 0.9333,
+            "recall_tinggi_std": 0.0913
+        },
+        {
+            "model": "Dummy Classifier",
+            "accuracy_mean": 0.3333,
+            "accuracy_std": 0.0,
+            "balanced_accuracy_mean": 0.3333,
+            "balanced_accuracy_std": 0.0,
+            "precision_macro_mean": 0.1111,
+            "precision_macro_std": 0.0,
+            "recall_macro_mean": 0.3333,
+            "recall_macro_std": 0.0,
+            "f1_macro_mean": 0.1667,
+            "f1_macro_std": 0.0,
+            "recall_tinggi_mean": 0.0,
+            "recall_tinggi_std": 0.0
+        },
+        {
+            "model": "Logistic Regression",
+            "accuracy_mean": 0.8667,
+            "accuracy_std": 0.0633,
+            "balanced_accuracy_mean": 0.8667,
+            "balanced_accuracy_std": 0.0633,
+            "precision_macro_mean": 0.8881,
+            "precision_macro_std": 0.0589,
+            "recall_macro_mean": 0.8667,
+            "recall_macro_std": 0.0633,
+            "f1_macro_mean": 0.8645,
+            "f1_macro_std": 0.0633,
+            "recall_tinggi_mean": 0.8333,
+            "recall_tinggi_std": 0.2041
+        },
+        {
+            "model": "Random Forest",
+            "accuracy_mean": 0.9333,
+            "accuracy_std": 0.0465,
+            "balanced_accuracy_mean": 0.9333,
+            "balanced_accuracy_std": 0.0465,
+            "precision_macro_mean": 0.9381,
+            "precision_macro_std": 0.0457,
+            "recall_macro_mean": 0.9333,
+            "recall_macro_std": 0.0465,
+            "f1_macro_mean": 0.9331,
+            "f1_macro_std": 0.0465,
+            "recall_tinggi_mean": 0.9,
+            "recall_tinggi_std": 0.0913
+        }
+    ],
+    "confusion_matrix": {
+        "Logistic Regression": [
+            [
+                29,
+                1,
+                0
+            ],
+            [
+                2,
+                24,
+                4
+            ],
+            [
+                0,
+                5,
+                25
+            ]
+        ],
+        "Decision Tree": [
+            [
+                29,
+                1,
+                0
+            ],
+            [
+                0,
+                28,
+                2
+            ],
+            [
+                0,
+                2,
+                28
+            ]
+        ],
+        "Random Forest": [
+            [
+                29,
+                1,
+                0
+            ],
+            [
+                0,
+                28,
+                2
+            ],
+            [
+                0,
+                3,
+                27
+            ]
+        ],
+        "Dummy Classifier": [
+            [
+                30,
+                0,
+                0
+            ],
+            [
+                30,
+                0,
+                0
+            ],
+            [
+                30,
+                0,
+                0
+            ]
+        ]
+    }
+}

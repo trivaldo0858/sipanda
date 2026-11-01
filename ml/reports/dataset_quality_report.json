@@ -1,0 +1,54 @@
+{
+    "nama_dataset": "Dataset Prediksi Stunting Posyandu-In",
+    "versi": "1.0",
+    "jumlah_sampel": 2,
+    "jumlah_anak": 1,
+    "fitur_model": [
+        "umur_hari_awal",
+        "jenis_kelamin",
+        "berat_badan_awal_kg",
+        "tinggi_badan_awal_cm",
+        "haz_awal",
+        "waz_awal",
+        "whz_awal",
+        "baz_awal",
+        "jarak_pemeriksaan_sebelumnya_hari",
+        "perubahan_berat_badan_kg",
+        "perubahan_tinggi_badan_cm",
+        "perubahan_haz"
+    ],
+    "target_model": "label_risiko",
+    "distribusi_label": {
+        "rendah": 0,
+        "sedang": 2,
+        "tinggi": 0
+    },
+    "data_kosong_per_kolom": {
+        "group_id": 0,
+        "umur_hari_awal": 0,
+        "jenis_kelamin": 0,
+        "berat_badan_awal_kg": 0,
+        "tinggi_badan_awal_cm": 0,
+        "haz_awal": 0,
+        "waz_awal": 1,
+        "whz_awal": 1,
+        "baz_awal": 1,
+        "jarak_pemeriksaan_sebelumnya_hari": 1,
+        "perubahan_berat_badan_kg": 1,
+        "perubahan_tinggi_badan_cm": 1,
+        "perubahan_haz": 1,
+        "jarak_hari_target": 0,
+        "haz_target": 0,
+        "label_risiko": 0
+    },
+    "pemeriksaan_kualitas": {
+        "jumlah_baris_awal": 2,
+        "jumlah_baris_valid": 2,
+        "jumlah_baris_dengan_data_tidak_valid": 0,
+        "jumlah_baris_duplikat": 0,
+        "jumlah_total_baris_dihapus": 0
+    },
+    "status_dataset": "BELUM_SIAP",
+    "alasan": "Belum semua kelas risiko memiliki sampel.",
+    "model_boleh_dilatih": false
+}

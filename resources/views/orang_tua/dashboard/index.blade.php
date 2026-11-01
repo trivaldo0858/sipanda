@@ -20,35 +20,25 @@
         $akhirBulan = $tanggalSekarang->copy()->endOfMonth();
         $jumlahHari = $akhirBulan->day;
         $hariPertama = $awalBulan->dayOfWeekIso; // Senin = 1
+
+        $daftarJadwalPosyandu = $jadwalPosyanduBulanIni ?? collect();
+        $daftarJadwalImunisasi = $jadwalImunisasiBulanIni ?? collect();
     @endphp
 
-    <div class="space-y-7">
-
-
-
-
-        {{-- Header Dashboard Orang Tua --}}
-        <section class=" pl-5 pr-4">
-
-            {{-- Sapaan --}}
-            <h1 class="text-xl font-extrabold tracking-tight text-slate-800decoration-2 underline-offset-4">
+    <div class="space-y-8">
+        <section class="dashboard-welcome px-1 sm:px-2">
+            <h1>
                 Selamat Datang, Bunda!
             </h1>
 
-            {{-- Ringkasan nama dan usia anak --}}
-            <p class="mt-5 text-sm font-semibold leading-5 text-slate-500">
+            <p>
                 {{ \Illuminate\Support\Str::title($anak?->nama_anak ?? 'Data anak belum tersedia') }}
 
                 @if ($usiaAnak)
                     , {{ $usiaAnak->y }} Tahun {{ $usiaAnak->m }} Bulan
                 @endif
             </p>
-
         </section>
-
-
-
-
         {{-- Data Pemeriksaan Terakhir --}}
         <section id="perkembangan-anak" class="space-y-5">
 
@@ -56,13 +46,13 @@
             <div class="flex items-center gap-3">
                 <span aria-hidden="true"
                     style="display:block; flex:0 0 8px; width:8px; height:24px;
-                                                                                                                                           border-radius:9999px; background-color:#155DFC;
-                                                                                                                                           box-shadow:0 1px 2px #DBEAFE;">
+                                                                                                                                                                               border-radius:9999px; background-color:#155DFC;
+                                                                                                                                                                               box-shadow:0 1px 2px #DBEAFE;">
                 </span>
 
                 <h1
                     style="margin:0; color:#1E293B; font-size:20px;
-                                                                                                                                           line-height:28px; font-weight:800; letter-spacing:-0.5px;">
+                                                                                                                                                                               line-height:28px; font-weight:800; letter-spacing:-0.5px;">
                     Data pemeriksaan Terakhir
                 </h1>
             </div>
@@ -73,23 +63,23 @@
                 {{-- Berat badan --}}
                 <article
                     style="display:flex; align-items:center; justify-content:space-between;
-                                                                                                                                           gap:16px; min-width:0; min-height:121px; padding:24px 28px;
-                                                                                                                                           background:#FFFFFF; border:1px solid #F8FAFC;
-                                                                                                                                           border-radius:40px;
-                                                                                                                                           box-shadow:0 8px 12px rgba(15,23,42,0.08);">
+                                                                                                                                                                               gap:16px; min-width:0; min-height:121px; padding:24px 28px;
+                                                                                                                                                                               background:#FFFFFF; border:1px solid #F8FAFC;
+                                                                                                                                                                               border-radius:40px;
+                                                                                                                                                                               box-shadow:0 8px 12px rgba(15,23,42,0.08);">
 
                     <div style="min-width:0; flex:1;">
                         <p
                             style="margin:0; color:#94A3B8; font-size:10px;
-                                                                                                                                                  font-weight:700; line-height:15px;
-                                                                                                                                                  letter-spacing:2px; text-transform:uppercase;">
+                                                                                                                                                                                      font-weight:700; line-height:15px;
+                                                                                                                                                                                      letter-spacing:2px; text-transform:uppercase;">
                             Berat Badan
                         </p>
 
                         <p
                             style="margin:4px 0 0; color:#1E293B;
-                                                                                                                                                  font-size:24px; font-weight:800;
-                                                                                                                                                  line-height:36px; white-space:nowrap;">
+                                                                                                                                                                                      font-size:24px; font-weight:800;
+                                                                                                                                                                                      line-height:36px; white-space:nowrap;">
                             @if ($pemeriksaan?->berat_badan !== null)
                                 {{ number_format((float) $pemeriksaan->berat_badan, 2, '.', '') }}
                                 <span style="font-size:24px; font-weight:800;">KG</span>
@@ -101,10 +91,10 @@
 
                     <div
                         style="display:flex; flex:0 0 64px; width:64px; height:64px;
-                                                                                                                                               align-items:center; justify-content:center;
-                                                                                                                                               border-radius:24px; background-color:#EFF6FF;
-                                                                                                                                               color:#155DFC;
-                                                                                                                                               box-shadow:0 1px 1px rgba(0,0,0,0.05);">
+                                                                                                                                                                                   align-items:center; justify-content:center;
+                                                                                                                                                                                   border-radius:24px; background-color:#EFF6FF;
+                                                                                                                                                                                   color:#155DFC;
+                                                                                                                                                                                   box-shadow:0 1px 1px rgba(0,0,0,0.05);">
 
 
                         <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24" fill="none"
@@ -114,12 +104,13 @@
                             <rect x="3.5" y="2.5" width="17" height="19" rx="3" />
 
                             <!-- Panel indikator analog -->
-                            <path d="M7 7.5
-                                                                                                                 C7 5.6 9.2 4.7 12 4.7
-                                                                                                                 C14.8 4.7 17 5.6 17 7.5
-                                                                                                                 L15.8 10
-                                                                                                                 C13.3 10.8 10.7 10.8 8.2 10
-                                                                                                                 Z" />
+                            <path
+                                d="M7 7.5
+                                                                                                                                                     C7 5.6 9.2 4.7 12 4.7
+                                                                                                                                                     C14.8 4.7 17 5.6 17 7.5
+                                                                                                                                                     L15.8 10
+                                                                                                                                                     C13.3 10.8 10.7 10.8 8.2 10
+                                                                                                                                                     Z" />
 
                             <!-- Jarum penunjuk -->
                             <path d="M12 9.7 L10.2 6.8" />
@@ -132,23 +123,23 @@
                 {{-- Tinggi badan --}}
                 <article
                     style="display:flex; align-items:center; justify-content:space-between;
-                                                                                                                                           gap:16px; min-width:0; min-height:121px; padding:24px 28px;
-                                                                                                                                           background:#FFFFFF; border:1px solid #F8FAFC;
-                                                                                                                                           border-radius:40px;
-                                                                                                                                           box-shadow:0 8px 12px rgba(15,23,42,0.08);">
+                                                                                                                                                                               gap:16px; min-width:0; min-height:121px; padding:24px 28px;
+                                                                                                                                                                               background:#FFFFFF; border:1px solid #F8FAFC;
+                                                                                                                                                                               border-radius:40px;
+                                                                                                                                                                               box-shadow:0 8px 12px rgba(15,23,42,0.08);">
 
                     <div style="min-width:0; flex:1;">
                         <p
                             style="margin:0; color:#94A3B8; font-size:10px;
-                                                                                                                                                  font-weight:700; line-height:15px;
-                                                                                                                                                  letter-spacing:2px; text-transform:uppercase;">
+                                                                                                                                                                                      font-weight:700; line-height:15px;
+                                                                                                                                                                                      letter-spacing:2px; text-transform:uppercase;">
                             Tinggi Badan
                         </p>
 
                         <p
                             style="margin:4px 0 0; color:#1E293B;
-                                                                                                                                                  font-size:24px; font-weight:800;
-                                                                                                                                                  line-height:36px; white-space:nowrap;">
+                                                                                                                                                                                      font-size:24px; font-weight:800;
+                                                                                                                                                                                      line-height:36px; white-space:nowrap;">
                             @if ($pemeriksaan?->tinggi_badan !== null)
                                 {{ number_format((float) $pemeriksaan->tinggi_badan, 2, '.', '') }}
                                 <span style="font-size:24px; font-weight:800;">CM</span>
@@ -160,10 +151,10 @@
 
                     <div
                         style="display:flex; flex:0 0 64px; width:64px; height:64px;
-                                                                                                                                               align-items:center; justify-content:center;
-                                                                                                                                               border-radius:24px; background-color:#EFF6FF;
-                                                                                                                                               color:#155DFC;
-                                                                                                                                               box-shadow:0 1px 1px rgba(0,0,0,0.05);">
+                                                                                                                                                                                   align-items:center; justify-content:center;
+                                                                                                                                                                                   border-radius:24px; background-color:#EFF6FF;
+                                                                                                                                                                                   color:#155DFC;
+                                                                                                                                                                                   box-shadow:0 1px 1px rgba(0,0,0,0.05);">
 
                         <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24" fill="none"
                             stroke="#155DFC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
@@ -181,23 +172,23 @@
                 {{-- Lingkar kepala --}}
                 <article
                     style="display:flex; align-items:center; justify-content:space-between;
-                                                                                                                                           gap:16px; min-width:0; min-height:121px; padding:24px;
-                                                                                                                                           background:#FFFFFF; border:1px solid #F8FAFC;
-                                                                                                                                           border-radius:40px;
-                                                                                                                                           box-shadow:0 8px 12px rgba(15,23,42,0.08);">
+                                                                                                                                                                               gap:16px; min-width:0; min-height:121px; padding:24px;
+                                                                                                                                                                               background:#FFFFFF; border:1px solid #F8FAFC;
+                                                                                                                                                                               border-radius:40px;
+                                                                                                                                                                               box-shadow:0 8px 12px rgba(15,23,42,0.08);">
 
                     <div style="min-width:0; flex:1;">
                         <p
                             style="margin:0; color:#94A3B8; font-size:10px;
-                                                                                                                                                  font-weight:700; line-height:15px;
-                                                                                                                                                  letter-spacing:2px; text-transform:uppercase;">
+                                                                                                                                                                                      font-weight:700; line-height:15px;
+                                                                                                                                                                                      letter-spacing:2px; text-transform:uppercase;">
                             Lingkar Kepala
                         </p>
 
                         <p
                             style="margin:4px 0 0; color:#1E293B;
-                                                                                                                                                  font-size:24px; font-weight:800;
-                                                                                                                                                  line-height:36px; white-space:nowrap;">
+                                                                                                                                                                                      font-size:24px; font-weight:800;
+                                                                                                                                                                                      line-height:36px; white-space:nowrap;">
                             @if ($pemeriksaan?->lingkar_kepala !== null)
                                 {{ number_format((float) $pemeriksaan->lingkar_kepala, 2, '.', '') }}
                                 <span style="font-size:24px; font-weight:800;">CM</span>
@@ -209,10 +200,10 @@
 
                     <div
                         style="display:flex; flex:0 0 64px; width:64px; height:64px;
-                                                                                                                                               align-items:center; justify-content:center;
-                                                                                                                                               border-radius:24px; background-color:#EFF6FF;
-                                                                                                                                               color:#155DFC;
-                                                                                                                                               box-shadow:0 1px 1px rgba(0,0,0,0.05);">
+                                                                                                                                                                                   align-items:center; justify-content:center;
+                                                                                                                                                                                   border-radius:24px; background-color:#EFF6FF;
+                                                                                                                                                                                   color:#155DFC;
+                                                                                                                                                                                   box-shadow:0 1px 1px rgba(0,0,0,0.05);">
 
 
 
@@ -302,7 +293,280 @@
                     gap: 20px;
                     min-width: 0;
                 }
+
+                /* =========================================
+                                   DASHBOARD
+                                ========================================= */
+
+                .dashboard-content-section {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    min-width: 0;
+                }
+
+                /* =========================================
+                                   CHATBOT FLOATING BUTTON
+                                ========================================= */
+
+                .dashboard-chatbot-widget {
+                    position: fixed;
+                    right: max(20px, env(safe-area-inset-right));
+                    bottom: max(20px, env(safe-area-inset-bottom));
+                    z-index: 60;
+                }
+
+                .dashboard-chatbot-button {
+                    position: relative;
+                    display: flex;
+                    width: 58px;
+                    height: 58px;
+                    align-items: center;
+                    justify-content: center;
+                    border: none;
+                    border-radius: 50%;
+                    background: #155DFC;
+                    color: #FFFFFF;
+                    cursor: pointer;
+                    box-shadow: 0 5px 18px rgba(21, 93, 252, 0.28);
+                    transition: background .2s ease, transform .2s ease,
+                        box-shadow .2s ease;
+                }
+
+                .dashboard-chatbot-button:hover {
+                    background: #104BCB;
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 22px rgba(21, 93, 252, 0.32);
+                }
+
+                .dashboard-chatbot-button:focus-visible,
+                .dashboard-chatbot-close:focus-visible {
+                    outline: 3px solid #93C5FD;
+                    outline-offset: 3px;
+                }
+
+                /* Indikator pada tombol chatbot */
+
+                .dashboard-chatbot-status {
+                    position: absolute;
+                    top: 2px;
+                    right: 2px;
+                    width: 12px;
+                    height: 12px;
+                    border: 2px solid #FFFFFF;
+                    border-radius: 50%;
+                    background: #22C55E;
+                }
+
+                /* =========================================
+                                   CHATBOT PANEL
+                                ========================================= */
+
+                .dashboard-chatbot-panel {
+                    position: absolute;
+                    right: 0;
+                    bottom: 74px;
+                    display: none;
+                    flex-direction: column;
+                    width: min(360px, calc(100vw - 32px));
+                    max-height: min(520px, calc(100dvh - 112px));
+                    overflow: hidden;
+                    border: 1px solid #E2E8F0;
+                    border-radius: 20px;
+                    background: #FFFFFF;
+                    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.16);
+                    animation: chatbot-appear .2s ease-out;
+                }
+
+                .dashboard-chatbot-panel:not(.hidden) {
+                    display: flex;
+                }
+
+                .dashboard-chatbot-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    padding: 17px 18px;
+                    background: #155DFC;
+                    color: #FFFFFF;
+                }
+
+                .dashboard-chatbot-close {
+                    display: flex;
+                    width: 34px;
+                    height: 34px;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    border: none;
+                    border-radius: 10px;
+                    background: rgba(255, 255, 255, 0.15);
+                    color: #FFFFFF;
+                    cursor: pointer;
+                }
+
+                .dashboard-chatbot-close:hover {
+                    background: rgba(255, 255, 255, 0.25);
+                }
+
+                .dashboard-chatbot-body {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 20px;
+                }
+
+                .dashboard-chatbot-message {
+                    padding: 14px;
+                    border: 1px solid #DBEAFE;
+                    border-radius: 14px;
+                    background: #F8FAFF;
+                }
+
+                .dashboard-chatbot-footer {
+                    padding: 12px 18px;
+                    border-top: 1px solid #E2E8F0;
+                    background: #FFFFFF;
+                }
+
+                @keyframes chatbot-appear {
+                    from {
+                        opacity: 0;
+                        transform: translateY(8px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .dashboard-chatbot-widget {
+                        right: max(16px, env(safe-area-inset-right));
+                        bottom: max(16px, env(safe-area-inset-bottom));
+                    }
+
+                    .dashboard-chatbot-button {
+                        width: 54px;
+                        height: 54px;
+                    }
+
+                    .dashboard-chatbot-panel {
+                        bottom: 68px;
+                        width: min(360px, calc(100vw - 32px));
+                        max-height: calc(100dvh - 105px);
+                    }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    .dashboard-chatbot-panel {
+                        animation: none;
+                    }
+
+                    .dashboard-chatbot-button {
+                        transition: none;
+                    }
+                }
+
+                /* =========================================
+                                   WELCOME SECTION
+                                ========================================= */
+
+                .dashboard-welcome h1 {
+                    margin: 0;
+                    color: #142D59;
+                    font-size: clamp(28px, 2.2vw, 36px);
+                    font-weight: 800;
+                    line-height: 1.2;
+                    letter-spacing: -1.2px;
+                }
+
+                .dashboard-welcome p {
+                    margin-top: 7px;
+                    color: #334B73;
+                    font-size: clamp(17px, 1.3vw, 21px);
+                    font-weight: 500;
+                    line-height: 1.5;
+                }
+
+                /* =========================================
+                                   SECTION HEADING
+                                ========================================= */
+
+                .dashboard-section-heading {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-width: 0;
+                }
+
+                .dashboard-section-heading::before {
+                    content: "";
+                    display: block;
+                    width: 8px;
+                    height: 25px;
+                    flex: 0 0 8px;
+                    border-radius: 999px;
+                    background: #155DFC;
+                    box-shadow: 0 1px 3px rgba(21, 93, 252, 0.15);
+                }
+
+                .dashboard-section-heading h2 {
+                    margin: 0;
+                    color: #1E293B;
+                    font-size: 20px;
+                    font-weight: 800;
+                    line-height: 28px;
+                    letter-spacing: -0.5px;
+                }
+
+                .dashboard-section-heading p {
+                    margin-top: 4px;
+                    color: #64748B;
+                    font-size: 13px;
+                    line-height: 20px;
+                }
+
+                /* =========================================
+                       BOTTOM DASHBOARD GRID
+                    ========================================= */
+
+                .dashboard-bottom-grid {
+                    display: grid;
+                    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+                    gap: 20px;
+                    align-items: stretch;
+                }
+
+                .dashboard-bottom-card {
+                    min-width: 0;
+                    padding: 20px;
+                    border: 1px solid #E8EEF8;
+                    border-radius: 26px;
+                    background: #FFFFFF;
+                    box-shadow: 0 5px 16px rgba(15, 23, 42, 0.055);
+                }
+
+                @media (max-width: 1100px) {
+                    .dashboard-bottom-grid {
+                        grid-template-columns: minmax(0, 1fr);
+                    }
+                }
+
+                @media (max-width: 640px) {
+                    .dashboard-bottom-card {
+                        padding: 16px;
+                        border-radius: 20px;
+                    }
+
+                    .dashboard-section-heading h2 {
+                        font-size: 18px;
+                        line-height: 25px;
+                    }
+                }
             </style>
+
         @endpush
 
         {{-- Kalender dan jadwal terdekat --}}
@@ -315,7 +579,7 @@
                 <div class="flex items-center gap-3">
                     <span aria-hidden="true"
                         style="display:block; width:8px; height:24px; flex-shrink:0;
-                                                                                                                       border-radius:9999px; background:#155DFC;">
+                                                                                                                                                           border-radius:9999px; background:#155DFC;">
                     </span>
 
                     <h2 class="text-xl font-extrabold tracking-tight text-slate-800">
@@ -340,7 +604,7 @@
 
                         <span
                             class="rounded-xl bg-[#EBF3FF] px-3 py-2
-                                                                                                                             text-sm font-bold text-[#155DFC]">
+                                                                                                                                                                 text-sm font-bold text-[#155DFC]">
                             {{ $tanggalSekarang->translatedFormat('F Y') }}
                         </span>
                     </div>
@@ -351,7 +615,7 @@
                         {{-- Nama hari: selalu tujuh kolom --}}
                         <div
                             class="dashboard-calendar-weekdays bg-slate-50 px-1 py-3
-                                                                                                                           text-center text-xs font-bold text-slate-500">
+                                                                                                                                                               text-center text-xs font-bold text-slate-500">
 
                             @foreach (['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as $hari)
                                 <div class="min-w-0">
@@ -374,9 +638,7 @@
 
                                                     $adalahHariIni = $tanggalKalender->isToday();
 
-                                                    $daftarJadwal = $jadwalTerdekat ?? collect();
-
-                                                    $adalahTanggalJadwal = $daftarJadwal->contains(
+                                                    $adaJadwalPosyandu = $daftarJadwalPosyandu->contains(
                                                         function ($item) use ($tanggalKalender) {
                                                             return !empty($item->tgl_kegiatan)
                                                                 && $tanggalKalender->isSameDay(
@@ -384,11 +646,20 @@
                                                                 );
                                                         }
                                                     );
+
+                                                    $adaJadwalImunisasi = $daftarJadwalImunisasi->contains(
+                                                        function ($item) use ($tanggalKalender) {
+                                                            return !empty($item->tanggal_jadwal)
+                                                                && $tanggalKalender->isSameDay($item->tanggal_jadwal);
+                                                        }
+                                                    );
+
+                                                    $adalahTanggalJadwal = $adaJadwalPosyandu || $adaJadwalImunisasi;
                                                 @endphp
 
                                                 <div class="dashboard-calendar-day">
                                                     <span title="{{ $tanggalKalender->translatedFormat('d F Y') }}" class="dashboard-calendar-number
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $adalahTanggalJadwal
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $adalahTanggalJadwal
                                 ? 'bg-[#155DFC] font-bold text-white'
                                 : ($adalahHariIni
                                     ? 'border-2 border-[#155DFC] font-bold text-[#155DFC]'
@@ -404,7 +675,7 @@
                     {{-- Keterangan warna --}}
                     <div
                         class="flex flex-wrap items-center gap-x-5 gap-y-2
-                                                                                                                        border-t border-slate-100 px-5 py-3">
+                                                                                                                                                            border-t border-slate-100 px-5 py-3">
 
                         <div class="flex items-center gap-2">
                             <span class="h-3 w-3 rounded-full border-2 border-[#155DFC]"></span>
@@ -427,7 +698,7 @@
                 <div class="flex items-center gap-3">
                     <span aria-hidden="true"
                         style="display:block; width:8px; height:24px; flex-shrink:0;
-                                                                                                                       border-radius:9999px; background:#155DFC;">
+                                                                                                                                                           border-radius:9999px; background:#155DFC;">
                     </span>
 
                     <h2 class="text-xl font-extrabold tracking-tight text-slate-800">
@@ -446,7 +717,7 @@
                                         {{-- Ikon jadwal --}}
                                         <div
                                             class="flex h-12 w-12 shrink-0 items-center justify-center
-                                                                                                                                                                                                                                                                                                                                                                                                                                rounded-2xl bg-[#EFF6FF] text-[#155DFC]">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                rounded-2xl bg-[#EFF6FF] text-[#155DFC]">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                                 fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
                                                 stroke-linejoin="round" aria-hidden="true">
@@ -503,21 +774,21 @@
                         {{-- Empty state: jadwal belum tersedia --}}
 
                         <div class="min-h-[230px] rounded-2xl border border-dashed
-                                                                                                                           border-slate-200 bg-slate-50 px-5 text-center"
+                                                                                                                                                                                                   border-slate-200 bg-slate-50 px-5 text-center"
                             style="box-sizing:border-box;
-                                                                                                                           display:flex;
-                                                                                                                           flex-direction:column;
-                                                                                                                           align-items:center;
-                                                                                                                           justify-content:flex-start;
-                                                                                                                           gap:14px;
-                                                                                                                           padding-top:24px;
-                                                                                                                           padding-bottom:20px;">
+                                                                                                                                                                                                   display:flex;
+                                                                                                                                                                                                   flex-direction:column;
+                                                                                                                                                                                                   align-items:center;
+                                                                                                                                                                                                   justify-content:flex-start;
+                                                                                                                                                                                                   gap:14px;
+                                                                                                                                                                                                   padding-top:24px;
+                                                                                                                                                                                                   padding-bottom:20px;">
 
                             {{-- Ikon kalender --}}
                             <div
                                 style="display:flex; align-items:center; justify-content:center;
-                                                                                                                                                       width:52px; height:52px; flex-shrink:0;
-                                                                                                                                                       border-radius:16px; background:#EFF6FF;">
+                                                                                                                                                                                                                               width:52px; height:52px; flex-shrink:0;
+                                                                                                                                                                                                                               border-radius:16px; background:#EFF6FF;">
 
                                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
                                     stroke="#155DFC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
@@ -548,446 +819,580 @@
             </section>
         </div>
 
-
         {{-- Pemantauan Pertumbuhan Anak --}}
         <section id="pemantauan-pertumbuhan" class="scroll-mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
 
 
 
+            @php
+                $tbU = data_get($hasilAnalisisPertumbuhan, 'indikator.TB_U', []);
+                $bbU = data_get($hasilAnalisisPertumbuhan, 'indikator.BB_U', []);
+                $bbPbTb = data_get($hasilAnalisisPertumbuhan, 'indikator.BB_PB_TB', []);
+                $imtU = data_get($hasilAnalisisPertumbuhan, 'indikator.IMT_U', []);
+                $lkU = data_get($hasilAnalisisPertumbuhan, 'indikator.LK_U', []);
+
+                $ringkasan = [];
+
+                // ==========================================
+                // 1. PERTUMBUHAN TINGGI BADAN
+                // ==========================================
+
+                if (!data_get($tbU, 'tersedia', false)) {
+                    $ringkasan[] = [
+                        'judul' => 'Pertumbuhan tinggi badan',
+                        'status' => 'Belum tersedia',
+                        'deskripsi' => 'Data tinggi badan belum tersedia untuk pemantauan.',
+                    ];
+                } else {
+                    $tbPerluPerhatian =
+                        data_get($tbU, 'perlu_tinjau_ulang', false) ||
+                        data_get($tbU, 'status_stunting') === true ||
+                        data_get($tbU, 'kategori_berdasarkan_z_score') === 'Tinggi';
+
+                    $ringkasan[] = [
+                        'judul' => 'Pertumbuhan tinggi badan',
+                        'status' => $tbPerluPerhatian
+                            ? 'Perlu perhatian'
+                            : 'Dalam rentang acuan',
+                        'deskripsi' => $tbPerluPerhatian
+                            ? 'Pertumbuhan tinggi badan anak perlu mendapatkan perhatian. Diskusikan hasilnya dengan bidan atau petugas Posyandu.'
+                            : 'Tinggi badan anak berada dalam rentang acuan untuk usianya.',
+                    ];
+                }
+
+                // ==========================================
+                // 2. KESESUAIAN BERAT BADAN
+                // ==========================================
+
+                $dataBeratLengkap =
+                    data_get($bbU, 'tersedia', false) &&
+                    data_get($bbPbTb, 'tersedia', false) &&
+                    data_get($imtU, 'tersedia', false);
+
+                if (!$dataBeratLengkap) {
+                    $ringkasan[] = [
+                        'judul' => 'Kesesuaian berat badan',
+                        'status' => 'Belum tersedia',
+                        'deskripsi' => 'Data berat badan dan tinggi badan belum lengkap untuk menilai kesesuaian berat badan anak.',
+                    ];
+                } else {
+                    $bbPerluPerhatian =
+                        data_get($bbU, 'perlu_tinjau_ulang', false) ||
+                        data_get($bbPbTb, 'perlu_tinjau_ulang', false) ||
+                        data_get($imtU, 'perlu_tinjau_ulang', false) ||
+
+                        data_get($bbU, 'kategori_berdasarkan_z_score')
+                        !== 'Berat badan normal' ||
+
+                        data_get($bbPbTb, 'kategori_berdasarkan_z_score')
+                        !== 'Gizi baik' ||
+
+                        data_get($imtU, 'kategori_berdasarkan_z_score')
+                        !== 'Gizi baik';
+
+                    $ringkasan[] = [
+                        'judul' => 'Kesesuaian berat badan',
+                        'status' => $bbPerluPerhatian
+                            ? 'Perlu perhatian'
+                            : 'Dalam rentang acuan',
+                        'deskripsi' => $bbPerluPerhatian
+                            ? 'Kesesuaian berat badan dengan usia dan tinggi badan anak perlu diperhatikan. Diskusikan hasilnya dengan bidan.'
+                            : 'Hasil berat badan anak berada dalam rentang acuan berdasarkan usia dan tinggi badannya.',
+                    ];
+                }
+
+                // ==========================================
+                // 3. LINGKAR KEPALA
+                // ==========================================
+
+                if (!data_get($lkU, 'tersedia', false)) {
+                    $ringkasan[] = [
+                        'judul' => 'Lingkar kepala',
+                        'status' => 'Belum tersedia',
+                        'deskripsi' => 'Data lingkar kepala belum tersedia untuk pemantauan.',
+                    ];
+                } else {
+                    $lkPerluPerhatian =
+                        data_get($lkU, 'perlu_tinjau_ulang', false) ||
+                        data_get($lkU, 'interpretasi_berdasarkan_z_score')
+                        !== 'Dalam rentang rujukan';
+
+                    $ringkasan[] = [
+                        'judul' => 'Lingkar kepala',
+                        'status' => $lkPerluPerhatian
+                            ? 'Perlu perhatian'
+                            : 'Dalam rentang acuan',
+                        'deskripsi' => $lkPerluPerhatian
+                            ? 'Hasil pengukuran lingkar kepala perlu diperhatikan. Diskusikan hasilnya dengan bidan atau petugas Posyandu.'
+                            : 'Lingkar kepala anak berada dalam rentang acuan untuk usianya.',
+                    ];
+                }
+
+                // ==========================================
+                // STATUS KESELURUHAN
+                // ==========================================
+
+                $adaPerhatian = collect($ringkasan)->contains(
+                    fn($item) => $item['status'] === 'Perlu perhatian'
+                );
+
+                $adaDataBelumTersedia = collect($ringkasan)->contains(
+                    fn($item) => $item['status'] === 'Belum tersedia'
+                );
+
+                $statusKeseluruhan = $adaPerhatian
+                    ? 'Ada hasil yang perlu diperhatikan'
+                    : ($adaDataBelumTersedia
+                        ? 'Pemantauan belum lengkap'
+                        : 'Hasil pemantauan dalam rentang acuan');
+
+                // ==========================================
+                // REKOMENDASI TINDAK LANJUT
+                // ==========================================
+
+                $indikatorPerhatian = collect($ringkasan)
+                    ->filter(fn($item) => $item['status'] === 'Perlu perhatian')
+                    ->pluck('judul')
+                    ->all();
+
+                $rekomendasi = [];
+
+                if (in_array('Pertumbuhan tinggi badan', $indikatorPerhatian)) {
+                    $rekomendasi[] = 'Diskusikan pertumbuhan tinggi badan anak dengan bidan.';
+                }
+
+                if (in_array('Kesesuaian berat badan', $indikatorPerhatian)) {
+                    $rekomendasi[] = 'Diskusikan kesesuaian berat badan dan pola makan anak dengan tenaga kesehatan.';
+                }
+
+                if (in_array('Lingkar kepala', $indikatorPerhatian)) {
+                    $rekomendasi[] = 'Sampaikan hasil pengukuran lingkar kepala kepada bidan.';
+                }
+
+                if ($adaPerhatian) {
+                    $judulRekomendasi = 'Saran untuk Bunda';
+
+                    $isiRekomendasi = implode(' ', $rekomendasi)
+                        . ' Bunda dapat menghubungi kader atau bidan Posyandu untuk menentukan tindak lanjut yang sesuai.';
+
+                } elseif ($adaDataBelumTersedia) {
+                    $judulRekomendasi = 'Lengkapi pemantauan anak';
+
+                    $isiRekomendasi = 'Bunda dapat menanyakan kepada kader atau bidan mengenai data pemeriksaan yang belum tersedia.';
+
+                } else {
+                    $judulRekomendasi = 'Pertahankan pola pemantauan anak';
+
+                    $isiRekomendasi = 'Tetap berikan makanan bergizi seimbang dan lakukan pemeriksaan pertumbuhan anak secara rutin sesuai jadwal Posyandu.';
+                }
+            @endphp
+
+            <div class="dashboard-section-heading">
+                <div>
+                    <h2>Pemantauan Pertumbuhan Anak</h2>
+                    <p>Ringkasan hasil pemeriksaan pertumbuhan anak.</p>
+                </div>
+            </div>
+
+            {{-- Status keseluruhan --}}
+            @if ($adaPerhatian)
+                <div
+                    class="mt-5 flex items-start gap-3 rounded-xl
+                                                                                                border border-amber-100 bg-amber-50 p-4">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-6 w-6 shrink-0 text-amber-600" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 8v5m0 3h.01" />
+                    </svg>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-amber-800">
+                            {{ $statusKeseluruhan }}
+                        </h3>
+
+                        <p class="mt-1 text-sm leading-6 text-amber-700">
+                            Beberapa hasil pemeriksaan anak perlu mendapatkan perhatian.
+                            Bunda dapat mendiskusikannya dengan kader atau bidan Posyandu.
+                        </p>
+                    </div>
+                </div>
+
+            @elseif ($adaDataBelumTersedia)
+                <div
+                    class="mt-5 flex items-start gap-3 rounded-xl
+                                                                                                border border-slate-200 bg-slate-50 p-4">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-6 w-6 shrink-0 text-slate-500" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 11v5m0-8h.01" />
+                    </svg>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-700">
+                            {{ $statusKeseluruhan }}
+                        </h3>
+
+                        <p class="mt-1 text-sm leading-6 text-slate-500">
+                            Beberapa data pemeriksaan belum tersedia sehingga pemantauan
+                            pertumbuhan anak belum dapat dilakukan secara lengkap.
+                        </p>
+                    </div>
+                </div>
+
+            @else
+                <div
+                    class="mt-5 flex items-start gap-3 rounded-xl
+                                                                                                border border-green-100 bg-green-50 p-4">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-6 w-6 shrink-0 text-green-600" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="m8 12 2.5 2.5L16 9" />
+                    </svg>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-green-800">
+                            {{ $statusKeseluruhan }}
+                        </h3>
+
+                        <p class="mt-1 text-sm leading-6 text-green-700">
+                            Hasil pemeriksaan anak berada dalam rentang acuan.
+                            Tetap lakukan pemantauan pertumbuhan secara rutin.
+                        </p>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Tiga ringkasan pertumbuhan --}}
+            <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
+
+                @foreach ($ringkasan as $item)
+
                     @php
-                        $tbU = data_get($hasilAnalisisPertumbuhan, 'indikator.TB_U', []);
-                        $bbU = data_get($hasilAnalisisPertumbuhan, 'indikator.BB_U', []);
-                        $bbPbTb = data_get($hasilAnalisisPertumbuhan, 'indikator.BB_PB_TB', []);
-                        $imtU = data_get($hasilAnalisisPertumbuhan, 'indikator.IMT_U', []);
-                        $lkU = data_get($hasilAnalisisPertumbuhan, 'indikator.LK_U', []);
-
-                        $ringkasan = [];
-
-                        // ==========================================
-                        // 1. PERTUMBUHAN TINGGI BADAN
-                        // ==========================================
-
-                        if (!data_get($tbU, 'tersedia', false)) {
-                            $ringkasan[] = [
-                                'judul' => 'Pertumbuhan tinggi badan',
-                                'status' => 'Belum tersedia',
-                                'deskripsi' => 'Data tinggi badan belum tersedia untuk pemantauan.',
-                            ];
-                        } else {
-                            $tbPerluPerhatian =
-                                data_get($tbU, 'perlu_tinjau_ulang', false) ||
-                                data_get($tbU, 'status_stunting') === true ||
-                                data_get($tbU, 'kategori_berdasarkan_z_score') === 'Tinggi';
-
-                            $ringkasan[] = [
-                                'judul' => 'Pertumbuhan tinggi badan',
-                                'status' => $tbPerluPerhatian
-                                    ? 'Perlu perhatian'
-                                    : 'Dalam rentang acuan',
-                                'deskripsi' => $tbPerluPerhatian
-                                    ? 'Pertumbuhan tinggi badan anak perlu mendapatkan perhatian. Diskusikan hasilnya dengan bidan atau petugas Posyandu.'
-                                    : 'Tinggi badan anak berada dalam rentang acuan untuk usianya.',
-                            ];
-                        }
-
-                        // ==========================================
-                        // 2. KESESUAIAN BERAT BADAN
-                        // ==========================================
-
-                        $dataBeratLengkap =
-                            data_get($bbU, 'tersedia', false) &&
-                            data_get($bbPbTb, 'tersedia', false) &&
-                            data_get($imtU, 'tersedia', false);
-
-                        if (!$dataBeratLengkap) {
-                            $ringkasan[] = [
-                                'judul' => 'Kesesuaian berat badan',
-                                'status' => 'Belum tersedia',
-                                'deskripsi' => 'Data berat badan dan tinggi badan belum lengkap untuk menilai kesesuaian berat badan anak.',
-                            ];
-                        } else {
-                            $bbPerluPerhatian =
-                                data_get($bbU, 'perlu_tinjau_ulang', false) ||
-                                data_get($bbPbTb, 'perlu_tinjau_ulang', false) ||
-                                data_get($imtU, 'perlu_tinjau_ulang', false) ||
-
-                                data_get($bbU, 'kategori_berdasarkan_z_score')
-                                !== 'Berat badan normal' ||
-
-                                data_get($bbPbTb, 'kategori_berdasarkan_z_score')
-                                !== 'Gizi baik' ||
-
-                                data_get($imtU, 'kategori_berdasarkan_z_score')
-                                !== 'Gizi baik';
-
-                            $ringkasan[] = [
-                                'judul' => 'Kesesuaian berat badan',
-                                'status' => $bbPerluPerhatian
-                                    ? 'Perlu perhatian'
-                                    : 'Dalam rentang acuan',
-                                'deskripsi' => $bbPerluPerhatian
-                                    ? 'Kesesuaian berat badan dengan usia dan tinggi badan anak perlu diperhatikan. Diskusikan hasilnya dengan bidan.'
-                                    : 'Hasil berat badan anak berada dalam rentang acuan berdasarkan usia dan tinggi badannya.',
-                            ];
-                        }
-
-                        // ==========================================
-                        // 3. LINGKAR KEPALA
-                        // ==========================================
-
-                        if (!data_get($lkU, 'tersedia', false)) {
-                            $ringkasan[] = [
-                                'judul' => 'Lingkar kepala',
-                                'status' => 'Belum tersedia',
-                                'deskripsi' => 'Data lingkar kepala belum tersedia untuk pemantauan.',
-                            ];
-                        } else {
-                            $lkPerluPerhatian =
-                                data_get($lkU, 'perlu_tinjau_ulang', false) ||
-                                data_get($lkU, 'interpretasi_berdasarkan_z_score')
-                                !== 'Dalam rentang rujukan';
-
-                            $ringkasan[] = [
-                                'judul' => 'Lingkar kepala',
-                                'status' => $lkPerluPerhatian
-                                    ? 'Perlu perhatian'
-                                    : 'Dalam rentang acuan',
-                                'deskripsi' => $lkPerluPerhatian
-                                    ? 'Hasil pengukuran lingkar kepala perlu diperhatikan. Diskusikan hasilnya dengan bidan atau petugas Posyandu.'
-                                    : 'Lingkar kepala anak berada dalam rentang acuan untuk usianya.',
-                            ];
-                        }
-
-                        // ==========================================
-                        // STATUS KESELURUHAN
-                        // ==========================================
-
-                        $adaPerhatian = collect($ringkasan)->contains(
-                            fn($item) => $item['status'] === 'Perlu perhatian'
-                        );
-
-                        $adaDataBelumTersedia = collect($ringkasan)->contains(
-                            fn($item) => $item['status'] === 'Belum tersedia'
-                        );
-
-                        $statusKeseluruhan = $adaPerhatian
-                            ? 'Ada hasil yang perlu diperhatikan'
-                            : ($adaDataBelumTersedia
-                                ? 'Pemantauan belum lengkap'
-                                : 'Hasil pemantauan dalam rentang acuan');
-
-                        // ==========================================
-                        // REKOMENDASI TINDAK LANJUT
-                        // ==========================================
-
-                        $indikatorPerhatian = collect($ringkasan)
-                            ->filter(fn($item) => $item['status'] === 'Perlu perhatian')
-                            ->pluck('judul')
-                            ->all();
-
-                        $rekomendasi = [];
-
-                        if (in_array('Pertumbuhan tinggi badan', $indikatorPerhatian)) {
-                            $rekomendasi[] = 'Diskusikan pertumbuhan tinggi badan anak dengan bidan.';
-                        }
-
-                        if (in_array('Kesesuaian berat badan', $indikatorPerhatian)) {
-                            $rekomendasi[] = 'Diskusikan kesesuaian berat badan dan pola makan anak dengan tenaga kesehatan.';
-                        }
-
-                        if (in_array('Lingkar kepala', $indikatorPerhatian)) {
-                            $rekomendasi[] = 'Sampaikan hasil pengukuran lingkar kepala kepada bidan.';
-                        }
-
-                        if ($adaPerhatian) {
-                            $judulRekomendasi = 'Saran untuk Bunda';
-
-                            $isiRekomendasi = implode(' ', $rekomendasi)
-                                . ' Bunda dapat menghubungi kader atau bidan Posyandu untuk menentukan tindak lanjut yang sesuai.';
-
-                        } elseif ($adaDataBelumTersedia) {
-                            $judulRekomendasi = 'Lengkapi pemantauan anak';
-
-                            $isiRekomendasi = 'Bunda dapat menanyakan kepada kader atau bidan mengenai data pemeriksaan yang belum tersedia.';
-
-                        } else {
-                            $judulRekomendasi = 'Pertahankan pola pemantauan anak';
-
-                            $isiRekomendasi = 'Tetap berikan makanan bergizi seimbang dan lakukan pemeriksaan pertumbuhan anak secara rutin sesuai jadwal Posyandu.';
-                        }
+                        $warna = match ($item['status']) {
+                            'Perlu perhatian' => [
+                                'border' => 'border-amber-100',
+                                'badge' => 'bg-amber-50 text-amber-700',
+                                'icon' => 'text-amber-500',
+                            ],
+                            'Dalam rentang acuan' => [
+                                'border' => 'border-green-100',
+                                'badge' => 'bg-green-50 text-green-700',
+                                'icon' => 'text-green-600',
+                            ],
+                            default => [
+                                'border' => 'border-slate-200',
+                                'badge' => 'bg-slate-100 text-slate-600',
+                                'icon' => 'text-slate-400',
+                            ],
+                        };
                     @endphp
 
-        {{-- Header --}}
-        <div>
-            <h2 class="text-lg font-bold text-slate-800">
-                Pemantauan Pertumbuhan Anak
-            </h2>
+                    <article class="rounded-2xl border {{ $warna['border'] }}
+                                                                                                        bg-white p-5">
 
-            <p class="mt-1 text-sm text-slate-500">
-                Ringkasan hasil pemeriksaan pertumbuhan anak.
+                        <div class="flex items-center justify-between gap-2">
+
+                            @if ($item['status'] === 'Perlu perhatian')
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $warna['icon'] }}" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M12 8v5m0 3h.01" />
+                                </svg>
+
+                            @elseif ($item['status'] === 'Dalam rentang acuan')
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $warna['icon'] }}" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="m8 12 2.5 2.5L16 9" />
+                                </svg>
+
+                            @else
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $warna['icon'] }}" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M12 11v5m0-8h.01" />
+                                </svg>
+                            @endif
+
+                            <span
+                                class="rounded-full px-3 py-1.5 text-xs
+                                                                                                             font-semibold {{ $warna['badge'] }}">
+                                {{ $item['status'] }}
+                            </span>
+
+                        </div>
+
+                        <h3 class="mt-4 text-base font-bold text-slate-800">
+                            {{ $item['judul'] }}
+                        </h3>
+
+                        <p class="mt-2 text-sm leading-6 text-slate-500">
+                            {{ $item['deskripsi'] }}
+                        </p>
+
+                    </article>
+
+                @endforeach
+
+            </div>
+
+            {{-- Rekomendasi --}}
+            <div class="mt-5 rounded-xl bg-[#F8FAFC] p-4">
+
+                <div class="flex items-start gap-3">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-6 w-6 shrink-0 text-[#155DFC]"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M12 3v3m0 12v3M3 12h3m12 0h3" />
+                        <circle cx="12" cy="12" r="7" />
+                        <path d="m9 12 2 2 4-4" />
+                    </svg>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-700">
+                            {{ $judulRekomendasi }}
+                        </h3>
+
+                        <p class="mt-1 text-sm leading-6 text-slate-500">
+                            {{ $isiRekomendasi }}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            {{-- Tanggal pemeriksaan --}}
+            @if ($pemeriksaanTerakhir?->tgl_periksa)
+                <p class="mt-4 text-xs text-slate-400">
+                    Pemeriksaan terakhir:
+                    {{ \Carbon\Carbon::parse($pemeriksaanTerakhir->tgl_periksa)
+                ->translatedFormat('d F Y') }}
+                </p>
+            @endif
+
+            <p class="mt-2 text-xs leading-5 text-slate-400">
+                Informasi ini merupakan hasil pemantauan berdasarkan data
+                pemeriksaan dan bukan diagnosis medis.
             </p>
-        </div>
 
-        {{-- Status keseluruhan --}}
-        @if ($adaPerhatian)
-            <div class="mt-5 flex items-start gap-3 rounded-xl
-                        border border-amber-100 bg-amber-50 p-4">
+        </section>
 
-                <svg xmlns="http://www.w3.org/2000/svg"
-                    class="mt-0.5 h-6 w-6 shrink-0 text-amber-600"
-                    viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8">
-                    <circle cx="12" cy="12" r="9"/>
-                    <path d="M12 8v5m0 3h.01"/>
-                </svg>
 
+        {{-- Prediksi Risiko Stunting --}}
+        <section id="prediksi-stunting" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            {{-- Judul section --}}
+            <div class="dashboard-section-heading">
                 <div>
-                    <h3 class="text-sm font-bold text-amber-800">
-                        {{ $statusKeseluruhan }}
-                    </h3>
-
-                    <p class="mt-1 text-sm leading-6 text-amber-700">
-                        Beberapa hasil pemeriksaan anak perlu mendapatkan perhatian.
-                        Bunda dapat mendiskusikannya dengan kader atau bidan Posyandu.
+                    <h2>Prediksi Risiko Stunting</h2>
+                    <p>
+                        Perkiraan kondisi pertumbuhan anak dalam 3 bulan mendatang.
                     </p>
                 </div>
             </div>
 
-        @elseif ($adaDataBelumTersedia)
-            <div class="mt-5 flex items-start gap-3 rounded-xl
-                        border border-slate-200 bg-slate-50 p-4">
+            {{-- Konten prediksi --}}
+            <div class="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-200 text-slate-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M12 8v4m0 4h.01" />
+                            <circle cx="12" cy="12" r="9" />
+                        </svg>
+                    </div>
 
-                <svg xmlns="http://www.w3.org/2000/svg"
-                    class="mt-0.5 h-6 w-6 shrink-0 text-slate-500"
-                    viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8">
-                    <circle cx="12" cy="12" r="9"/>
-                    <path d="M12 11v5m0-8h.01"/>
-                </svg>
-
-                <div>
-                    <h3 class="text-sm font-bold text-slate-700">
-                        {{ $statusKeseluruhan }}
-                    </h3>
-
-                    <p class="mt-1 text-sm leading-6 text-slate-500">
-                        Beberapa data pemeriksaan belum tersedia sehingga pemantauan
-                        pertumbuhan anak belum dapat dilakukan secara lengkap.
-                    </p>
-                </div>
-            </div>
-
-        @else
-            <div class="mt-5 flex items-start gap-3 rounded-xl
-                        border border-green-100 bg-green-50 p-4">
-
-                <svg xmlns="http://www.w3.org/2000/svg"
-                    class="mt-0.5 h-6 w-6 shrink-0 text-green-600"
-                    viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8">
-                    <circle cx="12" cy="12" r="9"/>
-                    <path d="m8 12 2.5 2.5L16 9"/>
-                </svg>
-
-                <div>
-                    <h3 class="text-sm font-bold text-green-800">
-                        {{ $statusKeseluruhan }}
-                    </h3>
-
-                    <p class="mt-1 text-sm leading-6 text-green-700">
-                        Hasil pemeriksaan anak berada dalam rentang acuan.
-                        Tetap lakukan pemantauan pertumbuhan secara rutin.
-                    </p>
-                </div>
-            </div>
-        @endif
-
-        {{-- Tiga ringkasan pertumbuhan --}}
-        <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
-
-            @foreach ($ringkasan as $item)
-
-                @php
-                    $warna = match ($item['status']) {
-                        'Perlu perhatian' => [
-                            'border' => 'border-amber-100',
-                            'badge' => 'bg-amber-50 text-amber-700',
-                            'icon' => 'text-amber-500',
-                        ],
-                        'Dalam rentang acuan' => [
-                            'border' => 'border-green-100',
-                            'badge' => 'bg-green-50 text-green-700',
-                            'icon' => 'text-green-600',
-                        ],
-                        default => [
-                            'border' => 'border-slate-200',
-                            'badge' => 'bg-slate-100 text-slate-600',
-                            'icon' => 'text-slate-400',
-                        ],
-                    };
-                @endphp
-
-                <article class="rounded-2xl border {{ $warna['border'] }}
-                                bg-white p-5">
-
-                    <div class="flex items-center justify-between gap-2">
-
-                        @if ($item['status'] === 'Perlu perhatian')
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 {{ $warna['icon'] }}"
-                                viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.8">
-                                <circle cx="12" cy="12" r="9"/>
-                                <path d="M12 8v5m0 3h.01"/>
-                            </svg>
-
-                        @elseif ($item['status'] === 'Dalam rentang acuan')
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 {{ $warna['icon'] }}"
-                                viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.8">
-                                <circle cx="12" cy="12" r="9"/>
-                                <path d="m8 12 2.5 2.5L16 9"/>
-                            </svg>
-
-                        @else
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 {{ $warna['icon'] }}"
-                                viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="1.8">
-                                <circle cx="12" cy="12" r="9"/>
-                                <path d="M12 11v5m0-8h.01"/>
-                            </svg>
-                        @endif
-
-                        <span class="rounded-full px-3 py-1.5 text-xs
-                                     font-semibold {{ $warna['badge'] }}">
-                            {{ $item['status'] }}
+                    <div>
+                        <span class="inline-flex rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">
+                            Belum tersedia
                         </span>
 
+                        <h3 class="mt-2 text-sm font-bold text-slate-700">
+                            Hasil prediksi belum tersedia
+                        </h3>
                     </div>
+                </div>
 
-                    <h3 class="mt-4 text-base font-bold text-slate-800">
-                        {{ $item['judul'] }}
-                    </h3>
+                <p class="mt-4 text-sm leading-6 text-slate-500">
+                    Hasil prediksi akan ditampilkan setelah layanan Machine Learning
+                    terhubung dan data pemeriksaan anak memenuhi kebutuhan analisis.
+                </p>
 
-                    <p class="mt-2 text-sm leading-6 text-slate-500">
-                        {{ $item['deskripsi'] }}
-                    </p>
+                <p class="mt-3 text-xs leading-5 text-slate-400">
+                    Informasi prediksi merupakan hasil analisis sistem dan bukan
+                    diagnosis medis.
+                </p>
+            </div>
+        </section>
+        {{-- Chatbot Posyandu-In --}}
+        <div class="dashboard-chatbot-widget">
 
-                </article>
-
-            @endforeach
-
-        </div>
-
-        {{-- Rekomendasi --}}
-        <div class="mt-5 rounded-xl bg-[#F8FAFC] p-4">
-
-            <div class="flex items-start gap-3">
-
-                <svg xmlns="http://www.w3.org/2000/svg"
-                    class="mt-0.5 h-6 w-6 shrink-0 text-[#155DFC]"
-                    viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.8">
-                    <path d="M12 3v3m0 12v3M3 12h3m12 0h3"/>
-                    <circle cx="12" cy="12" r="7"/>
-                    <path d="m9 12 2 2 4-4"/>
+            {{-- Tombol mengambang --}}
+            <button type="button" id="chatbot-toggle" class="dashboard-chatbot-button" aria-label="Buka chatbot"
+                aria-expanded="false" aria-controls="chatbot-panel" title="Asisten Posyandu-In">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
+                    <path
+                        d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z" />
+                    <path d="M8 11h8M8 14h5" />
                 </svg>
 
-                <div>
-                    <h3 class="text-sm font-bold text-slate-700">
-                        {{ $judulRekomendasi }}
-                    </h3>
+                <span class="dashboard-chatbot-status"></span>
+            </button>
 
-                    <p class="mt-1 text-sm leading-6 text-slate-500">
-                        {{ $isiRekomendasi }}
+            {{-- Panel chatbot --}}
+            <section id="chatbot-panel" class="dashboard-chatbot-panel hidden" role="dialog" aria-labelledby="chatbot-title"
+                aria-modal="false">
+
+                {{-- Header --}}
+                <div class="dashboard-chatbot-header">
+
+                    <div class="flex min-w-0 items-center gap-3">
+
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center
+                                        rounded-xl bg-white/15">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+                                aria-hidden="true">
+                                <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+                                <circle cx="12" cy="12" r="7" />
+                                <path d="m9 12 2 2 4-4" />
+                            </svg>
+                        </div>
+
+                        <div class="min-w-0">
+                            <h2 id="chatbot-title" class="text-sm font-bold">
+                                Asisten Posyandu-In
+                            </h2>
+
+                            <p class="mt-0.5 text-xs text-blue-100">
+                                Informasi kesehatan anak
+                            </p>
+                        </div>
+
+                    </div>
+
+                    {{-- Tombol tutup --}}
+                    <button type="button" id="chatbot-close" class="dashboard-chatbot-close" aria-label="Tutup chatbot">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="m18 6-12 12M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                </div>
+
+                {{-- Isi percakapan --}}
+                <div class="dashboard-chatbot-body">
+
+                    <div class="dashboard-chatbot-message">
+
+                        <div class="flex items-center gap-2">
+                            <span class="flex h-7 w-7 items-center justify-center
+                                             rounded-lg bg-blue-100 text-[#155DFC]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                                    aria-hidden="true">
+                                    <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+                                    <circle cx="12" cy="12" r="7" />
+                                </svg>
+                            </span>
+
+                            <p class="text-xs font-bold text-slate-700">
+                                Asisten Posyandu-In
+                            </p>
+                        </div>
+
+                        <p class="mt-3 text-sm leading-6 text-slate-600">
+                            Halo, Bunda! Saya siap membantu memberikan informasi
+                            seputar pertumbuhan anak, imunisasi, gizi, dan kegiatan
+                            Posyandu.
+                        </p>
+
+                    </div>
+
+                    <p class="mt-4 text-xs leading-5 text-slate-400">
+                        Layanan percakapan sedang dalam tahap pengembangan.
+                        Informasi ini belum diproses oleh layanan AI.
+                    </p>
+
+                </div>
+
+                {{-- Footer --}}
+                <div class="dashboard-chatbot-footer">
+                    <p class="text-center text-xs text-slate-400">
+                        Posyandu-In · Asisten Informasi Posyandu
                     </p>
                 </div>
 
-            </div>
-
+            </section>
         </div>
 
-        {{-- Tanggal pemeriksaan --}}
-        @if ($pemeriksaanTerakhir?->tgl_periksa)
-            <p class="mt-4 text-xs text-slate-400">
-                Pemeriksaan terakhir:
-                {{ \Carbon\Carbon::parse($pemeriksaanTerakhir->tgl_periksa)
-            ->translatedFormat('d F Y') }}
-            </p>
-        @endif
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggle = document.getElementById('chatbot-toggle');
+                const panel = document.getElementById('chatbot-panel');
+                const close = document.getElementById('chatbot-close');
 
-        <p class="mt-2 text-xs leading-5 text-slate-400">
-            Informasi ini merupakan hasil pemantauan berdasarkan data
-            pemeriksaan dan bukan diagnosis medis.
-        </p>
+                if (!toggle || !panel || !close) return;
 
-    </section>
+                function bukaChatbot() {
+                    panel.classList.remove('hidden');
+                    toggle.setAttribute('aria-expanded', 'true');
+                    toggle.setAttribute('aria-label', 'Tutup chatbot');
+                    close.focus();
+                }
 
+                function tutupChatbot() {
+                    panel.classList.add('hidden');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.setAttribute('aria-label', 'Buka chatbot');
+                    toggle.focus();
+                }
 
+                toggle.addEventListener('click', function () {
+                    const sedangTerbuka =
+                        !panel.classList.contains('hidden');
 
-            </div>
-
-            {{-- Tombol chatbot mengambang --}}
-            <div class="fixed bottom-6 right-6 z-50">
-                <button type="button" id="chatbot-toggle" aria-label="Buka chatbot" aria-expanded="false"
-                    class="flex h-14 w-14 items-center justify-center
-                                                                                                                                                                                           rounded-full bg-[#155DFC] text-white
-                                                                                                                                                                                           shadow-lg shadow-blue-200 transition
-                                                                                                                                                                                           hover:bg-blue-700 hover:shadow-xl">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M8 10h8M8 14h5m-8 6 1.8-3.6A8 8 0 1119 17H9l-4 3z" />
-                    </svg>
-                </button>
-
-                {{-- Panel tampilan chatbot --}}
-                <div id="chatbot-panel"
-                    class="absolute bottom-16 right-0 hidden w-80
-                                                                                                                                                                                        overflow-hidden rounded-2xl border border-slate-200
-                                                                                                                                                                                        bg-white shadow-xl">
-
-                    <div class="bg-[#155DFC] p-4 text-white">
-                        <p class="font-semibold">Chatbot Posyandu-In</p>
-                        <p class="mt-1 text-xs text-blue-100">
-                            Asisten informasi tumbuh kembang anak
-                        </p>
-                    </div>
-
-                    <div class="p-4">
-                        <p class="text-sm leading-6 text-slate-600">
-                            Halo, Bunda! Chatbot ini dapat digunakan untuk membantu
-                            mencari informasi seputar pertumbuhan, pemeriksaan,
-                            imunisasi, dan jadwal Posyandu.
-                        </p>
-
-                        <p class="mt-3 text-xs text-slate-400">
-                            Fitur percakapan belum terhubung ke layanan chatbot.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const toggle = document.getElementById('chatbot-toggle');
-                    const panel = document.getElementById('chatbot-panel');
-
-                    if (!toggle || !panel) return;
-
-                    toggle.addEventListener('click', function () {
-                        const akanDibuka = panel.classList.contains('hidden');
-
-                        panel.classList.toggle('hidden', !akanDibuka);
-                        toggle.setAttribute('aria-expanded', String(akanDibuka));
-                        toggle.setAttribute(
-                            'aria-label',
-                            akanDibuka ? 'Tutup chatbot' : 'Buka chatbot'
-                        );
-                    });
+                    if (sedangTerbuka) {
+                        tutupChatbot();
+                    } else {
+                        bukaChatbot();
+                    }
                 });
-            </script>
+
+                close.addEventListener('click', tutupChatbot);
+
+                document.addEventListener('keydown', function (event) {
+                    if (
+                        event.key === 'Escape' &&
+                        !panel.classList.contains('hidden')
+                    ) {
+                        tutupChatbot();
+                    }
+                });
+
+                document.addEventListener('click', function (event) {
+                    const widget = document.querySelector(
+                        '.dashboard-chatbot-widget'
+                    );
+
+                    if (
+                        !widget.contains(event.target) &&
+                        !panel.classList.contains('hidden')
+                    ) {
+                        panel.classList.add('hidden');
+                        toggle.setAttribute('aria-expanded', 'false');
+                        toggle.setAttribute('aria-label', 'Buka chatbot');
+                    }
+                });
+            });
+        </script>
+
 @endsection

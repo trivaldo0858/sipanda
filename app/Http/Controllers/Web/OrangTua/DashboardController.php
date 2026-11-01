@@ -60,14 +60,25 @@ class DashboardController extends Controller
             ->orderBy('waktu')
             ->get();
 
-        // Kegiatan Posyandu tepat tiga hari dari hari ini.
-        $tanggalTarget = $hariIni->copy()->addDays(3);
+        // Jadwal Posyandu terdekat mulai hari ini.
+        $waktuSekarang = Carbon::now()->format('H:i:s');
 
         $jadwalTerdekat = DB::table('jadwal_posyandu')
             ->where('id_posyandu', $anak->id_posyandu)
-            ->whereDate('tgl_kegiatan', $tanggalTarget->toDateString())
+            ->where(function ($query) use ($hariIni, $waktuSekarang) {
+                $query->whereDate('tgl_kegiatan', '>', $hariIni->toDateString())
+                    ->orWhere(function ($query) use ($hariIni, $waktuSekarang) {
+                        $query->whereDate('tgl_kegiatan', $hariIni->toDateString())
+                            ->where(function ($query) use ($waktuSekarang) {
+                                $query->whereNull('waktu')
+                                    ->orWhereTime('waktu', '>=', $waktuSekarang);
+                            });
+                    });
+            })
+            ->orderBy('tgl_kegiatan')
             ->orderBy('waktu')
             ->orderBy('id_jadwal')
+            ->limit(1)
             ->get();
 
         /*
@@ -241,7 +252,6 @@ class DashboardController extends Controller
             'pemeriksaanTerakhir',
             'jadwalPosyanduBulanIni',
             'jadwalTerdekat',
-            'tanggalTarget',
             'jadwalImunisasiBulanIni',
             'jadwalImunisasiTerdekat',
             'prediksiStunting',
