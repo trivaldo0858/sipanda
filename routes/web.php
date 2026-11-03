@@ -22,9 +22,50 @@ Route::get('/', [SharedAuthController::class, 'showLogin'])
 Route::get('/login', [SharedAuthController::class, 'showLogin'])
     ->name('login');
 
-// Login Bidan
-Route::post('/login/bidan', [SharedAuthController::class, 'loginBidan'])
-    ->name('login.bidan');
+//Proses Login Bidan
+Route::post('/login/bidan', [
+    SharedAuthController::class,
+    'loginBidan',
+])->name('login.bidan');
+
+
+
+ // Halaman Web Bidan
+Route::prefix('bidan')
+    ->name('bidan.')
+    ->middleware(['auth', 'bidan'])
+    ->group(function () {
+
+        Route::get('/dashboard', [
+            BidanDashboardController::class,
+            'index',
+        ])->name('dashboard');
+
+        // Data Balita
+        Route::get('/anak', [
+            \App\Http\Controllers\Web\Bidan\AnakController::class,
+            'index',
+        ])->name('anak.index');
+
+        // Detail Balita
+        Route::get('/anak/{nik}', [
+            \App\Http\Controllers\Web\Bidan\AnakController::class,
+            'show',
+        ])->name('anak.show');
+
+        // Logout Bidan
+        Route::post('/logout', function (\Illuminate\Http\Request $request) {
+            \Illuminate\Support\Facades\Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->with('success', 'Kamu berhasil logout.');
+        })->name('logout');
+
+    });
+
 
 // Login dan logout Orang Tua
 Route::post('/login/orang-tua', [SharedAuthController::class, 'loginOrangTua'])
@@ -65,10 +106,10 @@ Route::prefix('posyandu')->name('posyandu.')->group(function () {
     Route::post('/login', [PosyanduAuthController::class, 'login'])
         ->name('login.post');
 
-    Route::get('dashboard', [PosyanduDashboardController::class, 'index'])
-        ->name('dashboard');
-
     Route::middleware('posyandu')->group(function () {
+        Route::get('/dashboard', [PosyanduDashboardController::class, 'index'])
+            ->name('dashboard');
+
         Route::post('/logout', [PosyanduAuthController::class, 'logout'])
             ->name('logout');
 
@@ -109,26 +150,3 @@ Route::get('/orang-tua/dashboard', [
 ])->name('orang-tua.dashboard');
 
 
-Route::prefix('bidan')
-    ->name('bidan.')
-    ->middleware('auth')
-    ->group(function () {
-        Route::get('/dashboard', [
-            BidanDashboardController::class,
-            'index',
-        ])->name('dashboard');
-
-        Route::post('/logout', function (\Illuminate\Http\Request $request) {
-            abort_unless(
-                $request->user()?->isBidan(),
-                403
-            );
-
-            \Illuminate\Support\Facades\Auth::logout();
-
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect('/login');
-        })->name('logout');
-    });

@@ -4,7 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,24 +17,38 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'superadmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
             'posyandu' => \App\Http\Middleware\PosyanduMiddleware::class,
+            'bidan' => \App\Http\Middleware\BidanMiddleware::class,
         ]);
 
         $middleware->authenticateSessions();
 
-        // Redirect guests — HANYA untuk web, bukan API
+        // Redirect guest sesuai kelompok halaman.
         $middleware->redirectGuestsTo(function (Request $request) {
-            // Jika request ke API → jangan redirect, return null
-            // Laravel akan otomatis return 401 JSON
+            // Request API tetap menggunakan respons JSON 401.
             if ($request->is('api/*') || $request->expectsJson()) {
                 return null;
             }
-            // Hanya redirect untuk web
-            return route('superadmin.login');
+
+            // Halaman Web Bidan menggunakan login bersama.
+            if ($request->is('bidan/*')) {
+                return route('login');
+            }
+
+            // Halaman Web Posyandu menggunakan login Posyandu.
+            if ($request->is('posyandu/*')) {
+                return route('posyandu.login');
+            }
+
+            // Default halaman Web menggunakan login bersama.
+            return route('login');
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Pastikan error API selalu return JSON bukan redirect
-        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, Request $request) {
+        // Pastikan error autentikasi API selalu menghasilkan JSON.
+        $exceptions->render(function (
+            \Illuminate\Auth\AuthenticationException $e,
+            Request $request
+        ) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
@@ -43,4 +56,5 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 401);
             }
         });
-    })->create();
+    })
+    ->create();

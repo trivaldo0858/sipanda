@@ -237,6 +237,37 @@
                         <span class="nav-label font-bold text-sm">Dashboard</span>
                     </a>
                 </div>
+                
+                <!-- Data Balita -->
+                <div class="relative group">
+                    {{-- Indikator Aktif --}}
+                    @if(request()->routeIs('bidan.anak.*'))
+                        <div class="sidebar-active-indicator absolute -left-8 top-1/2
+                                    -translate-y-1/2 w-2 h-10 bg-[#0A63D8] rounded-r-full">
+                        </div>
+                    @endif
+
+                    <a href="{{ route('bidan.anak.index') }}"
+                        class="flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 {{ request()->routeIs('bidan.anak.*') ? 'bg-[#EBF3FF] text-[#0A63D8]' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600' }}">
+
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="w-5 h-5" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="10" cy="7" r="4"/>
+                            <path d="M20 8v6"/>
+                            <path d="M23 11h-6"/>
+                        </svg>
+
+                        <span class="nav-label font-bold text-sm">
+                            Data Balita
+                        </span>
+                    </a>
+                </div>
+
 
                 {{-- Logout Section --}}
                 <div class="pt-6 mt-6 border-t border-slate-50">
