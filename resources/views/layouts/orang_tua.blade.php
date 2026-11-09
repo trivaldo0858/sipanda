@@ -24,6 +24,7 @@
             font-size: 14px;
             line-height: 1.6;
             color: #1E293B;
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }

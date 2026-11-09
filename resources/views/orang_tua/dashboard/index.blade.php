@@ -25,7 +25,7 @@
         $daftarJadwalImunisasi = $jadwalImunisasiBulanIni ?? collect();
     @endphp
 
-    <div class="space-y-8">
+    <div class="space-y-7 pb-20">
         <section class="dashboard-welcome px-1 sm:px-2">
             <h1>
                 Selamat Datang, Bunda!
@@ -40,61 +40,37 @@
             </p>
         </section>
         {{-- Data Pemeriksaan Terakhir --}}
-        <section id="perkembangan-anak" class="space-y-5">
+        <section id="perkembangan-anak" class="scroll-mt-6 space-y-4">
 
             {{-- Judul section --}}
-            <div class="flex items-center gap-3">
-                <span aria-hidden="true"
-                    style="display:block; flex:0 0 8px; width:8px; height:24px;
-                                                                                                                                                                               border-radius:9999px; background-color:#155DFC;
-                                                                                                                                                                               box-shadow:0 1px 2px #DBEAFE;">
-                </span>
+            <div class="dashboard-section-heading">
+                <span class="dashboard-section-bar" aria-hidden="true"></span>
 
-                <h1
-                    style="margin:0; color:#1E293B; font-size:20px;
-                                                                                                                                                                               line-height:28px; font-weight:800; letter-spacing:-0.5px;">
-                    Data pemeriksaan Terakhir
-                </h1>
+                <h2>Data Pemeriksaan Terakhir</h2>
             </div>
 
             {{-- Kartu pemeriksaan --}}
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-3" style="padding-top:4px;">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 
                 {{-- Berat badan --}}
-                <article
-                    style="display:flex; align-items:center; justify-content:space-between;
-                                                                                                                                                                               gap:16px; min-width:0; min-height:121px; padding:24px 28px;
-                                                                                                                                                                               background:#FFFFFF; border:1px solid #F8FAFC;
-                                                                                                                                                                               border-radius:40px;
-                                                                                                                                                                               box-shadow:0 8px 12px rgba(15,23,42,0.08);">
+                <article class="dashboard-metric-card">
 
-                    <div style="min-width:0; flex:1;">
-                        <p
-                            style="margin:0; color:#94A3B8; font-size:10px;
-                                                                                                                                                                                      font-weight:700; line-height:15px;
-                                                                                                                                                                                      letter-spacing:2px; text-transform:uppercase;">
+                    <div class="min-w-0 flex-1">
+                        <p class="dashboard-metric-label">
                             Berat Badan
                         </p>
 
-                        <p
-                            style="margin:4px 0 0; color:#1E293B;
-                                                                                                                                                                                      font-size:24px; font-weight:800;
-                                                                                                                                                                                      line-height:36px; white-space:nowrap;">
+                        <p class="dashboard-metric-value">
                             @if ($pemeriksaan?->berat_badan !== null)
                                 {{ number_format((float) $pemeriksaan->berat_badan, 2, '.', '') }}
-                                <span style="font-size:24px; font-weight:800;">KG</span>
+                                <span class="dashboard-metric-unit">KG</span>
                             @else
                                 —
                             @endif
                         </p>
                     </div>
 
-                    <div
-                        style="display:flex; flex:0 0 64px; width:64px; height:64px;
-                                                                                                                                                                                   align-items:center; justify-content:center;
-                                                                                                                                                                                   border-radius:24px; background-color:#EFF6FF;
-                                                                                                                                                                                   color:#155DFC;
-                                                                                                                                                                                   box-shadow:0 1px 1px rgba(0,0,0,0.05);">
+                    <div class="dashboard-metric-icon">
 
 
                         <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24" fill="none"
@@ -121,40 +97,24 @@
                 </article>
 
                 {{-- Tinggi badan --}}
-                <article
-                    style="display:flex; align-items:center; justify-content:space-between;
-                                                                                                                                                                               gap:16px; min-width:0; min-height:121px; padding:24px 28px;
-                                                                                                                                                                               background:#FFFFFF; border:1px solid #F8FAFC;
-                                                                                                                                                                               border-radius:40px;
-                                                                                                                                                                               box-shadow:0 8px 12px rgba(15,23,42,0.08);">
+                <article class="dashboard-metric-card">
 
-                    <div style="min-width:0; flex:1;">
-                        <p
-                            style="margin:0; color:#94A3B8; font-size:10px;
-                                                                                                                                                                                      font-weight:700; line-height:15px;
-                                                                                                                                                                                      letter-spacing:2px; text-transform:uppercase;">
+                    <div class="min-w-0 flex-1">
+                        <p class="dashboard-metric-label">
                             Tinggi Badan
                         </p>
 
-                        <p
-                            style="margin:4px 0 0; color:#1E293B;
-                                                                                                                                                                                      font-size:24px; font-weight:800;
-                                                                                                                                                                                      line-height:36px; white-space:nowrap;">
+                        <p class="dashboard-metric-value">
                             @if ($pemeriksaan?->tinggi_badan !== null)
                                 {{ number_format((float) $pemeriksaan->tinggi_badan, 2, '.', '') }}
-                                <span style="font-size:24px; font-weight:800;">CM</span>
+                                <span class="dashboard-metric-unit">CM</span>
                             @else
                                 —
                             @endif
                         </p>
                     </div>
 
-                    <div
-                        style="display:flex; flex:0 0 64px; width:64px; height:64px;
-                                                                                                                                                                                   align-items:center; justify-content:center;
-                                                                                                                                                                                   border-radius:24px; background-color:#EFF6FF;
-                                                                                                                                                                                   color:#155DFC;
-                                                                                                                                                                                   box-shadow:0 1px 1px rgba(0,0,0,0.05);">
+                    <div class="dashboard-metric-icon">
 
                         <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24" fill="none"
                             stroke="#155DFC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
@@ -170,40 +130,24 @@
                 </article>
 
                 {{-- Lingkar kepala --}}
-                <article
-                    style="display:flex; align-items:center; justify-content:space-between;
-                                                                                                                                                                               gap:16px; min-width:0; min-height:121px; padding:24px;
-                                                                                                                                                                               background:#FFFFFF; border:1px solid #F8FAFC;
-                                                                                                                                                                               border-radius:40px;
-                                                                                                                                                                               box-shadow:0 8px 12px rgba(15,23,42,0.08);">
+                <article class="dashboard-metric-card">
 
-                    <div style="min-width:0; flex:1;">
-                        <p
-                            style="margin:0; color:#94A3B8; font-size:10px;
-                                                                                                                                                                                      font-weight:700; line-height:15px;
-                                                                                                                                                                                      letter-spacing:2px; text-transform:uppercase;">
+                    <div class="min-w-0 flex-1">
+                        <p class="dashboard-metric-label">
                             Lingkar Kepala
                         </p>
 
-                        <p
-                            style="margin:4px 0 0; color:#1E293B;
-                                                                                                                                                                                      font-size:24px; font-weight:800;
-                                                                                                                                                                                      line-height:36px; white-space:nowrap;">
+                        <p class="dashboard-metric-value">
                             @if ($pemeriksaan?->lingkar_kepala !== null)
                                 {{ number_format((float) $pemeriksaan->lingkar_kepala, 2, '.', '') }}
-                                <span style="font-size:24px; font-weight:800;">CM</span>
+                                <span class="dashboard-metric-unit">CM</span>
                             @else
                                 —
                             @endif
                         </p>
                     </div>
 
-                    <div
-                        style="display:flex; flex:0 0 64px; width:64px; height:64px;
-                                                                                                                                                                                   align-items:center; justify-content:center;
-                                                                                                                                                                                   border-radius:24px; background-color:#EFF6FF;
-                                                                                                                                                                                   color:#155DFC;
-                                                                                                                                                                                   box-shadow:0 1px 1px rgba(0,0,0,0.05);">
+                    <div class="dashboard-metric-icon">
 
 
 
@@ -290,19 +234,17 @@
                 .dashboard-content-section {
                     display: flex;
                     flex-direction: column;
-                    gap: 20px;
+                    gap: 16px;
                     min-width: 0;
                 }
 
-                /* =========================================
-                                   DASHBOARD
-                                ========================================= */
-
-                .dashboard-content-section {
+                /* Jarak isi section yang memakai heading dengan subjudul */
+                .dashboard-section-content {
                     display: flex;
                     flex-direction: column;
                     gap: 16px;
                     min-width: 0;
+                    margin-top: 16px;
                 }
 
                 /* =========================================
@@ -311,16 +253,16 @@
 
                 .dashboard-chatbot-widget {
                     position: fixed;
-                    right: max(20px, env(safe-area-inset-right));
-                    bottom: max(20px, env(safe-area-inset-bottom));
+                    right: max(24px, env(safe-area-inset-right));
+                    bottom: max(24px, env(safe-area-inset-bottom));
                     z-index: 60;
                 }
 
                 .dashboard-chatbot-button {
                     position: relative;
                     display: flex;
-                    width: 58px;
-                    height: 58px;
+                    width: 56px;
+                    height: 56px;
                     align-items: center;
                     justify-content: center;
                     border: none;
@@ -328,15 +270,13 @@
                     background: #155DFC;
                     color: #FFFFFF;
                     cursor: pointer;
-                    box-shadow: 0 5px 18px rgba(21, 93, 252, 0.28);
-                    transition: background .2s ease, transform .2s ease,
-                        box-shadow .2s ease;
+                    box-shadow: 0 4px 12px rgba(21, 93, 252, 0.20);
+                    transition: background .2s ease, box-shadow .2s ease;
                 }
 
                 .dashboard-chatbot-button:hover {
                     background: #104BCB;
-                    transform: translateY(-3px);
-                    box-shadow: 0 8px 22px rgba(21, 93, 252, 0.32);
+                    box-shadow: 0 6px 14px rgba(21, 93, 252, 0.24);
                 }
 
                 .dashboard-chatbot-button:focus-visible,
@@ -345,18 +285,7 @@
                     outline-offset: 3px;
                 }
 
-                /* Indikator pada tombol chatbot */
-
-                .dashboard-chatbot-status {
-                    position: absolute;
-                    top: 2px;
-                    right: 2px;
-                    width: 12px;
-                    height: 12px;
-                    border: 2px solid #FFFFFF;
-                    border-radius: 50%;
-                    background: #22C55E;
-                }
+                /* Indikator pada tombol chatbot dihapus karena layanan belum aktif. */
 
                 /* =========================================
                                    CHATBOT PANEL
@@ -365,16 +294,16 @@
                 .dashboard-chatbot-panel {
                     position: absolute;
                     right: 0;
-                    bottom: 74px;
+                    bottom: 68px;
                     display: none;
                     flex-direction: column;
                     width: min(360px, calc(100vw - 32px));
                     max-height: min(520px, calc(100dvh - 112px));
                     overflow: hidden;
                     border: 1px solid #E2E8F0;
-                    border-radius: 20px;
+                    border-radius: 18px;
                     background: #FFFFFF;
-                    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.16);
+                    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
                     animation: chatbot-appear .2s ease-out;
                 }
 
@@ -387,7 +316,7 @@
                     align-items: center;
                     justify-content: space-between;
                     gap: 12px;
-                    padding: 17px 18px;
+                    padding: 16px;
                     background: #155DFC;
                     color: #FFFFFF;
                 }
@@ -413,7 +342,9 @@
                 .dashboard-chatbot-body {
                     flex: 1;
                     overflow-y: auto;
-                    padding: 20px;
+                    overscroll-behavior: contain;
+                    -webkit-overflow-scrolling: touch;
+                    padding: 16px;
                 }
 
                 .dashboard-chatbot-message {
@@ -424,7 +355,7 @@
                 }
 
                 .dashboard-chatbot-footer {
-                    padding: 12px 18px;
+                    padding: 12px 16px;
                     border-top: 1px solid #E2E8F0;
                     background: #FFFFFF;
                 }
@@ -453,9 +384,10 @@
                     }
 
                     .dashboard-chatbot-panel {
-                        bottom: 68px;
-                        width: min(360px, calc(100vw - 32px));
-                        max-height: calc(100dvh - 105px);
+                        bottom: 66px;
+                        width: calc(100vw - 32px);
+                        max-height: calc(100dvh - 96px);
+                        border-radius: 16px;
                     }
                 }
 
@@ -476,16 +408,16 @@
                 .dashboard-welcome h1 {
                     margin: 0;
                     color: #142D59;
-                    font-size: clamp(28px, 2.2vw, 36px);
+                    font-size: clamp(24px, 2.4vw, 32px);
                     font-weight: 800;
                     line-height: 1.2;
-                    letter-spacing: -1.2px;
+                    letter-spacing: -0.8px;
                 }
 
                 .dashboard-welcome p {
-                    margin-top: 7px;
+                    margin-top: 8px;
                     color: #334B73;
-                    font-size: clamp(17px, 1.3vw, 21px);
+                    font-size: clamp(16px, 1.3vw, 18px);
                     font-weight: 500;
                     line-height: 1.5;
                 }
@@ -497,19 +429,22 @@
                 .dashboard-section-heading {
                     display: flex;
                     align-items: center;
-                    gap: 12px;
+                    gap: 10px;
                     min-width: 0;
                 }
 
-                .dashboard-section-heading::before {
-                    content: "";
+                .dashboard-section-bar {
                     display: block;
                     width: 8px;
-                    height: 25px;
+                    height: 24px;
                     flex: 0 0 8px;
                     border-radius: 999px;
                     background: #155DFC;
                     box-shadow: 0 1px 3px rgba(21, 93, 252, 0.15);
+                }
+
+                .dashboard-section-heading > div {
+                    min-width: 0;
                 }
 
                 .dashboard-section-heading h2 {
@@ -517,7 +452,7 @@
                     color: #1E293B;
                     font-size: 20px;
                     font-weight: 800;
-                    line-height: 28px;
+                    line-height: 1.3;
                     letter-spacing: -0.5px;
                 }
 
@@ -526,6 +461,83 @@
                     color: #64748B;
                     font-size: 13px;
                     line-height: 20px;
+                }
+
+                /* =========================================
+                                   METRIC CARDS
+                                ========================================= */
+
+                .dashboard-metric-card {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    min-width: 0;
+                    min-height: 112px;
+                    padding: 20px;
+                    background: #FFFFFF;
+                    border: 1px solid #E8EEF8;
+                    border-radius: 20px;
+                    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+                }
+
+                .dashboard-metric-label {
+                    margin: 0;
+                    color: #64748B;
+                    font-size: 11px;
+                    font-weight: 700;
+                    line-height: 16px;
+                    letter-spacing: 1.2px;
+                    text-transform: uppercase;
+                }
+
+                .dashboard-metric-value {
+                    margin: 6px 0 0;
+                    color: #1E293B;
+                    font-size: 28px;
+                    font-weight: 800;
+                    line-height: 1.2;
+                    white-space: nowrap;
+                }
+
+                .dashboard-metric-unit {
+                    margin-left: 2px;
+                    color: #64748B;
+                    font-size: 14px;
+                    font-weight: 700;
+                    line-height: 1;
+                    vertical-align: baseline;
+                }
+
+                .dashboard-metric-icon {
+                    display: flex;
+                    flex: 0 0 56px;
+                    width: 56px;
+                    height: 56px;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 16px;
+                    background-color: #EFF6FF;
+                    color: #155DFC;
+                    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+                }
+
+                @media (max-width: 640px) {
+                    .dashboard-metric-card {
+                        min-height: 100px;
+                        padding: 16px;
+                        border-radius: 16px;
+                    }
+
+                    .dashboard-metric-value {
+                        font-size: 24px;
+                    }
+
+                    .dashboard-metric-icon {
+                        flex: 0 0 48px;
+                        width: 48px;
+                        height: 48px;
+                    }
                 }
 
                 /* =========================================
@@ -576,22 +588,17 @@
             <section id="jadwal-posyandu" class="dashboard-content-section min-w-0">
 
                 {{-- Judul --}}
-                <div class="flex items-center gap-3">
-                    <span aria-hidden="true"
-                        style="display:block; width:8px; height:24px; flex-shrink:0;
-                                                                                                                                                           border-radius:9999px; background:#155DFC;">
-                    </span>
+                <div class="dashboard-section-heading">
+                    <span class="dashboard-section-bar" aria-hidden="true"></span>
 
-                    <h2 class="text-xl font-extrabold tracking-tight text-slate-800">
-                        Kalender Kegiatan Posyandu
-                    </h2>
+                    <h2>Kalender Kegiatan Posyandu</h2>
                 </div>
 
                 {{-- Panel kalender --}}
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
                     {{-- Header bulan --}}
-                    <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
                         <div>
                             <p class="text-sm font-bold text-slate-700">
                                 Jadwal Posyandu & Imunisasi
@@ -675,7 +682,7 @@
                     {{-- Keterangan warna --}}
                     <div
                         class="flex flex-wrap items-center gap-x-5 gap-y-2
-                                                                                                                                                            border-t border-slate-100 px-5 py-3">
+                                                                                                                                                            border-t border-slate-100 px-4 py-3">
 
                         <div class="flex items-center gap-2">
                             <span class="h-3 w-3 rounded-full border-2 border-[#155DFC]"></span>
@@ -695,22 +702,17 @@
             <section id="jadwal-terdekat" class="dashboard-content-section min-w-0">
 
                 {{-- Judul --}}
-                <div class="flex items-center gap-3">
-                    <span aria-hidden="true"
-                        style="display:block; width:8px; height:24px; flex-shrink:0;
-                                                                                                                                                           border-radius:9999px; background:#155DFC;">
-                    </span>
+                <div class="dashboard-section-heading">
+                    <span class="dashboard-section-bar" aria-hidden="true"></span>
 
-                    <h2 class="text-xl font-extrabold tracking-tight text-slate-800">
-                        Jadwal Terdekat
-                    </h2>
+                    <h2>Jadwal Terdekat</h2>
                 </div>
 
                 {{-- Konten jadwal --}}
                 <div class="space-y-3">
 
                     @if ($jadwal)
-                                <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                                <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
 
                                     <div class="flex items-start gap-4">
 
@@ -773,16 +775,16 @@
                     @else
                         {{-- Empty state: jadwal belum tersedia --}}
 
-                        <div class="min-h-[230px] rounded-2xl border border-dashed
-                                                                                                                                                                                                   border-slate-200 bg-slate-50 px-5 text-center"
+                        <div class="min-h-[210px] rounded-2xl border border-dashed
+                                                                                                                                                                                                   border-slate-200 bg-slate-50 px-4 text-center"
                             style="box-sizing:border-box;
                                                                                                                                                                                                    display:flex;
                                                                                                                                                                                                    flex-direction:column;
                                                                                                                                                                                                    align-items:center;
                                                                                                                                                                                                    justify-content:flex-start;
-                                                                                                                                                                                                   gap:14px;
-                                                                                                                                                                                                   padding-top:24px;
-                                                                                                                                                                                                   padding-bottom:20px;">
+                                                                                                                                                                                                   gap:12px;
+                                                                                                                                                                                                   padding-top:20px;
+                                                                                                                                                                                                   padding-bottom:16px;">
 
                             {{-- Ikon kalender --}}
                             <div
@@ -841,7 +843,7 @@
                     $ringkasan[] = [
                         'judul' => 'Pertumbuhan tinggi badan',
                         'status' => 'Belum tersedia',
-                        'deskripsi' => 'Data tinggi badan belum tersedia untuk pemantauan.',
+                        'deskripsi' => 'Data tinggi badan belum tersedia.',
                     ];
                 } else {
                     $tbPerluPerhatian =
@@ -855,8 +857,8 @@
                             ? 'Perlu perhatian'
                             : 'Dalam rentang acuan',
                         'deskripsi' => $tbPerluPerhatian
-                            ? 'Pertumbuhan tinggi badan anak perlu mendapatkan perhatian. Diskusikan hasilnya dengan bidan atau petugas Posyandu.'
-                            : 'Tinggi badan anak berada dalam rentang acuan untuk usianya.',
+                            ? 'Pertumbuhan tinggi badan perlu diperhatikan.'
+                            : 'Tinggi badan sesuai rentang acuan usia.',
                     ];
                 }
 
@@ -873,7 +875,7 @@
                     $ringkasan[] = [
                         'judul' => 'Kesesuaian berat badan',
                         'status' => 'Belum tersedia',
-                        'deskripsi' => 'Data berat badan dan tinggi badan belum lengkap untuk menilai kesesuaian berat badan anak.',
+                        'deskripsi' => 'Data berat dan tinggi badan belum lengkap.',
                     ];
                 } else {
                     $bbPerluPerhatian =
@@ -896,8 +898,8 @@
                             ? 'Perlu perhatian'
                             : 'Dalam rentang acuan',
                         'deskripsi' => $bbPerluPerhatian
-                            ? 'Kesesuaian berat badan dengan usia dan tinggi badan anak perlu diperhatikan. Diskusikan hasilnya dengan bidan.'
-                            : 'Hasil berat badan anak berada dalam rentang acuan berdasarkan usia dan tinggi badannya.',
+                            ? 'Kesesuaian berat badan perlu diperhatikan.'
+                            : 'Berat badan sesuai rentang acuan usia dan tinggi badan.',
                     ];
                 }
 
@@ -909,7 +911,7 @@
                     $ringkasan[] = [
                         'judul' => 'Lingkar kepala',
                         'status' => 'Belum tersedia',
-                        'deskripsi' => 'Data lingkar kepala belum tersedia untuk pemantauan.',
+                        'deskripsi' => 'Data lingkar kepala belum tersedia.',
                     ];
                 } else {
                     $lkPerluPerhatian =
@@ -923,8 +925,8 @@
                             ? 'Perlu perhatian'
                             : 'Dalam rentang acuan',
                         'deskripsi' => $lkPerluPerhatian
-                            ? 'Hasil pengukuran lingkar kepala perlu diperhatikan. Diskusikan hasilnya dengan bidan atau petugas Posyandu.'
-                            : 'Lingkar kepala anak berada dalam rentang acuan untuk usianya.',
+                            ? 'Lingkar kepala perlu diperhatikan.'
+                            : 'Lingkar kepala sesuai rentang acuan usia.',
                     ];
                 }
 
@@ -950,235 +952,168 @@
                 // REKOMENDASI TINDAK LANJUT
                 // ==========================================
 
-                $indikatorPerhatian = collect($ringkasan)
-                    ->filter(fn($item) => $item['status'] === 'Perlu perhatian')
-                    ->pluck('judul')
-                    ->all();
-
-                $rekomendasi = [];
-
-                if (in_array('Pertumbuhan tinggi badan', $indikatorPerhatian)) {
-                    $rekomendasi[] = 'Diskusikan pertumbuhan tinggi badan anak dengan bidan.';
-                }
-
-                if (in_array('Kesesuaian berat badan', $indikatorPerhatian)) {
-                    $rekomendasi[] = 'Diskusikan kesesuaian berat badan dan pola makan anak dengan tenaga kesehatan.';
-                }
-
-                if (in_array('Lingkar kepala', $indikatorPerhatian)) {
-                    $rekomendasi[] = 'Sampaikan hasil pengukuran lingkar kepala kepada bidan.';
-                }
-
                 if ($adaPerhatian) {
                     $judulRekomendasi = 'Saran untuk Bunda';
 
-                    $isiRekomendasi = implode(' ', $rekomendasi)
-                        . ' Bunda dapat menghubungi kader atau bidan Posyandu untuk menentukan tindak lanjut yang sesuai.';
-
+                    $isiRekomendasi = 'Diskusikan hasil ini dengan kader atau bidan Posyandu.';
                 } elseif ($adaDataBelumTersedia) {
                     $judulRekomendasi = 'Lengkapi pemantauan anak';
 
-                    $isiRekomendasi = 'Bunda dapat menanyakan kepada kader atau bidan mengenai data pemeriksaan yang belum tersedia.';
-
+                    $isiRekomendasi = 'Lengkapi data pemeriksaan bersama kader atau bidan.';
                 } else {
                     $judulRekomendasi = 'Pertahankan pola pemantauan anak';
 
-                    $isiRekomendasi = 'Tetap berikan makanan bergizi seimbang dan lakukan pemeriksaan pertumbuhan anak secara rutin sesuai jadwal Posyandu.';
+                    $isiRekomendasi = 'Lanjutkan pemantauan rutin dan pola makan bergizi seimbang.';
                 }
             @endphp
 
             <div class="dashboard-section-heading">
+                <span class="dashboard-section-bar" aria-hidden="true"></span>
+
                 <div>
                     <h2>Pemantauan Pertumbuhan Anak</h2>
                     <p>Ringkasan hasil pemeriksaan pertumbuhan anak.</p>
                 </div>
             </div>
 
-            {{-- Status keseluruhan --}}
-            @if ($adaPerhatian)
-                <div
-                    class="mt-5 flex items-start gap-3 rounded-xl
-                                                                                                border border-amber-100 bg-amber-50 p-4">
+            <div class="dashboard-section-content">
+                {{-- Status keseluruhan --}}
+                @if ($adaPerhatian)
+                    <div class="flex items-start gap-2.5 rounded-xl border border-amber-100 bg-amber-50 p-4">
 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-6 w-6 shrink-0 text-amber-600" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.8">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M12 8v5m0 3h.01" />
-                    </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M12 8v5m0 3h.01" />
+                        </svg>
 
-                    <div>
-                        <h3 class="text-sm font-bold text-amber-800">
-                            {{ $statusKeseluruhan }}
-                        </h3>
+                        <div>
+                            <h3 class="text-sm font-bold text-amber-800">
+                                {{ $statusKeseluruhan }}
+                            </h3>
 
-                        <p class="mt-1 text-sm leading-6 text-amber-700">
-                            Beberapa hasil pemeriksaan anak perlu mendapatkan perhatian.
-                            Bunda dapat mendiskusikannya dengan kader atau bidan Posyandu.
-                        </p>
+                            <p class="mt-0.5 text-sm leading-5 text-amber-700">
+                                Beberapa hasil pemeriksaan perlu diperhatikan.
+                            </p>
+                        </div>
                     </div>
+
+                @elseif ($adaDataBelumTersedia)
+                    <div class="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 shrink-0 text-slate-500" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M12 11v5m0-8h.01" />
+                        </svg>
+
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-700">
+                                {{ $statusKeseluruhan }}
+                            </h3>
+
+                            <p class="mt-0.5 text-sm leading-5 text-slate-500">
+                                Beberapa data pemeriksaan belum lengkap.
+                            </p>
+                        </div>
+                    </div>
+
+                @else
+                    <div class="flex items-start gap-2.5 rounded-xl border border-green-100 bg-green-50 p-4">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 shrink-0 text-green-600" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="m8 12 2.5 2.5L16 9" />
+                        </svg>
+
+                        <div>
+                            <h3 class="text-sm font-bold text-green-800">
+                                {{ $statusKeseluruhan }}
+                            </h3>
+
+                            <p class="mt-0.5 text-sm leading-5 text-green-700">
+                                Hasil pemeriksaan berada dalam rentang acuan.
+                            </p>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Tiga ringkasan pertumbuhan --}}
+                <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+
+                    @foreach ($ringkasan as $item)
+
+                        @php
+                            $warna = match ($item['status']) {
+                                'Perlu perhatian' => 'bg-amber-50 text-amber-700',
+                                'Dalam rentang acuan' => 'bg-green-50 text-green-700',
+                                default => 'bg-slate-100 text-slate-600',
+                            };
+                        @endphp
+
+                        <article class="rounded-2xl border border-slate-200 bg-white p-4">
+                            <div class="flex items-start justify-between gap-3">
+                                <h3 class="text-sm font-bold text-slate-800">
+                                    {{ $item['judul'] }}
+                                </h3>
+
+                                <span class="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold {{ $warna }}">
+                                    {{ $item['status'] }}
+                                </span>
+                            </div>
+
+                            <p class="mt-2 text-sm leading-5 text-slate-500">
+                                {{ $item['deskripsi'] }}
+                            </p>
+                        </article>
+
+                    @endforeach
+
                 </div>
 
-            @elseif ($adaDataBelumTersedia)
-                <div
-                    class="mt-5 flex items-start gap-3 rounded-xl
-                                                                                                border border-slate-200 bg-slate-50 p-4">
+                {{-- Rekomendasi --}}
+                <div class="rounded-xl bg-[#F8FAFC] p-4">
 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-6 w-6 shrink-0 text-slate-500" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.8">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M12 11v5m0-8h.01" />
-                    </svg>
+                    <div class="flex items-start gap-2.5">
 
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-700">
-                            {{ $statusKeseluruhan }}
-                        </h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 shrink-0 text-[#155DFC]"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M12 3v3m0 12v3M3 12h3m12 0h3" />
+                            <circle cx="12" cy="12" r="7" />
+                            <path d="m9 12 2 2 4-4" />
+                        </svg>
 
-                        <p class="mt-1 text-sm leading-6 text-slate-500">
-                            Beberapa data pemeriksaan belum tersedia sehingga pemantauan
-                            pertumbuhan anak belum dapat dilakukan secara lengkap.
-                        </p>
-                    </div>
-                </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-700">
+                                {{ $judulRekomendasi }}
+                            </h3>
 
-            @else
-                <div
-                    class="mt-5 flex items-start gap-3 rounded-xl
-                                                                                                border border-green-100 bg-green-50 p-4">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-6 w-6 shrink-0 text-green-600" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.8">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="m8 12 2.5 2.5L16 9" />
-                    </svg>
-
-                    <div>
-                        <h3 class="text-sm font-bold text-green-800">
-                            {{ $statusKeseluruhan }}
-                        </h3>
-
-                        <p class="mt-1 text-sm leading-6 text-green-700">
-                            Hasil pemeriksaan anak berada dalam rentang acuan.
-                            Tetap lakukan pemantauan pertumbuhan secara rutin.
-                        </p>
-                    </div>
-                </div>
-            @endif
-
-            {{-- Tiga ringkasan pertumbuhan --}}
-            <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
-
-                @foreach ($ringkasan as $item)
-
-                    @php
-                        $warna = match ($item['status']) {
-                            'Perlu perhatian' => [
-                                'border' => 'border-amber-100',
-                                'badge' => 'bg-amber-50 text-amber-700',
-                                'icon' => 'text-amber-500',
-                            ],
-                            'Dalam rentang acuan' => [
-                                'border' => 'border-green-100',
-                                'badge' => 'bg-green-50 text-green-700',
-                                'icon' => 'text-green-600',
-                            ],
-                            default => [
-                                'border' => 'border-slate-200',
-                                'badge' => 'bg-slate-100 text-slate-600',
-                                'icon' => 'text-slate-400',
-                            ],
-                        };
-                    @endphp
-
-                    <article class="rounded-2xl border {{ $warna['border'] }}
-                                                                                                        bg-white p-5">
-
-                        <div class="flex items-center justify-between gap-2">
-
-                            @if ($item['status'] === 'Perlu perhatian')
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $warna['icon'] }}" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="1.8">
-                                    <circle cx="12" cy="12" r="9" />
-                                    <path d="M12 8v5m0 3h.01" />
-                                </svg>
-
-                            @elseif ($item['status'] === 'Dalam rentang acuan')
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $warna['icon'] }}" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="1.8">
-                                    <circle cx="12" cy="12" r="9" />
-                                    <path d="m8 12 2.5 2.5L16 9" />
-                                </svg>
-
-                            @else
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $warna['icon'] }}" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="1.8">
-                                    <circle cx="12" cy="12" r="9" />
-                                    <path d="M12 11v5m0-8h.01" />
-                                </svg>
-                            @endif
-
-                            <span
-                                class="rounded-full px-3 py-1.5 text-xs
-                                                                                                             font-semibold {{ $warna['badge'] }}">
-                                {{ $item['status'] }}
-                            </span>
-
+                            <p class="mt-0.5 text-sm leading-5 text-slate-500">
+                                {{ $isiRekomendasi }}
+                            </p>
                         </div>
 
-                        <h3 class="mt-4 text-base font-bold text-slate-800">
-                            {{ $item['judul'] }}
-                        </h3>
-
-                        <p class="mt-2 text-sm leading-6 text-slate-500">
-                            {{ $item['deskripsi'] }}
-                        </p>
-
-                    </article>
-
-                @endforeach
-
-            </div>
-
-            {{-- Rekomendasi --}}
-            <div class="mt-5 rounded-xl bg-[#F8FAFC] p-4">
-
-                <div class="flex items-start gap-3">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-6 w-6 shrink-0 text-[#155DFC]"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <path d="M12 3v3m0 12v3M3 12h3m12 0h3" />
-                        <circle cx="12" cy="12" r="7" />
-                        <path d="m9 12 2 2 4-4" />
-                    </svg>
-
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-700">
-                            {{ $judulRekomendasi }}
-                        </h3>
-
-                        <p class="mt-1 text-sm leading-6 text-slate-500">
-                            {{ $isiRekomendasi }}
-                        </p>
                     </div>
 
                 </div>
 
+                    {{-- Tanggal pemeriksaan --}}
+                    <div class="space-y-1">
+                        @if ($pemeriksaanTerakhir?->tgl_periksa)
+                            <p class="text-xs text-slate-400">
+                                Pemeriksaan terakhir:
+                                {{ \Carbon\Carbon::parse($pemeriksaanTerakhir->tgl_periksa)
+                    ->translatedFormat('d F Y') }}
+                            </p>
+                        @endif
+
+                        <p class="text-xs leading-5 text-slate-400">
+                            Informasi ini merupakan hasil pemantauan berdasarkan data
+                            pemeriksaan dan bukan diagnosis medis.
+                        </p>
+                    </div>
             </div>
-
-            {{-- Tanggal pemeriksaan --}}
-            @if ($pemeriksaanTerakhir?->tgl_periksa)
-                <p class="mt-4 text-xs text-slate-400">
-                    Pemeriksaan terakhir:
-                    {{ \Carbon\Carbon::parse($pemeriksaanTerakhir->tgl_periksa)
-                ->translatedFormat('d F Y') }}
-                </p>
-            @endif
-
-            <p class="mt-2 text-xs leading-5 text-slate-400">
-                Informasi ini merupakan hasil pemantauan berdasarkan data
-                pemeriksaan dan bukan diagnosis medis.
-            </p>
-
         </section>
 
 
@@ -1186,6 +1121,8 @@
         <section id="prediksi-stunting" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             {{-- Judul section --}}
             <div class="dashboard-section-heading">
+                <span class="dashboard-section-bar" aria-hidden="true"></span>
+
                 <div>
                     <h2>Prediksi Risiko Stunting</h2>
                     <p>
@@ -1194,37 +1131,39 @@
                 </div>
             </div>
 
-            {{-- Konten prediksi --}}
-            <div class="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-200 text-slate-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                            aria-hidden="true">
-                            <path d="M12 8v4m0 4h.01" />
-                            <circle cx="12" cy="12" r="9" />
-                        </svg>
-                    </div>
+            {{-- Kontrak hasil prediksi belum tersedia dari controller. --}}
+            <div class="dashboard-section-content">
+                <div class="rounded-xl bg-slate-50 p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-200 text-slate-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                                aria-hidden="true">
+                                <path d="M12 8v4m0 4h.01" />
+                                <circle cx="12" cy="12" r="9" />
+                            </svg>
+                        </div>
 
-                    <div>
-                        <span class="inline-flex rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">
-                            Belum tersedia
-                        </span>
+                        <div class="min-w-0">
+                            <span class="inline-flex rounded-full bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                                Belum tersedia
+                            </span>
 
-                        <h3 class="mt-2 text-sm font-bold text-slate-700">
-                            Hasil prediksi belum tersedia
-                        </h3>
+                            <h3 class="mt-2 text-sm font-bold text-slate-700">
+                                Hasil prediksi belum tersedia
+                            </h3>
+
+                            <p class="mt-1.5 text-sm leading-5 text-slate-500">
+                                Prediksi akan muncul setelah layanan prediksi
+                                terintegrasi dan data pemeriksaan memenuhi
+                                kebutuhan analisis.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
-                <p class="mt-4 text-sm leading-6 text-slate-500">
-                    Hasil prediksi akan ditampilkan setelah layanan Machine Learning
-                    terhubung dan data pemeriksaan anak memenuhi kebutuhan analisis.
-                </p>
-
-                <p class="mt-3 text-xs leading-5 text-slate-400">
-                    Informasi prediksi merupakan hasil analisis sistem dan bukan
-                    diagnosis medis.
+                <p class="text-xs leading-5 text-slate-400">
+                    Prediksi bukan diagnosis medis.
                 </p>
             </div>
         </section>
@@ -1234,15 +1173,13 @@
             {{-- Tombol mengambang --}}
             <button type="button" id="chatbot-toggle" class="dashboard-chatbot-button" aria-label="Buka chatbot"
                 aria-expanded="false" aria-controls="chatbot-panel" title="Asisten Posyandu-In">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-[26px] w-[26px]" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
                     aria-hidden="true">
                     <path
                         d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z" />
                     <path d="M8 11h8M8 14h5" />
                 </svg>
-
-                <span class="dashboard-chatbot-status"></span>
             </button>
 
             {{-- Panel chatbot --}}
@@ -1333,66 +1270,67 @@
 
             </section>
         </div>
+    </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const toggle = document.getElementById('chatbot-toggle');
-                const panel = document.getElementById('chatbot-panel');
-                const close = document.getElementById('chatbot-close');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.getElementById('chatbot-toggle');
+            const panel = document.getElementById('chatbot-panel');
+            const close = document.getElementById('chatbot-close');
 
-                if (!toggle || !panel || !close) return;
+            if (!toggle || !panel || !close) return;
 
-                function bukaChatbot() {
-                    panel.classList.remove('hidden');
-                    toggle.setAttribute('aria-expanded', 'true');
-                    toggle.setAttribute('aria-label', 'Tutup chatbot');
-                    close.focus();
+            function bukaChatbot() {
+                panel.classList.remove('hidden');
+                toggle.setAttribute('aria-expanded', 'true');
+                toggle.setAttribute('aria-label', 'Tutup chatbot');
+                close.focus();
+            }
+
+            function tutupChatbot() {
+                panel.classList.add('hidden');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.setAttribute('aria-label', 'Buka chatbot');
+                toggle.focus();
+            }
+
+            toggle.addEventListener('click', function () {
+                const sedangTerbuka =
+                    !panel.classList.contains('hidden');
+
+                if (sedangTerbuka) {
+                    tutupChatbot();
+                } else {
+                    bukaChatbot();
                 }
+            });
 
-                function tutupChatbot() {
+            close.addEventListener('click', tutupChatbot);
+
+            document.addEventListener('keydown', function (event) {
+                if (
+                    event.key === 'Escape' &&
+                    !panel.classList.contains('hidden')
+                ) {
+                    tutupChatbot();
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                const widget = document.querySelector(
+                    '.dashboard-chatbot-widget'
+                );
+
+                if (
+                    !widget.contains(event.target) &&
+                    !panel.classList.contains('hidden')
+                ) {
                     panel.classList.add('hidden');
                     toggle.setAttribute('aria-expanded', 'false');
                     toggle.setAttribute('aria-label', 'Buka chatbot');
-                    toggle.focus();
                 }
-
-                toggle.addEventListener('click', function () {
-                    const sedangTerbuka =
-                        !panel.classList.contains('hidden');
-
-                    if (sedangTerbuka) {
-                        tutupChatbot();
-                    } else {
-                        bukaChatbot();
-                    }
-                });
-
-                close.addEventListener('click', tutupChatbot);
-
-                document.addEventListener('keydown', function (event) {
-                    if (
-                        event.key === 'Escape' &&
-                        !panel.classList.contains('hidden')
-                    ) {
-                        tutupChatbot();
-                    }
-                });
-
-                document.addEventListener('click', function (event) {
-                    const widget = document.querySelector(
-                        '.dashboard-chatbot-widget'
-                    );
-
-                    if (
-                        !widget.contains(event.target) &&
-                        !panel.classList.contains('hidden')
-                    ) {
-                        panel.classList.add('hidden');
-                        toggle.setAttribute('aria-expanded', 'false');
-                        toggle.setAttribute('aria-label', 'Buka chatbot');
-                    }
-                });
             });
+        });
         </script>
 
 @endsection
